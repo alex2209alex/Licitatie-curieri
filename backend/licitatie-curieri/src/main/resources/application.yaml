@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: licitatie-curieri
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+  liquibase:
+    liquibase-schema: licitatie-curieri
+  jpa:
+    properties:
+      hibernate.default_schema: licitatie-curieri
+      hibernate.format_sql: true
+    open-in-view: false
+logging:
+  level:
+    org.hibernate.SQL: debug
