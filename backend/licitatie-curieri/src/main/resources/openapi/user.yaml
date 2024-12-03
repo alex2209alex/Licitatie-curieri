@@ -4,7 +4,7 @@ info:
   title: User management
   description: API related to management of users.
 paths:
-  /users:
+  /users/signup:
     post:
       tags:
         - User
