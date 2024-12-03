@@ -92,7 +92,7 @@ components:
           description: User's phone number
           type: string
           maxLength: 50
-          example: +40712345678
+          example: "+40712345678"
         password:
           description: User's password. Should be same as passwordConfirmation
           type: string
@@ -130,7 +130,7 @@ components:
         phoneNumber:
           description: User's phone number
           type: string
-          example: +40712345678
+          example: "+40712345678"
         userType:
           $ref: '#/components/schemas/UserType'
     UserVerification:
