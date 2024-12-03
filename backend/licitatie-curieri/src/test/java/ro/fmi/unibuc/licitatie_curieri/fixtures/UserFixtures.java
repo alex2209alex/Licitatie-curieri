@@ -4,6 +4,7 @@ import lombok.val;
 import org.openapitools.model.UserCreationDto;
 import org.openapitools.model.UserCreationResponseDto;
 import org.openapitools.model.UserTypeDto;
+import org.openapitools.model.UserVerificationDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
 
@@ -37,10 +38,14 @@ public class UserFixtures {
         user.setPhoneNumber("phoneNumber");
         user.setPassword("password");
         user.setUserType(UserType.CLIENT);
-        user.setEmailVerificationCode("12345");
-        user.setPhoneVerificationCode("54321");
+        user.setEmailVerificationCode("12345678");
+        user.setPhoneVerificationCode("87654321");
         user.setVerificationDeadline(Instant.now().plusSeconds(300));
         user.setVerified(false);
         return user;
+    }
+
+    public static UserVerificationDto getUserVerificationDtoFixture() {
+        return new UserVerificationDto("12345678", "87654321");
     }
 }

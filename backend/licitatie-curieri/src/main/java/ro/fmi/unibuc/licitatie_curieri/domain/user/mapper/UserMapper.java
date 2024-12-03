@@ -47,7 +47,7 @@ public interface UserMapper {
 
     default String getVerificationCode() {
         SecureRandom secureRandom = new SecureRandom();
-        return Integer.toString(secureRandom.nextInt(90000) + 10000);
+        return Integer.toString(secureRandom.nextInt(90000000) + 10000000);
     }
 
     default Instant getVerificationDeadline() {

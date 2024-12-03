@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.openapitools.model.UserCreationDto;
 import org.openapitools.model.UserCreationResponseDto;
 import org.openapitools.model.UserTypeDto;
+import org.openapitools.model.UserVerificationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -46,6 +47,10 @@ class UserControllerTest {
     record InvalidInputParametersForCreate(String firstName, String lastName, String email, String phoneNumber,
                                            String password, String passwordConfirmation, UserTypeDto userType,
                                            String message) {
+    }
+
+    record InvalidInputParametersForVerification(String emailVerificationCode, String phoneVerificationCode,
+                                                 String message) {
     }
 
     @ParameterizedTest
@@ -96,6 +101,42 @@ class UserControllerTest {
         Mockito.verify(userService, Mockito.times(1)).createUser(any());
     }
 
+    @ParameterizedTest
+    @MethodSource("provideInvalidInputParametersForVerification")
+    @SneakyThrows
+    void givenInvalidVerificationRequest_whenVerifyUser_thenBadRequest(InvalidInputParametersForVerification input) {
+        val userVerificationDto = new UserVerificationDto(input.emailVerificationCode, input.phoneVerificationCode);
+
+        val response = mockMvc.perform(MockMvcRequestBuilders.put("/users/test@gmail.com/verification")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userVerificationDto)))
+                .andReturn();
+
+        val responseBody = objectMapper.readValue(response.getResponse().getContentAsString(), GenericApplicationError.class);
+
+        Assertions.assertNotNull(responseBody);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), responseBody.getStatus());
+        Assertions.assertNotNull(responseBody.getDetail());
+        Assertions.assertTrue(responseBody.getDetail().contains(input.message));
+
+        Mockito.verify(userService, Mockito.never()).verifyUser(any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    void givenValidVerificationRequest_whenVerifyUser_thenOk() {
+        val userVerificationDto = UserFixtures.getUserVerificationDtoFixture();
+
+        Mockito.doNothing().when(userService).verifyUser(any(), any());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/users/test@gmail.com/verification")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userVerificationDto)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(userService, Mockito.times(1)).verifyUser(any(), any());
+    }
+
     private static Stream<InvalidInputParametersForCreate> provideInvalidInputParametersForCreate() {
         val firstName = "firstName";
         val lastName = "lastName";
@@ -123,6 +164,16 @@ class UserControllerTest {
                 new InvalidInputParametersForCreate(firstName, lastName, email, phoneNumber, password, stringOfLength51, userType, "passwordConfirmation"),
                 new InvalidInputParametersForCreate(firstName, lastName, email, phoneNumber, stringOfLength7, passwordConfirmation, userType, "password"),
                 new InvalidInputParametersForCreate(firstName, lastName, email, phoneNumber, password, stringOfLength7, userType, "passwordConfirmation")
+        );
+    }
+
+    private static Stream<InvalidInputParametersForVerification> provideInvalidInputParametersForVerification() {
+        val emailVerificationCode = "12345678";
+        val phoneVerificationCode = "87654321";
+
+        return Stream.of(
+                new InvalidInputParametersForVerification(null, phoneVerificationCode, "emailVerificationCode"),
+                new InvalidInputParametersForVerification(emailVerificationCode, null, "phoneVerificationCode")
         );
     }
 }

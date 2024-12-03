@@ -9,4 +9,6 @@ public class ErrorMessageUtils {
     public static final String PASSWORD_IS_DIFFERENT_FROM_PASSWORD_CONFIRMATION = "Password is different from password confirmation";
     public static final String PASSWORD_INVALID = "Password is invalid. It should contain at least one capital letter, one lower case letter, one digit and one special character (~!@#$%^&*()_+)";
     public static final String ERROR_HASHING_ALGORITHM = "Error with hashing algorithm";
+    public static final String USER_VERIFICATION_FAILED = "User verification failed";
+    public static final String VERIFICATION_FAILED_USER_DELETED = "User verification failed. User was deleted";
 }

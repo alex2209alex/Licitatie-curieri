@@ -43,9 +43,9 @@ class UserMapperTest {
         Assertions.assertNotEquals(user.getPassword(), userCreationDto.getPassword());
         Assertions.assertEquals(user.getUserType().name(), userCreationDto.getUserType().name());
         Assertions.assertNotNull(user.getEmailVerificationCode());
-        Assertions.assertEquals(5, user.getEmailVerificationCode().length());
+        Assertions.assertEquals(8, user.getEmailVerificationCode().length());
         Assertions.assertNotNull(user.getPhoneVerificationCode());
-        Assertions.assertEquals(5, user.getPhoneVerificationCode().length());
+        Assertions.assertEquals(8, user.getPhoneVerificationCode().length());
         Assertions.assertNotNull(user.getVerificationDeadline());
         Assertions.assertTrue(Instant.now().isBefore(user.getVerificationDeadline()));
         Assertions.assertTrue(Instant.now().plusSeconds(300).isAfter(user.getVerificationDeadline()));

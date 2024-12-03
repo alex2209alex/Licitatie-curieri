@@ -30,6 +30,36 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+  /users/{email}/verification:
+    put:
+      tags:
+        - User
+      summary: Verifies a user
+      operationId: verifyUser
+      parameters:
+        - name: email
+          required: true
+          in: path
+          description: Email of User to be verified
+          example: bogdan.popescu@gmail.com
+          schema:
+            type: string
+      requestBody:
+        description: Request body contains information related to verification codes
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserVerification'
+        required: true
+      responses:
+        '200':
+          description: User successfully verified.
+        '400':
+          description: Request body is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 components:
   schemas:
     UserCreation:
@@ -103,6 +133,20 @@ components:
           example: +40712345678
         userType:
           $ref: '#/components/schemas/UserType'
+    UserVerification:
+      type: object
+      required:
+        - emailVerificationCode
+        - phoneVerificationCode
+      properties:
+        emailVerificationCode:
+          description: Email verification code
+          type: string
+          example: 12345
+        phoneVerificationCode:
+          description: Phone verification code
+          type: string
+          example: 12345
     UserType:
       type: string
       description: Type of User in the application
