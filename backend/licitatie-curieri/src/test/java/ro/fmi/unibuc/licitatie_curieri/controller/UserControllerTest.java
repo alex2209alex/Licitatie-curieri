@@ -59,7 +59,7 @@ class UserControllerTest {
     void givenInvalidCreationRequest_whenCreateUser_thenBadRequest(InvalidInputParametersForCreate input) {
         val userCreationDto = new UserCreationDto(input.firstName, input.lastName, input.email, input.phoneNumber, input.password, input.passwordConfirmation, input.userType);
 
-        val response = mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        val response = mockMvc.perform(MockMvcRequestBuilders.post("/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreationDto)))
                 .andReturn();
@@ -82,7 +82,7 @@ class UserControllerTest {
 
         Mockito.when(userService.createUser(any())).thenReturn(userCreationResponseDto);
 
-        val response = mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        val response = mockMvc.perform(MockMvcRequestBuilders.post("/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreationDto)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
