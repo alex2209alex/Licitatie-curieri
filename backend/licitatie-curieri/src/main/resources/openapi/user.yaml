@@ -98,13 +98,13 @@ components:
           type: string
           minLength: 8
           maxLength: 50
-          example: example password
+          example: examplePassword1!
         passwordConfirmation:
           description: User's password. Should be same as password
           type: string
           minLength: 8
           maxLength: 50
-          example: example password
+          example: examplePassword1!
         userType:
           $ref: '#/components/schemas/UserType'
     UserCreationResponse:

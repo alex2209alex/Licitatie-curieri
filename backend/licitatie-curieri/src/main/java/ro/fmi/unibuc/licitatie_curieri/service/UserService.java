@@ -14,6 +14,8 @@ import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.time.Instant;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class UserService {
 
 //        ensureValidEmail(userCreationDto.getEmail());
 //        ensureValidPhoneNumber(userCreationDto.getPhoneNumber());
-//        ensureValidPassword(userCreationDto.getPassword(), userCreationDto.getPasswordConfirmation());
+        ensureValidPassword(userCreationDto.getPassword(), userCreationDto.getPasswordConfirmation());
 
         val user = userMapper.mapToUser(userCreationDto);
 
@@ -66,10 +68,10 @@ public class UserService {
             throw new BadRequestException(ErrorMessageUtils.PASSWORD_IS_DIFFERENT_FROM_PASSWORD_CONFIRMATION);
         }
 
-        // Sursa regex https://www.baeldung.com/java-regex-password-validation
-        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[~!@#$%^&*()_+])";
-
-        if (!password.matches(pattern)) {
+        // Sursa regex https://stackoverflow.com/questions/3802192/regexp-java-for-password-validation
+        Pattern pattern = Pattern.compile("^(?=.*[\\d])(?=.*[a-z])(?=.*[A-Z])(?=.*[~!@#$%^&*()_+])(?=\\S+$)");
+        Matcher matcher = pattern.matcher(password);
+        if (!matcher.find()) {
             throw new BadRequestException(ErrorMessageUtils.PASSWORD_INVALID);
         }
     }
