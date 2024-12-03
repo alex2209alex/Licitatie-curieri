@@ -4,6 +4,10 @@ import lombok.val;
 import org.openapitools.model.UserCreationDto;
 import org.openapitools.model.UserCreationResponseDto;
 import org.openapitools.model.UserTypeDto;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
+
+import java.time.Instant;
 
 public class UserFixtures {
     private UserFixtures(){
@@ -22,5 +26,21 @@ public class UserFixtures {
         userCreationResponseDto.setPhoneNumber("phoneNumber");
         userCreationResponseDto.setUserType(UserTypeDto.CLIENT);
         return userCreationResponseDto;
+    }
+
+    public static User getUnverifiedUserFixture() {
+        val user = new User();
+        user.setId(1L);
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
+        user.setEmail("email");
+        user.setPhoneNumber("phoneNumber");
+        user.setPassword("password");
+        user.setUserType(UserType.CLIENT);
+        user.setEmailVerificationCode("12345");
+        user.setPhoneVerificationCode("54321");
+        user.setVerificationDeadline(Instant.now().plusSeconds(300));
+        user.setVerified(false);
+        return user;
     }
 }
