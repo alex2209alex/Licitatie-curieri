@@ -1,4 +1,4 @@
-package ro.fmi.unibuc.licitatie_curieri.common;
+package ro.fmi.unibuc.licitatie_curieri.common.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
