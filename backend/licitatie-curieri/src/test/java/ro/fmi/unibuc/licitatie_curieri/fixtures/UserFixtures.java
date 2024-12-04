@@ -15,7 +15,7 @@ public class UserFixtures {
     }
 
     public static UserCreationDto getUserCreationDtoFixture(){
-        return new UserCreationDto("firstName", "lastName", "email", "phoneNumber", "password", "password", UserTypeDto.CLIENT);
+        return new UserCreationDto("firstName", "lastName", "email@gmail.com", "+40123456789", "passwordExample1!", "passwordExample1!", UserTypeDto.CLIENT);
     }
 
     public static UserCreationResponseDto getUserCreationResponseDtoFixture(){
@@ -42,6 +42,19 @@ public class UserFixtures {
         user.setPhoneVerificationCode("87654321");
         user.setVerificationDeadline(Instant.now().plusSeconds(300));
         user.setVerified(false);
+        return user;
+    }
+
+    public static User getVerifiedUserFixture() {
+        val user = new User();
+        user.setId(1L);
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
+        user.setEmail("email");
+        user.setPhoneNumber("phoneNumber");
+        user.setPassword("password");
+        user.setUserType(UserType.CLIENT);
+        user.setVerified(true);
         return user;
     }
 

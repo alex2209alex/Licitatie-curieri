@@ -8,6 +8,7 @@ import org.openapitools.model.UserVerificationDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
+import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapper;
@@ -28,8 +29,8 @@ public class UserService {
         userRepository.findByEmailAndUserType(userCreationDto.getEmail(), userMapper.mapToUserType(userCreationDto.getUserType()))
                 .ifPresent(this::ensureUserIsUnverifiedAndVerificationTimeExpired);
 
-//        ensureValidEmail(userCreationDto.getEmail());
-//        ensureValidPhoneNumber(userCreationDto.getPhoneNumber());
+        ensureValidEmail(userCreationDto.getEmail());
+        ensureValidPhoneNumber(userCreationDto.getPhoneNumber());
         ensureValidPassword(userCreationDto.getPassword(), userCreationDto.getPasswordConfirmation());
 
         val user = userMapper.mapToUser(userCreationDto);
@@ -37,14 +38,14 @@ public class UserService {
         return userMapper.mapToUserCreationResponseDto(userRepository.save(user));
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = ForbiddenException.class)
     public void verifyUser(String email, UserVerificationDto userVerificationDto) {
         val user = userRepository.findByEmailAndEmailVerificationCodeAndPhoneVerificationCode(email, userVerificationDto.getEmailVerificationCode(), userVerificationDto.getPhoneVerificationCode())
                 .orElseThrow(() -> new BadRequestException(ErrorMessageUtils.USER_VERIFICATION_FAILED));
 
         if (Instant.now().isAfter(user.getVerificationDeadline())) {
             userRepository.delete(user);
-            throw new BadRequestException(ErrorMessageUtils.VERIFICATION_FAILED_USER_DELETED);
+            throw new ForbiddenException(ErrorMessageUtils.VERIFICATION_FAILED_USER_DELETED);
         }
 
         user.setVerified(true);
@@ -61,6 +62,23 @@ public class UserService {
             throw new BadRequestException(String.format(ErrorMessageUtils.USER_WITH_EMAIL_AND_USER_TYPE_AWAITING_VERIFICATION, user.getEmail(), user.getUserType()));
         }
         userRepository.delete(user);
+    }
+
+    private void ensureValidEmail(String email) {
+        // Sursa regex https://stackoverflow.com/questions/8204680/java-regex-email
+        Pattern pattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+        Matcher matcher = pattern.matcher(email);
+        if (!matcher.matches()) {
+            throw new BadRequestException(ErrorMessageUtils.EMAIL_INVALID);
+        }
+    }
+
+    private void ensureValidPhoneNumber(String phoneNumber) {
+        Pattern pattern = Pattern.compile("^[+][\\d]{11}$");
+        Matcher matcher = pattern.matcher(phoneNumber);
+        if (!matcher.find()) {
+            throw new BadRequestException(ErrorMessageUtils.PHONE_NUMBER_INVALID);
+        }
     }
 
     private void ensureValidPassword(String password, String passwordConfirmation) {

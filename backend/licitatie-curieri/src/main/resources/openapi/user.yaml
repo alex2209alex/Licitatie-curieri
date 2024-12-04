@@ -60,6 +60,12 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: Verification deadline expired. User was deleted.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 components:
   schemas:
     UserCreation:
@@ -92,7 +98,7 @@ components:
           description: User's phone number
           type: string
           maxLength: 50
-          example: "+40712345678"
+          example: "+40123456789"
         password:
           description: User's password. Should be same as passwordConfirmation
           type: string
@@ -130,7 +136,7 @@ components:
         phoneNumber:
           description: User's phone number
           type: string
-          example: "+40712345678"
+          example: "+40123456789"
         userType:
           $ref: '#/components/schemas/UserType'
     UserVerification:

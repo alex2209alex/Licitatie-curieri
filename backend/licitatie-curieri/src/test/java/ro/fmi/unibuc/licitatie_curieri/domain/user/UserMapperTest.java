@@ -48,7 +48,7 @@ class UserMapperTest {
         Assertions.assertEquals(8, user.getPhoneVerificationCode().length());
         Assertions.assertNotNull(user.getVerificationDeadline());
         Assertions.assertTrue(Instant.now().isBefore(user.getVerificationDeadline()));
-        Assertions.assertTrue(Instant.now().plusSeconds(300).isAfter(user.getVerificationDeadline()));
+        Assertions.assertTrue(Instant.now().plusSeconds(301).isAfter(user.getVerificationDeadline()));
         Assertions.assertFalse(user.isVerified());
     }
 

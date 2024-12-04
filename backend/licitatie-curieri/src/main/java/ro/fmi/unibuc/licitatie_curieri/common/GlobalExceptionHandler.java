@@ -10,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
+import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.GenericApplicationError;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.InternalServerErrorException;
 
@@ -19,6 +20,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InternalServerErrorException.class)
     public ResponseEntity<GenericApplicationError> handleInternalServerErrorException(Exception exception) {
         return getGenerocApplicationErrorResponseEntity(exception, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<GenericApplicationError> handleForbiddenErrorException(Exception exception) {
+        return getGenerocApplicationErrorResponseEntity(exception, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({
