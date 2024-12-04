@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: licitatie-curieri
+  datasource:
+    url: jdbc:postgresql://localhost:5432/licitatieCurieri
+    username: postgres
+    password: postgres
+  flyway:
+    out-of-order: true
+logging:
+  level:
+    org.hibernate.SQL: debug

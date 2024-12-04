@@ -1,0 +1,13 @@
+components:
+  schemas:
+    GenericApplicationError:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        detail:
+          type: string
+          description: Detailed description of error
+          example: An example detailed description
