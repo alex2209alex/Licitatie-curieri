@@ -9,7 +9,7 @@ paths:
       tags:
         - Address
       summary: Creates an Addresses for an User. Only Users of type client are allowed to create addresses
-      operationId: creatAddress
+      operationId: createAddress
       requestBody:
         description: Request body contains information related to new Address
         content:

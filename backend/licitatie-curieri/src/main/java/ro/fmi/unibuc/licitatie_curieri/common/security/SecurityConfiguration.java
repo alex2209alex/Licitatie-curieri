@@ -19,7 +19,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/users/signup", "users/*/verification").permitAll()
-                        .anyRequest().denyAll()
+                        .anyRequest().permitAll()
                 );
         return http.build();
     }
