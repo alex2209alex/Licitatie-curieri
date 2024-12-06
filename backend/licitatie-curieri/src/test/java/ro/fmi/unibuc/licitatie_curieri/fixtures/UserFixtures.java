@@ -9,6 +9,7 @@ import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
 public class UserFixtures {
     private UserFixtures(){
@@ -42,6 +43,7 @@ public class UserFixtures {
         user.setPhoneVerificationCode("87654321");
         user.setVerificationDeadline(Instant.now().plusSeconds(300));
         user.setVerified(false);
+        user.setUserAddressAssociations(new ArrayList<>());
         return user;
     }
 
@@ -55,6 +57,7 @@ public class UserFixtures {
         user.setPassword("password");
         user.setUserType(UserType.CLIENT);
         user.setVerified(true);
+        user.setUserAddressAssociations(new ArrayList<>());
         return user;
     }
 
