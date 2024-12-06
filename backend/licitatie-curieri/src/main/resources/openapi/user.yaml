@@ -2,13 +2,13 @@ openapi: 3.0.3
 info:
   version: 1.0.0
   title: User management
-  description: API related to management of users.
+  description: API related to management of Users.
 paths:
   /users/signup:
     post:
       tags:
         - User
-      summary: Creates a user of type client or courier
+      summary: Creates a User of type client or courier
       operationId: createUser
       requestBody:
         description: Request body contains information related to new User
@@ -34,7 +34,7 @@ paths:
     put:
       tags:
         - User
-      summary: Verifies a user
+      summary: Verifies a User
       operationId: verifyUser
       parameters:
         - name: email
@@ -117,7 +117,7 @@ components:
       type: object
       properties:
         id:
-          description: User's id
+          description: User's ID
           type: integer
           format: int64
           example: 100
