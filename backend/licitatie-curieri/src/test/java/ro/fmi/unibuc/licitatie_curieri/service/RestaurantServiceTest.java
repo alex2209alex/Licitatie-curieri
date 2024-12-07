@@ -94,8 +94,8 @@ class RestaurantServiceTest {
         restaurant2.setId(2L);
         restaurant2.getAddress().setLatitude(45.439663);
         restaurant2.getAddress().setLongitude(26.156306);
-        val restaurantDetailsDto = RestaurantFixtures.getRestaurantDeatilsDto(restaurant);
-        val restaurantDetailsDto2 = RestaurantFixtures.getRestaurantDeatilsDto(restaurant2);
+        val restaurantDetailsDto = RestaurantFixtures.getRestaurantDetailsDto(restaurant);
+        val restaurantDetailsDto2 = RestaurantFixtures.getRestaurantDetailsDto(restaurant2);
 
         Mockito.when(userRepository.findById(any())).thenReturn(Optional.of(user));
         Mockito.when(restaurantRepository.findAll()).thenReturn(List.of(restaurant, restaurant2));
