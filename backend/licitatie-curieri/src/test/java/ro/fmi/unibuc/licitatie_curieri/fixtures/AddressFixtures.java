@@ -21,6 +21,7 @@ public class AddressFixtures {
         val userAddressAssociationId = new UserAddressAssociationId();
         userAddressAssociationId.setAddressId(address.getId());
         userAddressAssociationId.setUserId(user.getId());
+        userAddressAssociation.setId(userAddressAssociationId);
         return userAddressAssociation;
     }
 
