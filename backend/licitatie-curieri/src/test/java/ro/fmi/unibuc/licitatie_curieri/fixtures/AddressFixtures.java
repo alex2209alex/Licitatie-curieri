@@ -3,10 +3,34 @@ package ro.fmi.unibuc.licitatie_curieri.fixtures;
 import lombok.val;
 import org.openapitools.model.AddressCreationDto;
 import org.openapitools.model.AddressCreationResponseDto;
+import org.openapitools.model.AddressDetailsDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociationId;
 
 public class AddressFixtures {
     private AddressFixtures(){
+    }
+
+    public static UserAddressAssociation getUserAddressAssociationFixture(User user) {
+        val userAddressAssociation = new UserAddressAssociation();
+        userAddressAssociation.setUser(user);
+        val address = getAddressFixture();
+        userAddressAssociation.setAddress(address);
+        val userAddressAssociationId = new UserAddressAssociationId();
+        userAddressAssociationId.setAddressId(address.getId());
+        userAddressAssociationId.setUserId(user.getId());
+        return userAddressAssociation;
+    }
+
+    public static AddressDetailsDto getAddressDetailsDtoFixture() {
+        val addressDetailsDto = new AddressDetailsDto();
+        addressDetailsDto.setId(1L);
+        addressDetailsDto.setDetails("details");
+        addressDetailsDto.setLatitude(12.345);
+        addressDetailsDto.setLongitude(54.321);
+        return addressDetailsDto;
     }
 
     public static AddressCreationDto getAddressCreationDtoFixture() {

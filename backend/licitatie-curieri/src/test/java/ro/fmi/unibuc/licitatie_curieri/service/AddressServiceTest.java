@@ -16,6 +16,7 @@ import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 import ro.fmi.unibuc.licitatie_curieri.fixtures.AddressFixtures;
 import ro.fmi.unibuc.licitatie_curieri.fixtures.UserFixtures;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +34,44 @@ class AddressServiceTest {
 
     @InjectMocks
     private AddressService addressService;
+
+    @Test
+    void givenUnverifiedUser_whenGetAddresses_thenForbiddenException() {
+        val user = UserFixtures.getUnverifiedUserFixture();
+
+        Mockito.when(userRepository.findById(any())).thenReturn(Optional.of(user));
+
+        val exc = Assertions.assertThrows(ForbiddenException.class, () -> addressService.getAddresses());
+
+        Assertions.assertEquals("User is unverified", exc.getMessage());
+    }
+
+    @Test
+    void givenNonClientUser_whenGetAddresses_thenForbiddenException() {
+        val user = UserFixtures.getVerifiedUserFixture();
+        user.setUserType(UserType.COURIER);
+
+        Mockito.when(userRepository.findById(any())).thenReturn(Optional.of(user));
+
+        val exc = Assertions.assertThrows(ForbiddenException.class, () -> addressService.getAddresses());
+
+        Assertions.assertEquals("Only client can get addresses", exc.getMessage());
+    }
+
+    @Test
+    void givenVerifiedClientUser_whenGetAddresses_thenGetAddresses() {
+        val user = UserFixtures.getVerifiedUserFixture();
+        user.setUserType(UserType.CLIENT);
+        user.setUserAddressAssociations(List.of(AddressFixtures.getUserAddressAssociationFixture(user)));
+        val addressDetailsDto = AddressFixtures.getAddressDetailsDtoFixture();
+
+        Mockito.when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        Mockito.when(addressMapper.mapToAddressDetailsDto(any())).thenReturn(addressDetailsDto);
+
+        Assertions.assertDoesNotThrow(() -> addressService.getAddresses());
+
+        Mockito.verify(addressMapper, Mockito.times(1)).mapToAddressDetailsDto(any());
+    }
 
     @Test
     void givenUnverifiedUser_whenCreateAddress_thenForbiddenException() {
