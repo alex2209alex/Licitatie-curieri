@@ -15,7 +15,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    // Sursa filterChain https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html
+    // Source filterChain https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
