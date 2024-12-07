@@ -40,7 +40,7 @@ public interface UserMapper {
     default String hashPassword(String password) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-            return new String(messageDigest.digest(password.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+            return new String(messageDigest.digest(password.getBytes(StandardCharsets.UTF_16)), StandardCharsets.UTF_16);
         } catch (NoSuchAlgorithmException exception) {
             throw new InternalServerErrorException(ErrorMessageUtils.ERROR_HASHING_ALGORITHM);
         }
