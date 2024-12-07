@@ -25,9 +25,11 @@ import ro.fmi.unibuc.licitatie_curieri.common.exception.GenericApplicationError;
 import ro.fmi.unibuc.licitatie_curieri.fixtures.AddressFixtures;
 import ro.fmi.unibuc.licitatie_curieri.service.AddressService;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = AddressController.class)
 @ContextConfiguration(classes = {AddressController.class, GlobalExceptionHandler.class})
@@ -43,6 +45,24 @@ class AddressControllerTest {
     private AddressService addressService;
 
     record InvalidInputParametersForCreate(String details, Double latitude, Double longitude, String message) {
+    }
+
+    @Test
+    @SneakyThrows
+    void whenGetAddresses_thenGetAddresses() {
+        val addressDetailsDto = AddressFixtures.getAddressDetailsDtoFixture();
+
+        Mockito.when(addressService.getAddresses()).thenReturn(List.of(addressDetailsDto));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/addresses")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(addressDetailsDto.getId()))
+                .andExpect(jsonPath("$[0].details").value(addressDetailsDto.getDetails()))
+                .andExpect(jsonPath("$[0].latitude").value(addressDetailsDto.getLatitude()))
+                .andExpect(jsonPath("$[0].longitude").value(addressDetailsDto.getLongitude()));
     }
 
     @ParameterizedTest
