@@ -13,6 +13,19 @@ class AddressMapperTest {
     private AddressMapper addressMapper;
 
     @Test
+    void testMapToAddressDetailsDto() {
+        val address = AddressFixtures.getAddressFixture();
+
+        val addressDetailsDto = addressMapper.mapToAddressDetailsDto(address);
+
+        Assertions.assertNotNull(addressDetailsDto);
+        Assertions.assertEquals(addressDetailsDto.getId(), address.getId());
+        Assertions.assertEquals(addressDetailsDto.getDetails(), address.getDetails());
+        Assertions.assertEquals(addressDetailsDto.getLatitude(), address.getLatitude());
+        Assertions.assertEquals(addressDetailsDto.getLongitude(), address.getLongitude());
+    }
+
+    @Test
     void testMapToAddress() {
         val addressCreationDto = AddressFixtures.getAddressCreationDtoFixture();
 
