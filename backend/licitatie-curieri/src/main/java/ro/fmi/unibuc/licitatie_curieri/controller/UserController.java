@@ -6,10 +6,14 @@ import org.openapitools.api.UserApi;
 import org.openapitools.model.UserCreationDto;
 import org.openapitools.model.UserCreationResponseDto;
 import org.openapitools.model.UserVerificationDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.LogMessageUtils;
+import ro.fmi.unibuc.licitatie_curieri.dto.LoginRequestDto;
+import ro.fmi.unibuc.licitatie_curieri.dto.VerificationRequestDto;
 import ro.fmi.unibuc.licitatie_curieri.service.UserService;
 
 @Slf4j
@@ -34,4 +38,19 @@ public class UserController implements UserApi {
         log.info(String.format(LogMessageUtils.VERIFY_USER, email));
         userService.verifyUser(email, userVerificationDto);
     }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto) {
+        String message = authService.initiateLogin(loginRequestDto.getUsername(), loginRequestDto.getPassword());
+        return ResponseEntity.ok(message);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<String> verifyCode(@RequestBody VerificationRequestDto verificationRequestDto) {
+        String token = authService.verifyCode(verificationRequestDto.getUsername(), verificationRequestDto.getCode());
+        return ResponseEntity.ok(token);
+    }
+
+
 }
