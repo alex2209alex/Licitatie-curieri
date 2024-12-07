@@ -65,7 +65,7 @@ public class UserService {
     }
 
     private void ensureValidEmail(String email) {
-        // Sursa regex https://stackoverflow.com/questions/8204680/java-regex-email
+        // Source regex https://stackoverflow.com/questions/8204680/java-regex-email
         Pattern pattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
         Matcher matcher = pattern.matcher(email);
         if (!matcher.matches()) {
@@ -86,7 +86,7 @@ public class UserService {
             throw new BadRequestException(ErrorMessageUtils.PASSWORD_IS_DIFFERENT_FROM_PASSWORD_CONFIRMATION);
         }
 
-        // Sursa regex https://stackoverflow.com/questions/3802192/regexp-java-for-password-validation
+        // Source regex https://stackoverflow.com/questions/3802192/regexp-java-for-password-validation
         Pattern pattern = Pattern.compile("^(?=.*[\\d])(?=.*[a-z])(?=.*[A-Z])(?=.*[~!@#$%^&*()_+])(?=\\S+$)");
         Matcher matcher = pattern.matcher(password);
         if (!matcher.find()) {

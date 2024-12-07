@@ -1,4 +1,4 @@
-package ro.fmi.unibuc.licitatie_curieri.domain.user;
+package ro.fmi.unibuc.licitatie_curieri.domain.user.mapper;
 
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -7,8 +7,6 @@ import org.openapitools.model.UserTypeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
-import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapper;
-import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapperImpl;
 import ro.fmi.unibuc.licitatie_curieri.fixtures.UserFixtures;
 
 import java.time.Instant;
