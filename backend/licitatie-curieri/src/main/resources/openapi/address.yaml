@@ -5,6 +5,26 @@ info:
   description: API related to management of Addresses.
 paths:
   /addresses:
+    get:
+      tags:
+        - Address
+      summary: Fetches Addresses of User. Only Users of type client can fetch Restaurants
+      operationId: getAddresses
+      responses:
+        '200':
+          description: Resources successfully fetched.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressDetails'
+        '403':
+          description: User is not allowed to get Addresses.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
     post:
       tags:
         - Address
@@ -38,6 +58,28 @@ paths:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 components:
   schemas:
+    AddressDetails:
+      type: object
+      properties:
+        id:
+          description: Address's ID
+          type: integer
+          format: int64
+          example: 100
+        details:
+          description: Address's details
+          type: string
+          example: Str. Strada Nr. 1
+        latitude:
+          description: Address's latitude
+          type: number
+          format: double
+          example: 44.439663
+        longitude:
+          description: Address's longitude
+          type: number
+          format: double
+          example: 26.096306
     AddressCreation:
       type: object
       required:
@@ -75,7 +117,6 @@ components:
         details:
           description: Address's details
           type: string
-          maxLength: 100
           example: Str. Strada Nr. 1
         latitude:
           description: Address's latitude
