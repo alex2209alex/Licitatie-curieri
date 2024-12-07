@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:licitatie_curieri/restaurant/providers/CartProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/MenuItemProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ void main() {
     [
       ChangeNotifierProvider(create: (_) => RestaurantProvider()),
       ChangeNotifierProvider(create: (_) => MenuItemProvider()),
+      ChangeNotifierProvider(create: (_) => CartProvider()),
     ],
     child: const MyApp(),
     ),
@@ -44,6 +46,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const RestaurantsScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

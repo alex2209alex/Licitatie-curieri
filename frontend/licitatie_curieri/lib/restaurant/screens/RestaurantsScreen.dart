@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
 import 'package:provider/provider.dart';
+import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
 import 'RestaurantMenusScreen.dart';
 
@@ -32,6 +33,11 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
       appBar: AppBar(
         title: const Text('Restaurants'),
         centerTitle: true,
+
+        actions: [
+          CartActionBarButton(canRedirect: true),
+          SizedBox(width: 20.0),
+        ],
       ),
       body: Consumer<RestaurantProvider>(
         builder: (context, restaurantProvider, _) {
