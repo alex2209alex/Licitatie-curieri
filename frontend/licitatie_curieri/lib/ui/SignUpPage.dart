@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../model/User.dart';
 import '../model/enum/UserType.dart';
+import 'VerifyUserPage.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -33,7 +34,7 @@ class SignUpPageState extends State<SignUpPage> {
     final userViewModel = Provider.of<UserViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(Constants.signUp)),
+      appBar: AppBar(title: const Text(Constants.SIGN_UP)),
 
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -42,28 +43,28 @@ class SignUpPageState extends State<SignUpPage> {
             children: [
               TextField(
                   controller: firstNameController,
-                  decoration: const InputDecoration(labelText: Constants.firstName)
+                  decoration: const InputDecoration(labelText: Constants.FIRST_NAME)
               ),
 
               const SizedBox(height: 10),
 
               TextField(
                   controller: lastNameController,
-                  decoration: const InputDecoration(labelText: Constants.lastName)
+                  decoration: const InputDecoration(labelText: Constants.LAST_NAME)
               ),
 
               const SizedBox(height: 10),
 
               TextField(
                   controller: emailController,
-                  decoration: const InputDecoration(labelText: Constants.email)
+                  decoration: const InputDecoration(labelText: Constants.EMAIL)
               ),
 
               const SizedBox(height: 10),
 
               TextField(
                   controller: phoneNumberController,
-                  decoration: const InputDecoration(labelText: Constants.phoneNumber)
+                  decoration: const InputDecoration(labelText: Constants.PHONE_NUMBER)
               ),
 
               const SizedBox(height: 10),
@@ -72,7 +73,7 @@ class SignUpPageState extends State<SignUpPage> {
                 controller: passwordController,
                 obscureText: !passwordVisible,
                 decoration: InputDecoration(
-                  labelText: Constants.password,
+                  labelText: Constants.PASSWORD,
                   suffixIcon: IconButton(
                     icon: Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
@@ -90,7 +91,7 @@ class SignUpPageState extends State<SignUpPage> {
                 controller: passwordConfirmationController,
                 obscureText: !confirmPasswordVisible,
                 decoration: InputDecoration(
-                  labelText: Constants.passwordConfirmation,
+                  labelText: Constants.PASSWORD_CONFIRMATION,
                   suffixIcon: IconButton(
                     icon: Icon(confirmPasswordVisible ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
@@ -106,7 +107,7 @@ class SignUpPageState extends State<SignUpPage> {
 
               ElevatedButton(
                 child: Text(
-                    selectedUserType != null ? selectedUserType.toString().split('.').last : Constants.selectUserType
+                    selectedUserType != null ? selectedUserType.toString().split('.').last : Constants.SELECT_USER_TYPE
                 ),
                 onPressed: () => showUserTypePicker(context),
               ),
@@ -114,7 +115,7 @@ class SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: () async {
+                onPressed: isLoading ? null : () async {
                   setState(() {
                     isLoading = true;
                   });
@@ -132,17 +133,18 @@ class SignUpPageState extends State<SignUpPage> {
                   try {
                     bool isSignedUp = await userViewModel.signUp(newUser);
                     if (isSignedUp) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text(Constants.signUpSuccess))
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const VerificationPage()),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text(Constants.signUpFail))
+                          const SnackBar(content: Text(Constants.SIGN_UP_FAIL))
                       );
                     }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(Constants.signUpFail + e.toString()))
+                        SnackBar(content: Text(Constants.SIGN_UP_FAIL + e.toString()))
                     );
                   } finally {
                     setState(() {
@@ -150,7 +152,7 @@ class SignUpPageState extends State<SignUpPage> {
                     });
                   }
                 },
-                child: isLoading ? const CircularProgressIndicator(color: AppColors.red) : const Text(Constants.signUp),
+                child: isLoading ? const CircularProgressIndicator(color: AppColors.red) : const Text(Constants.SIGN_UP),
               ),
             ],
           ),
@@ -162,7 +164,7 @@ class SignUpPageState extends State<SignUpPage> {
   void showUserTypePicker(BuildContext context) {
     showMaterialScrollPicker<UserType>(
       context: context,
-      title: Constants.selectUserType,
+      title: Constants.SELECT_USER_TYPE,
       items: UserType.values,
       selectedItem: selectedUserType ?? UserType.CLIENT,
       onChanged: (value) => setState(() => selectedUserType = value),

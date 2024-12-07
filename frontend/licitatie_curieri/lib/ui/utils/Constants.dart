@@ -1,14 +1,18 @@
 class Constants {
-  static const String signUp = 'Sign Up';
-  static const String firstName = 'First Name';
-  static const String lastName = 'Last Name';
-  static const String email = 'Email';
-  static const String phoneNumber = 'Phone Number';
-  static const String password = 'Password';
-  static const String passwordConfirmation = 'Password Confirmation';
-  static const String signUpSuccess = 'Sign up successful';
-  static const String signUpFail = 'Failed to sign up: ';
-  static const String selectUserType = "Select User Type";
+  static const String SIGN_UP = 'Sign Up';
+  static const String FIRST_NAME = 'First Name';
+  static const String LAST_NAME = 'Last Name';
+  static const String EMAIL = 'Email';
+  static const String PHONE_NUMBER = 'Phone Number';
+  static const String PASSWORD = 'Password';
+  static const String PASSWORD_CONFIRMATION = 'Password Confirmation';
+  static const String SIGN_UP_SUCCESS = 'Sign up successful';
+  static const String SIGN_UP_FAIL = 'Failed to sign up: ';
+  static const String SELECT_USER_TYPE = "Select User Type";
+  static const String EMAIL_VERIFICATION_CODE = "Email Verification Code";
+  static const String PHONE_VERIFICATION_CODE = "Phone Verification Code";
+  static const String VERIFY = "Verify";
+  static const String VERIFY_FAIL = 'Failed to verify: ';
 }
 
 

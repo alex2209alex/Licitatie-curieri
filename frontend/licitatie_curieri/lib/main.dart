@@ -21,12 +21,4 @@ void main() {
       ),
     ),
   );
-  // runApp(
-  //   ChangeNotifierProvider<UserViewModel>(
-  //     create: (_) => UserViewModel(UserRepository()),
-  //     child: const MaterialApp(
-  //       home: SignUpPage(),
-  //     ),
-  //   ),
-  // );
 }
