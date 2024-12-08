@@ -7,18 +7,10 @@ class CartProvider with ChangeNotifier {
   int get cartCounter => _cartCounter;
 
 
-  Future<void> incrementCounter() async {
+  Future<void> setCounter(int value) async {
     final prefs = await SharedPreferences.getInstance();
-    _cartCounter++;
-    prefs.setInt('cartCounter', cartCounter);
-
-    notifyListeners();
-  }
-
-  Future<void> decrementCounter() async {
-    final prefs = await SharedPreferences.getInstance();
-    _cartCounter--;
-    prefs.setInt('cartCounter', cartCounter);
+    _cartCounter = value;
+    prefs.setInt('cartCounter', value);
 
     notifyListeners();
   }

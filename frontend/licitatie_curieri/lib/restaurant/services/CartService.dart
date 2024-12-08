@@ -26,15 +26,19 @@ class CartService {
     return cartItems;
   }
 
-  Future<void> addItemToCart(MenuItem menuItem) async {
+  Future<int> addItemToCart(MenuItem menuItem) async {
     List<MenuItem> cartItems = await getCartItems();
     cartItems.add(menuItem);
     saveCartItems(cartItems);
+
+    return cartItems.length;
   }
 
-  Future<void> removeItemAtIndex(int index) async {
+  Future<int> removeItemAtIndex(int index) async {
     List<MenuItem> cartItems = await getCartItems();
     cartItems.removeAt(index);
     saveCartItems(cartItems);
+
+    return cartItems.length;
   }
 }
