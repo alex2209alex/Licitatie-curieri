@@ -36,27 +36,26 @@ class CartActionBarButtonState extends State<CartActionBarButton> {
     //prefs.setInt('cartCounter', 0);
     setState(() {
       cartCounter = prefs.getInt('cartCounter') ?? 0;
+      cartProvider!.setCounter(cartCounter);
     });
   }
 
   Future<void> addToCart(MenuItem menuItem, CartService cartService) async {
+    //  Add the menu item to the cart list
+    int count = await cartService.addItemToCart(menuItem);
 
     setState(() {
-      cartProvider!.incrementCounter();
+      cartProvider!.setCounter(count);
     });
-
-    //  Add the menu item to the cart list
-    cartService.addItemToCart(menuItem);
   }
 
   Future<void> removeFromCart(int index, CartService cartService) async {
+    //  Remove the item corresponding to this index from the cart list
+    int count = await cartService.removeItemAtIndex(index);
 
     setState(() {
-      cartProvider!.decrementCounter();
+      cartProvider!.setCounter(count);
     });
-
-    //  Remove the item corresponding to this index from the cart list
-    cartService.removeItemAtIndex(index);
   }
 
   @override
