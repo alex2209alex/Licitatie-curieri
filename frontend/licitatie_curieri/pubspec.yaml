@@ -31,8 +31,15 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # library for you can see IOS device in Android Studio
   device_preview: ^1.2.0
 
+  # library for http call
+  http: ^1.2.2
+
+  # library for UI
+  flutter_form_builder: ^9.5.0
+  flutter_material_pickers: ^3.7.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
