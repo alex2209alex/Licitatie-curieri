@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
 import '../providers/MenuItemProvider.dart';
 import '../providers/RestaurantProvider.dart';
+import '../services/CartService.dart';
 
 class RestaurantMenusScreen extends StatefulWidget {
   const RestaurantMenusScreen({Key? key}) : super(key: key);
@@ -12,6 +14,12 @@ class RestaurantMenusScreen extends StatefulWidget {
 }
 
 class _RestaurantMenusScreenState extends State<RestaurantMenusScreen> {
+
+  GlobalKey<CartActionBarButtonState> _cartKey = GlobalKey();
+
+  CartService cartService = CartService();
+
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +48,11 @@ class _RestaurantMenusScreenState extends State<RestaurantMenusScreen> {
       appBar: AppBar(
         title: Text(restaurantProvider.selectedRestaurant!.name),
         centerTitle: true,
+
+        actions: [
+          CartActionBarButton(key: _cartKey, canRedirect: true),
+          SizedBox(width: 20.0),
+        ],
       ),
       body: menuProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -52,9 +65,7 @@ class _RestaurantMenusScreenState extends State<RestaurantMenusScreen> {
           return ListItemCustomCard.fromMenuItem(
             menuItem,
              "Add to cart",
-                () {
-              // Add to cart function
-            },
+            () => (_cartKey.currentState)!.addToCart(menuItem, cartService),
           );
         },
       ),
