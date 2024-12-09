@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/MenuItemModel.dart';
 class MenuItemService {
 
-  static const String baseUrl = "http://localhost:8080/MenuItems";
+  static const String baseUrl = "http://192.168.100.97:8080/MenuItems";
 
   Future<List<MenuItem>> fetchMenuItemsByRestaurant(int id) async {
 

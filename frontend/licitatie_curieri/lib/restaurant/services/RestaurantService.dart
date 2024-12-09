@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class RestaurantService{
 
-  static const String baseUrl = "localhost:8080/restaurants";
+  static const String baseUrl = "http://192.168.100.97/restaurants";
 
   Future<List<Restaurant>> fetchRestaurants() async {
 

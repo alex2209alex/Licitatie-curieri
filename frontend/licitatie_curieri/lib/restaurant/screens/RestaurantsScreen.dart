@@ -76,6 +76,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: UniqueKey(),
         onPressed: () {
           Navigator.push(context,
           MaterialPageRoute(

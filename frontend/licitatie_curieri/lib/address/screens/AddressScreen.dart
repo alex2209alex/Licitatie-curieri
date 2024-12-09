@@ -46,7 +46,7 @@ class _AddressScreenState extends State<AddressScreen> {
             MaterialPageRoute(builder: (context) => const CreateAddressScreen()),
           ).then((_)
           {
-            Provider.of<AddressProvider>(context, listen: false).fetchAddressesByUserId(1);
+            Provider.of<AddressProvider>(context, listen: false).fetchAddresses(); // cand o sa mearga dupa user ID
           });
         },
         child: const Icon(Icons.add),
