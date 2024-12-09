@@ -49,8 +49,8 @@ class MenuItemProvider with ChangeNotifier {
       default:
         break;
     }
-
   }
+
   Future<void> fetchMenuItemById(int id) async {
     _isLoading = true;
     notifyListeners();

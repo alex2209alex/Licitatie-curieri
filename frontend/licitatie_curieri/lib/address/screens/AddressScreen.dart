@@ -16,7 +16,7 @@ class _AddressScreenState extends State<AddressScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AddressProvider>(context, listen: false).fetchAddressesByUserId(1); // Put actual User ID
+      Provider.of<AddressProvider>(context, listen: false).fetchAddresses();   // TO BE MODIFIED WITH FETCH BY ID cand securitatea e gata
     });
   }
 
@@ -34,7 +34,7 @@ class _AddressScreenState extends State<AddressScreen> {
           final address = addressProvider.addresses[index];
           return AddressSelectionCard(
             address: address,
-            isSelected: addressProvider.selectedAddress == address,
+            isSelected: addressProvider.selectedAddressId == address.id,
             onSelect: () => addressProvider.setSelectedAddress(address),
           );
         },

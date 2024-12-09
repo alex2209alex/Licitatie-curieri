@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/models/AddressModel.dart';
-import 'package:provider/provider.dart';
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
+import 'dart:convert';
+import 'package:provider/provider.dart';
 
 class CreateAddressScreen extends StatefulWidget {
   const CreateAddressScreen({Key? key}) : super(key: key);
@@ -14,6 +16,55 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _latitudeController = TextEditingController();
   final TextEditingController _longitudeController = TextEditingController();
+  final FocusNode _detailsFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _detailsFocusNode.addListener(() {
+      if (!_detailsFocusNode.hasFocus) {
+        _fetchCoordinatesForAddress();
+      }
+    });
+  }
+
+  Future<void> _fetchCoordinatesForAddress() async {
+    final address = _detailsController.text;
+    if (address.isEmpty) return;
+
+    final apiKey = "";
+    final url =
+        "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      final data = json.decode(response.body);
+
+      if (data['status'] == 'OK') {
+        final location = data['results'][0]['geometry']['location'];
+        final latitude = location['lat'];
+        final longitude = location['lng'];
+
+        setState(() {
+          _latitudeController.text = latitude.toString();
+          _longitudeController.text = longitude.toString();
+        });
+      } else {
+        _showErrorDialog(context, "Invalid address. Please try again.");
+      }
+    } catch (e) {
+      _showErrorDialog(context, "An error occurred. Please try again.");
+    }
+  }
+
+  @override
+  void dispose() {
+    _detailsFocusNode.dispose();
+    _detailsController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +76,20 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
           children: [
             TextField(
               controller: _detailsController,
+              focusNode: _detailsFocusNode,
               decoration: const InputDecoration(labelText: "Details"),
             ),
             TextField(
               controller: _latitudeController,
               decoration: const InputDecoration(labelText: "Latitude"),
               keyboardType: TextInputType.number,
+              readOnly: true,
             ),
             TextField(
               controller: _longitudeController,
               decoration: const InputDecoration(labelText: "Longitude"),
               keyboardType: TextInputType.number,
+              readOnly: true,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -44,26 +98,26 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
                 final latitude = double.tryParse(_latitudeController.text);
                 final longitude = double.tryParse(_longitudeController.text);
 
-                // Validare date
                 if (details.isEmpty || latitude == null || longitude == null) {
                   _showErrorDialog(context, "All fields must be filled correctly.");
                   return;
                 }
 
                 final address = Address(
-                  id: 1, // Temporar; poate fi ignorat dacă backend-ul generează ID-ul.
-                  details: details,
-                  latitude: latitude,
-                  longitude: longitude,
+                id: 1,              // IT DOESN'T MATTER
+                details: details,
+                latitude: latitude,
+                longitude: longitude,
                 );
 
                 final success = await Provider.of<AddressProvider>(context, listen: false)
                     .createAddress(address);
 
                 if (success) {
-                  Navigator.pop(context); // Închide ecranul dacă operația reușește.
+                Navigator.pop(context);
                 } else {
-                  _showErrorDialog(context, "Failed to create address. Please try again.");
+                  _showErrorDialog(
+                      context, "Failed to create address. Please try again.");
                 }
               },
               child: const Text("Create Address"),
@@ -74,7 +128,6 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
     );
   }
 
-  // Funcție pentru afișarea unui popup cu mesaj de eroare
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -85,7 +138,7 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Închide dialogul.
+                Navigator.of(context).pop();
               },
               child: const Text("OK"),
             ),

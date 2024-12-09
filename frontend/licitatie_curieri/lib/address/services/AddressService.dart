@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/models/AddressModel.dart';
-import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
-
 
 class AddressService {
   static const String baseUrl = "http://192.168.100.97:8080/addresses";
@@ -13,10 +11,6 @@ class AddressService {
     Uri uri = Uri.parse(baseUrl);
     final response = await http.get(uri);
 
-
-    // without backend
-    return addresses;
-
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => Address.fromJson(json)).toList();
@@ -25,14 +19,13 @@ class AddressService {
     }
   }
 
+
+  // TO BE MODIFIED
+  // cand o sa fie gata partea cu securitatea
+
   Future<List<Address>> fetchAddressesByUserId(int userId) async {
     Uri uri = Uri.parse("$baseUrl/user/$userId");
     final response = await http.get(uri);
-
-
-    // without backend
-    return addresses;
-
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -60,13 +53,6 @@ class AddressService {
     );
 
     print("adresa pt post: " + json.encode(address.toJson()));
-
-    //  Without Beckend
-    //
-
-    addresses.add(address);
-    print(addresses.length);
-    return address;
 
     if (response.statusCode == 201) {
       return Address.fromJson(json.decode(response.body));

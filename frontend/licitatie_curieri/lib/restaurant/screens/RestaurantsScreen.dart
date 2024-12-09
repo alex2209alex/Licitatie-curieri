@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:licitatie_curieri/address/screens/AddressScreen.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
 import 'package:provider/provider.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
@@ -67,6 +68,17 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+          MaterialPageRoute(
+            builder: (context) => const AddressScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.location_on),
+        tooltip: 'Go to Addresses',
       ),
     );
   }
