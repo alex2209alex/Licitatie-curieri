@@ -34,8 +34,8 @@ class ListItemCustomCard extends StatelessWidget {
   {
     return ListItemCustomCard(
         title: restaurant.name,
-        description: restaurant.address,
-        imageUrl: restaurant.photo,
+        description: restaurant.addressId.toString(),
+        imageUrl: "https://www.firstbenefits.org/wp-content/uploads/2017/10/placeholder.png",
         buttonText: buttonText,
         onButtonPressed: onButtonPressed
     );
@@ -51,7 +51,6 @@ class ListItemCustomCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Imagine
                 Image(
                   width: 128,
                   height: 128,

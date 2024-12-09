@@ -59,8 +59,8 @@ class RestaurantProvider with ChangeNotifier {
   void initWithoutBackEnd()
   {
     _restaurants = [
-      Restaurant(id: 1, name: "shaormeria 1", photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz9q94dqDYUBV6_YpAKCWCK3xdf6xSuAIiOg&s", address: "strada 1", latitude: 11.3, longitude: 10.4),
-      Restaurant(id: 2, name: "shaormeria 2", photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR-meP8FicBURYdq-PjR3J7_OWQL0mBOot8KiroYftUrdDQJ4OhK-QP1nIQnEOnRYyaqM&usqp=CAU", address: "strada 2", latitude: 25.1, longitude: 17.2)
+      Restaurant(id: 1, name: "shaormeria 1", addressId: 1),
+      Restaurant(id: 2, name: "shaormeria 2", addressId: 2)
     ];
   }
 
