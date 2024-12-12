@@ -3,12 +3,12 @@ import 'package:http/http.dart' as http;
 import '../models/MenuItemModel.dart';
 class MenuItemService {
 
-  static const String baseUrl = "http://192.168.100.97:8080/MenuItems";
+  static const String baseUrl = "http://192.168.1.130:8080/MenuItems";
 
-  Future<List<MenuItem>> fetchMenuItemsByRestaurant(int id) async {
+  Future<List<MenuItem>> fetchMenuItemsByRestaurant(int idRestaurant) async {
 
     // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/restaurant/$id");
+    Uri uri = Uri.parse("$baseUrl/restaurant/$idRestaurant");
     final response = await http.get(uri);
     if(response.statusCode == 200)
       {
@@ -17,14 +17,14 @@ class MenuItemService {
       }
     else
       {
-        throw Exception("Failed to fetch MenuItems from restaurant $id");
+        throw Exception("Failed to fetch MenuItems from restaurant $idRestaurant");
       }
   }
 
 
-  Future<MenuItem> fetchMenuItemById(int id) async {
+  Future<MenuItem> fetchMenuItemById(int idMenu) async {
     // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/$id");
+    Uri uri = Uri.parse("$baseUrl/$idMenu");
     final response = await http.get(uri);
     if(response.statusCode == 200)
       {
@@ -32,7 +32,7 @@ class MenuItemService {
       }
     else
       {
-        throw Exception("Failed to fetch MenuItem $id");
+        throw Exception("Failed to fetch MenuItem $idMenu");
       }
   }
 

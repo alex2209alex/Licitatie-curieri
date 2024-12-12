@@ -16,19 +16,22 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _latitudeController = TextEditingController();
   final TextEditingController _longitudeController = TextEditingController();
-  final FocusNode _detailsFocusNode = FocusNode();
+
+
+  bool isEditing = false;
+  bool isValidAddress = false;
+
 
   @override
   void initState() {
     super.initState();
-    _detailsFocusNode.addListener(() {
-      if (!_detailsFocusNode.hasFocus) {
-        _fetchCoordinatesForAddress();
-      }
-    });
   }
 
   Future<void> _fetchCoordinatesForAddress() async {
+    setState(() {
+      isValidAddress = false;
+    });
+
     final address = _detailsController.text;
     if (address.isEmpty) return;
 
@@ -48,23 +51,62 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
         setState(() {
           _latitudeController.text = latitude.toString();
           _longitudeController.text = longitude.toString();
+          isValidAddress = true;
         });
       } else {
+        setState(() {
+          isValidAddress = false;
+        });
         _showErrorDialog(context, "Invalid address. Please try again.");
       }
     } catch (e) {
+      setState(() {
+        isValidAddress = false;
+      });
       _showErrorDialog(context, "An error occurred. Please try again.");
     }
+
+    return;
   }
 
   @override
   void dispose() {
-    _detailsFocusNode.dispose();
     _detailsController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
     super.dispose();
   }
+
+
+  Future<void> createAddress() async
+  {
+    final details = _detailsController.text;
+    final latitude = double.tryParse(_latitudeController.text);
+    final longitude = double.tryParse(_longitudeController.text);
+
+    if (details.isEmpty || latitude == null || longitude == null) {
+      _showErrorDialog(context, "All fields must be filled correctly.");
+      return;
+    }
+
+    final address = Address(
+      id: 1,              // IT DOESN'T MATTER
+      details: details,
+      latitude: latitude,
+      longitude: longitude,
+    );
+
+    final success = await Provider.of<AddressProvider>(context, listen: false)
+        .createAddress(address);
+
+    if (success) {
+      Navigator.pop(context);
+    } else {
+      _showErrorDialog(
+          context, "Failed to create address. Please try again.");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +117,26 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
         child: Column(
           children: [
             TextField(
+              onTap: (){
+                setState(() {
+                  isEditing = true;
+                });
+              },
+              onChanged: (_){
+               setState(() {
+                 isEditing = true;
+               });
+              }
+              ,
+              onEditingComplete: () async
+              {
+                setState(() {
+                  isEditing = false;
+                });
+
+                await _fetchCoordinatesForAddress();
+              },
               controller: _detailsController,
-              focusNode: _detailsFocusNode,
               decoration: const InputDecoration(labelText: "Details"),
             ),
             TextField(
@@ -93,33 +153,7 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                final details = _detailsController.text;
-                final latitude = double.tryParse(_latitudeController.text);
-                final longitude = double.tryParse(_longitudeController.text);
-
-                if (details.isEmpty || latitude == null || longitude == null) {
-                  _showErrorDialog(context, "All fields must be filled correctly.");
-                  return;
-                }
-
-                final address = Address(
-                id: 1,              // IT DOESN'T MATTER
-                details: details,
-                latitude: latitude,
-                longitude: longitude,
-                );
-
-                final success = await Provider.of<AddressProvider>(context, listen: false)
-                    .createAddress(address);
-
-                if (success) {
-                Navigator.pop(context);
-                } else {
-                  _showErrorDialog(
-                      context, "Failed to create address. Please try again.");
-                }
-              },
+              onPressed: (isEditing || !isValidAddress)? null : createAddress,
               child: const Text("Create Address"),
             ),
           ],

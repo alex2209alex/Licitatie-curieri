@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/models/AddressModel.dart';
 
 class AddressService {
-  static const String baseUrl = "http://192.168.100.97:8080/addresses";
+  static const String baseUrl = "http://192.168.1.130:8080/addresses";
 
   static List<Address> addresses = [];
 
