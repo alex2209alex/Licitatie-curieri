@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"id", "user_type"})})
@@ -47,4 +49,7 @@ public class User {
 
     @Column(name = "is_verified")
     private boolean isVerified;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<UserAddressAssociation> userAddressAssociations = new ArrayList<>();
 }

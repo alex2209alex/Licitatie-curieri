@@ -31,6 +31,7 @@ public interface UserMapper {
     @Mapping(target = "phoneVerificationCode", expression = "java(this.getVerificationCode())")
     @Mapping(target = "verificationDeadline", expression = "java(this.getVerificationDeadline())")
     @Mapping(target = "verified", constant = "false")
+    @Mapping(target = "userAddressAssociations", ignore = true)
     User mapToUser(UserCreationDto userCreationDto);
 
     UserCreationResponseDto mapToUserCreationResponseDto(User user);
@@ -39,7 +40,7 @@ public interface UserMapper {
     default String hashPassword(String password) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-            return new String(messageDigest.digest(password.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+            return new String(messageDigest.digest(password.getBytes(StandardCharsets.UTF_16)), StandardCharsets.UTF_16);
         } catch (NoSuchAlgorithmException exception) {
             throw new InternalServerErrorException(ErrorMessageUtils.ERROR_HASHING_ALGORITHM);
         }

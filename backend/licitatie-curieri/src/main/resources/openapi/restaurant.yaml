@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Restaurant management
+  description: API related to management of Restaurants.
+paths:
+  /restaurants:
+    get:
+      tags:
+        - Restaurant
+      summary: Fetches Restaurants in the area of an Address. Only Users of type client can fetch Restaurants
+      operationId: getRestaurants
+      parameters:
+        - name: address_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of User's Address around which he is searching for Restaurants
+          example: 100
+      responses:
+        '200':
+          description: Resources successfully fetched.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestaurantDetails'
+        '403':
+          description: User is not allowed to get Restaurants.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: User's Address with provided ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+components:
+  schemas:
+    RestaurantDetails:
+      type: object
+      properties:
+        id:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
+        latitude:
+          description: Restaurant's latitude
+          type: number
+          format: double
+          example: 44.439663
+        longitude:
+          description: Restaurant's longitude
+          type: number
+          format: double
+          example: 26.096306

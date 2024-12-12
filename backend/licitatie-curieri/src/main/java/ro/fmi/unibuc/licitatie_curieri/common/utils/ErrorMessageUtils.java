@@ -13,4 +13,9 @@ public class ErrorMessageUtils {
     public static final String ERROR_HASHING_ALGORITHM = "Error with hashing algorithm";
     public static final String USER_VERIFICATION_FAILED = "User verification failed";
     public static final String VERIFICATION_FAILED_USER_DELETED = "User verification failed. User was deleted";
+    public static final String USER_IS_UNVERIFIED = "User is unverified";
+    public static final String ONLY_CLIENT_CAN_GET_ADDRESSES = "Only client can get addresses";
+    public static final String ONLY_CLIENT_CAN_CREATE_ADDRESS = "Only client user can create address";
+    public static final String USER_ADDRESS_NOT_FOUND = "User address %s not found";
+    public static final String ONLY_CLIENT_CAN_GET_RESTAURANTS = "Only client can get restaurants";
 }
