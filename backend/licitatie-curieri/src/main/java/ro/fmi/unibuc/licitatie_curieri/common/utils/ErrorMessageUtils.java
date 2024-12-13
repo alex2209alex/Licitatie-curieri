@@ -18,4 +18,5 @@ public class ErrorMessageUtils {
     public static final String ONLY_CLIENT_CAN_CREATE_ADDRESS = "Only client user can create address";
     public static final String USER_ADDRESS_NOT_FOUND = "User address %s not found";
     public static final String ONLY_CLIENT_CAN_GET_RESTAURANTS = "Only client can get restaurants";
+    public static final String AUTHORIZATION_FAILED = "Authorization failed";
 }

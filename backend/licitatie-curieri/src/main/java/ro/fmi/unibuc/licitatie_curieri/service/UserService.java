@@ -2,19 +2,20 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.openapitools.model.UserCreationDto;
-import org.openapitools.model.UserCreationResponseDto;
-import org.openapitools.model.UserVerificationDto;
+import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.fmi.unibuc.licitatie_curieri.common.JwtUtils;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
+import ro.fmi.unibuc.licitatie_curieri.common.exception.UnauthorizedException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +55,14 @@ public class UserService {
         user.setVerificationDeadline(null);
     }
 
+    @Transactional
+    public UserLoginResponseDto loginUser(UserLoginDto userLoginDto) {
+        userRepository.findByEmailAndPassword(userLoginDto.getEmail(), userMapper.hashPassword(userLoginDto.getPassword()))
+                .orElseThrow(() -> new UnauthorizedException(String.format(ErrorMessageUtils.AUTHORIZATION_FAILED)));
+
+        return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(userLoginDto.getEmail()));
+    }
+
     private void ensureUserIsUnverifiedAndVerificationTimeExpired(User user) {
         if (user.isVerified()) {
             throw new BadRequestException(String.format(ErrorMessageUtils.EMAIL_ALREADY_USED_FOR_USER_TYPE, user.getEmail(), user.getUserType()));
@@ -86,6 +95,10 @@ public class UserService {
             throw new BadRequestException(ErrorMessageUtils.PASSWORD_IS_DIFFERENT_FROM_PASSWORD_CONFIRMATION);
         }
 
+        ensureValidPasswordPattern(password);
+    }
+
+    private void ensureValidPasswordPattern(String password) {
         // Source regex https://stackoverflow.com/questions/3802192/regexp-java-for-password-validation
         Pattern pattern = Pattern.compile("^(?=.*[\\d])(?=.*[a-z])(?=.*[A-Z])(?=.*[~!@#$%^&*()_+])(?=\\S+$)");
         Matcher matcher = pattern.matcher(password);

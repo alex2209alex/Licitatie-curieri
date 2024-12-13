@@ -66,6 +66,34 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+  /users/login:
+    post:
+      tags:
+        - User
+      summary: Authenticates a User
+      operationId: authenticateUser
+      requestBody:
+        description: Credentials needed for user authentication
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        '201':
+          description: Token successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginResponse'
+        '401':
+          description: Authentication failed due to invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+
 components:
   schemas:
     UserCreation:
@@ -160,3 +188,27 @@ components:
       enum:
         - CLIENT
         - COURIER
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Registered user's email
+          example: user@example.com
+        password:
+          type: string
+          description: User's password
+          example: securePassword123!
+    UserLoginResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JSON Web Token
+          example: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbGV4X2lzYWM3MkB5YWhvby5jb20iLCJpYXQiOjE3MzQwNDI1MjcsImV4cCI6MTczNDY0NzMyN30.-lQlrmLP06IML36ls9hWzboJQrs5Udm1Uz65KY5B8aSvrui3AHSNAtqws64WuFViFuxGQe6yeKdEUsolg-uUaw

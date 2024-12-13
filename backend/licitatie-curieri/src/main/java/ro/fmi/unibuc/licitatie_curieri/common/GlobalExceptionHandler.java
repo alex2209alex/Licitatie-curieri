@@ -33,10 +33,15 @@ public class GlobalExceptionHandler {
             BadRequestException.class,
             MissingServletRequestParameterException.class,
             ConstraintViolationException.class,
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            UnauthorizedException.class,
     })
     public ResponseEntity<GenericApplicationError> handleBadRequestException(Exception exception) {
         return getGenerocApplicationErrorResponseEntity(exception, HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<GenericApplicationError> handleUnauthorizedException(Exception exception) {
+        return getGenerocApplicationErrorResponseEntity(exception, HttpStatus.UNAUTHORIZED);
     }
 
     private ResponseEntity<GenericApplicationError> getGenerocApplicationErrorResponseEntity(Exception exception, HttpStatus status) {
