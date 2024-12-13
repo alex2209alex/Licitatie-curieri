@@ -4,6 +4,7 @@ import 'package:licitatie_curieri/ui/utils/AppColors.dart';
 import 'package:licitatie_curieri/ui/utils/Constants.dart';
 import 'package:provider/provider.dart';
 
+import '../restaurant/screens/RestaurantsScreen.dart';
 import '../viewModel/UserViewModel.dart';
 
 class VerificationPage extends StatefulWidget {
@@ -62,7 +63,11 @@ class VerificationPageState extends State<VerificationPage> {
                     );
 
                     if (isVerified) {
-                      //Navigator.pop(context); // Or navigate to another page
+                      // navigate to main page
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => RestaurantsScreen()),
+                      );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text(Constants.VERIFY_FAIL))
