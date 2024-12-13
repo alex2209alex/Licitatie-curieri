@@ -1,3 +1,8 @@
 .idea/
 out/
 target/
+/frontend/licitatie_curieri/android/.gradle
+/frontend/licitatie_curieri/.dart_tool
+frontend/licitatie_curieri/.flutter-plugins
+frontend/licitatie_curieri/.flutter-plugins-dependencies
+/frontend/licitatie_curieri/build
