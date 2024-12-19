@@ -3,17 +3,21 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.openapitools.model.RestaurantDetailsDto;
+import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
+import ro.fmi.unibuc.licitatie_curieri.domain.address.repository.AddressRepository;
+import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.mapper.RestaurantMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.repository.RestaurantRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserAddressAssociationRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.util.List;
@@ -28,6 +32,8 @@ public class RestaurantService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final RestaurantMapper restaurantMapper;
+    private final AddressService addressService;
+    private final UserAddressAssociationService userAddressAssociationService;
 
     @Transactional(readOnly = true)
     public List<RestaurantDetailsDto> getRestaurants(Long addressId) {
@@ -50,6 +56,48 @@ public class RestaurantService {
                 .map(restaurantMapper::toRestaurantDetailsDto)
                 .filter(restaurantDetailsDto -> isWithinRange(restaurantDetailsDto, address))
                 .toList();
+    }
+
+    @Transactional
+    public CreateRestaurantResponseDto createRestaurant(CreateRestaurantDto createRestaurantDto) {
+        // TODO: only RESTAURANT_ADMIN can create restaurants. To be modified later
+        restaurantRepository.findByName(createRestaurantDto.getName())
+                .ifPresent(restaurant -> {
+                    throw new BadRequestException(
+                        String.format(ErrorMessageUtils.RESTAURANT_ALREADY_EXISTS,
+                                createRestaurantDto.getName())
+                    );
+                });
+
+        Long addressId = addressService.createAddress(
+                restaurantMapper.toAddressCreationDto(createRestaurantDto)
+        ).getId();
+
+        val restaurant = restaurantRepository.save(restaurantMapper.toRestaurant(createRestaurantDto, addressId));
+
+        return restaurantMapper.toCreateRestaurantResponseDto(restaurant);
+    }
+
+    @Transactional
+    public void deleteRestaurant(Long restaurantId) {
+        // TODO: only RESTAURANT_ADMIN can delete restaurants
+        val restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId)));
+
+        restaurantRepository.delete(restaurant);
+        userAddressAssociationService.deleteUserAddressAssociationByAddressId(restaurant.getAddress().getId());
+        addressService.deleteAddress(restaurant.getAddress().getId());
+    }
+
+    @Transactional
+    public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto) {
+        val restaurant = restaurantRepository.findById(updateRestaurantNameDto.getId())
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, updateRestaurantNameDto.getId())));
+
+        restaurant.setName(updateRestaurantNameDto.getName());
+        restaurantRepository.save(restaurant);
+
+        return restaurantMapper.toUpdateRestaurantNameResponseDto(restaurant);
     }
 
     private boolean isWithinRange(RestaurantDetailsDto restaurantDetailsDto, Address address) {
