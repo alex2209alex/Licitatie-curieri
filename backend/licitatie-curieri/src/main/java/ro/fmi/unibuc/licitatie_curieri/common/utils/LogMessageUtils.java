@@ -1,5 +1,7 @@
 package ro.fmi.unibuc.licitatie_curieri.common.utils;
 
+import java.util.Locale;
+
 public class LogMessageUtils {
     private LogMessageUtils() {}
 
@@ -11,5 +13,6 @@ public class LogMessageUtils {
 
     public static final String GET_RESTAURANTS = "getRestaurants operation was invoked for Address %s";
     public static final String CREATE_RESTAURANT = "createRestaurant operation was invoked with name %s, address %s, latitude %f and longitude %f";
+    public static final String DELETE_RESTAURANT = "Restaurant with id: %d was deleted";
 
 }

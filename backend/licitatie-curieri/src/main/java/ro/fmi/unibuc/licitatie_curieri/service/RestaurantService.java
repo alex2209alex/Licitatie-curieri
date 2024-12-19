@@ -15,10 +15,12 @@ import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.repository.AddressRepository;
+import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.mapper.RestaurantMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.repository.RestaurantRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserAddressAssociationRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.util.List;
@@ -34,6 +36,7 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantMapper restaurantMapper;
     private final AddressService addressService;
+    private final UserAddressAssociationService userAddressAssociationService;
 
     @Transactional(readOnly = true)
     public List<RestaurantDetailsDto> getRestaurants(Long addressId) {
@@ -76,6 +79,17 @@ public class RestaurantService {
         val restaurant = restaurantRepository.save(restaurantMapper.toRestaurant(createRestaurantDto, addressId));
 
         return restaurantMapper.toCreateRestaurantResponseDto(restaurant);
+    }
+
+    @Transactional
+    public void deleteRestaurant(Long restaurantId) {
+        // TODO: only RESTAURANT_ADMIN can delete restaurants
+        val restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId)));
+
+        restaurantRepository.delete(restaurant);
+        userAddressAssociationService.deleteUserAddressAssociationByAddressId(restaurant.getAddress().getId());
+        addressService.deleteAddress(restaurant.getAddress().getId());
     }
 
     private boolean isWithinRange(RestaurantDetailsDto restaurantDetailsDto, Address address) {

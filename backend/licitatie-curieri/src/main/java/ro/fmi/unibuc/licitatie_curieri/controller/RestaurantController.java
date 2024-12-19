@@ -36,4 +36,11 @@ public class RestaurantController implements RestaurantApi {
         ));
         return restaurantService.createRestaurant(createRestaurantDto);
     }
+
+    @Override
+    public void deleteRestaurant(@RequestParam(value = "restaurant_id") Long restaurantId){
+        log.info(String.format(LogMessageUtils.DELETE_RESTAURANT, restaurantId));
+
+        restaurantService.deleteRestaurant(restaurantId);
+    }
 }

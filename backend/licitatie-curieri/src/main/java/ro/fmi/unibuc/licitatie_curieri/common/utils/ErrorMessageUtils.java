@@ -19,4 +19,6 @@ public class ErrorMessageUtils {
     public static final String USER_ADDRESS_NOT_FOUND = "User address %s not found";
     public static final String ONLY_CLIENT_CAN_GET_RESTAURANTS = "Only client can get restaurants";
     public static final String RESTAURANT_ALREADY_EXISTS = "%s already exists";
+    public static final String RESTAURANT_NOT_FOUND = "Restaurant with id: %s not found";
+    public static final String ADDRESS_NOT_FOUND = "Address with id: %s not found";
 }

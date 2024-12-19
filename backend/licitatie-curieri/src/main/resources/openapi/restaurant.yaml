@@ -74,6 +74,38 @@ paths:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 
+  /DeleteRestaurant:
+    delete:
+      tags:
+        - Restaurant
+      summary: Delete a Restaurant by name and address
+      operationId: deleteRestaurant
+      parameters:
+        - name: restaurant_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of Restaurant who need to be deleted
+          example: 100
+      responses:
+        '200':
+          description: Successfully deleted the Restaurant.
+        '400':
+          description: Invalid parameters provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Restaurant not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+
 components:
   schemas:
     RestaurantDetails:
