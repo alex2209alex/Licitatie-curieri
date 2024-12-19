@@ -3,10 +3,7 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.openapitools.model.AddressCreationResponseDto;
-import org.openapitools.model.CreateRestaurantDto;
-import org.openapitools.model.CreateRestaurantResponseDto;
-import org.openapitools.model.RestaurantDetailsDto;
+import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
@@ -90,6 +87,17 @@ public class RestaurantService {
         restaurantRepository.delete(restaurant);
         userAddressAssociationService.deleteUserAddressAssociationByAddressId(restaurant.getAddress().getId());
         addressService.deleteAddress(restaurant.getAddress().getId());
+    }
+
+    @Transactional
+    public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto) {
+        val restaurant = restaurantRepository.findById(updateRestaurantNameDto.getId())
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, updateRestaurantNameDto.getId())));
+
+        restaurant.setName(updateRestaurantNameDto.getName());
+        restaurantRepository.save(restaurant);
+
+        return restaurantMapper.toUpdateRestaurantNameResponseDto(restaurant);
     }
 
     private boolean isWithinRange(RestaurantDetailsDto restaurantDetailsDto, Address address) {

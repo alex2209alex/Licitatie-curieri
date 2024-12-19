@@ -105,6 +105,33 @@ paths:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 
+  /UpdaterRstaurantName:
+    put:
+      tags:
+        - Restaurant
+      summary: Update a Restaurant's name
+      operationId: updateRestaurantByName
+      requestBody:
+        description: Data needed to update name for restaurant
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRestaurantName'
+      responses:
+        '200':
+          description: Restaurant updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateRestaurantNameResponse'
+        '404':
+          description: Restaurant not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
 
 components:
   schemas:
@@ -157,6 +184,34 @@ components:
           example: 26.096306
 
     CreateRestaurantResponse:
+      type: object
+      properties:
+        id:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
+
+    UpdateRestaurantName:
+      type: object
+      properties:
+        id:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
+
+    UpdateRestaurantNameResponse:
       type: object
       properties:
         id:

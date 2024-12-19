@@ -4,10 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
-import org.openapitools.model.AddressCreationDto;
-import org.openapitools.model.CreateRestaurantDto;
-import org.openapitools.model.CreateRestaurantResponseDto;
-import org.openapitools.model.RestaurantDetailsDto;
+import org.openapitools.model.*;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 
@@ -31,6 +28,8 @@ public interface RestaurantMapper {
     Restaurant toRestaurant(CreateRestaurantDto createRestaurantDto, Long addressId);
 
     CreateRestaurantResponseDto toCreateRestaurantResponseDto(Restaurant restaurant);
+
+    UpdateRestaurantNameResponseDto toUpdateRestaurantNameResponseDto(Restaurant restaurant);
 
     @Named("mapAddressId")
     default Address mapAddressId(Long addressId) {
