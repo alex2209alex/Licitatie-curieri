@@ -10,4 +10,6 @@ public class LogMessageUtils {
     public static final String CREATE_ADDRESS = "createAddress operation was invoked for User %s";
 
     public static final String GET_RESTAURANTS = "getRestaurants operation was invoked for Address %s";
+    public static final String CREATE_RESTAURANT = "createRestaurant operation was invoked with name %s, address %s, latitude %f and longitude %f";
+
 }

@@ -49,7 +49,8 @@ public class AddressService {
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
-        if (UserType.CLIENT != user.getUserType()) {
+        if (UserType.CLIENT != user.getUserType() &&
+        UserType.ADMIN_RESTAURANT != user.getUserType()) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_CREATE_ADDRESS);
         }
 

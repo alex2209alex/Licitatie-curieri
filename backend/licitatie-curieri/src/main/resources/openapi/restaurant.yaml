@@ -40,6 +40,40 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /CreateRestaurant:
+    post:
+      tags:
+        - Restaurant
+      summary: Create a new Restaurant
+      operationId: createRestaurant
+      requestBody:
+        description: Data needed to create a new restaurant
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRestaurant'
+      responses:
+        '201':
+          description: Restaurant created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateRestaurantResponse'
+        '400':
+          description: Invalid data provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: User is not allowed to create Restaurants.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
 components:
   schemas:
     RestaurantDetails:
@@ -65,3 +99,41 @@ components:
           type: number
           format: double
           example: 26.096306
+
+    CreateRestaurant:
+      type: object
+      properties:
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
+        address:
+          description: Restaurant's description
+          type: string
+          maxLength: 100
+          example: Str. Strada Nr. 1
+        latitude:
+          description: Restaurant's latitude
+          type: number
+          format: double
+          example: 44.439663
+        longitude:
+          description: Restaurant's longitude
+          type: number
+          format: double
+          example: 26.096306
+
+    CreateRestaurantResponse:
+      type: object
+      properties:
+        id:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
