@@ -3,9 +3,7 @@ package ro.fmi.unibuc.licitatie_curieri.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.UserApi;
-import org.openapitools.model.UserCreationDto;
-import org.openapitools.model.UserCreationResponseDto;
-import org.openapitools.model.UserVerificationDto;
+import org.openapitools.model.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +31,13 @@ public class UserController implements UserApi {
     ) {
         log.info(String.format(LogMessageUtils.VERIFY_USER, email));
         userService.verifyUser(email, userVerificationDto);
+    }
+
+    @Override
+    public UserLoginResponseDto authenticateUser(
+            @RequestBody UserLoginDto userLoginDto
+    ){
+        log.info(String.format(LogMessageUtils.AUTHENTICATE_USER, userLoginDto.getEmail(), userLoginDto.getPassword()));
+        return userService.loginUser(userLoginDto);
     }
 }

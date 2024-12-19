@@ -4,9 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
-import org.openapitools.model.UserCreationDto;
-import org.openapitools.model.UserCreationResponseDto;
-import org.openapitools.model.UserTypeDto;
+import org.openapitools.model.*;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.InternalServerErrorException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
@@ -35,6 +33,8 @@ public interface UserMapper {
     User mapToUser(UserCreationDto userCreationDto);
 
     UserCreationResponseDto mapToUserCreationResponseDto(User user);
+
+    UserLoginResponseDto mapToUserLoginResponseDto(String  token);
 
     @Named("hashPassword")
     default String hashPassword(String password) {
