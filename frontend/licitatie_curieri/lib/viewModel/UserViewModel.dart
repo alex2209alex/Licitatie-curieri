@@ -34,4 +34,8 @@ class UserViewModel extends ChangeNotifier {
         phoneVerificationCode
     );
   }
+
+  Future<bool> authentication(String email, String password) async {
+    return await userRepository.authentication(email, password);
+  }
 }

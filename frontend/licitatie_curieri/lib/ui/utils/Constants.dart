@@ -13,6 +13,8 @@ class Constants {
   static const String PHONE_VERIFICATION_CODE = "Phone Verification Code";
   static const String VERIFY = "Verify";
   static const String VERIFY_FAIL = 'Failed to verify: ';
+  static const String LOGIN = "Login";
+  static const String LOGIN_FAIL = "Login failed! ";
 }
 
 
