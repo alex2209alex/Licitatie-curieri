@@ -92,8 +92,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
-
 components:
   schemas:
     UserCreation:
