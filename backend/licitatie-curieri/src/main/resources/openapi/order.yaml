@@ -64,7 +64,6 @@ components:
           description: Id of the ordered Item
           type: integer
           format: int64
-          maxLength: 50
           example: 100
     OrderCreationResponse:
       type: object
@@ -73,13 +72,12 @@ components:
           description: Max limit of Delivery price
           type: number
           format: double
-          minimum: 1
           example: 10
         price:
-          description: Price of Order
+          description: Price of Order before auction
           type: number
           format: double
-          example: 100.50
+          example: 110.50
         items:
           description: Items ordered
           type: array
@@ -94,7 +92,6 @@ components:
           description: Id of the ordered Item
           type: integer
           format: int64
-          maxLength: 50
           example: 100
         price:
           description: Price of Item
