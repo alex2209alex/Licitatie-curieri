@@ -8,6 +8,7 @@ import org.openapitools.model.AddressDetailsDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
+import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.mapper.AddressMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.repository.AddressRepository;
@@ -44,12 +45,14 @@ public class AddressService {
 
     @Transactional
     public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto) {
+        // TODO: the same address cannot be added again (same name, latitude and longitude)
         val user = userRepository.findById(1L).get(); // TODO user needs to be retrieved from security context or some service class
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
-        if (UserType.CLIENT != user.getUserType()) {
+        if (UserType.CLIENT != user.getUserType() &&
+        UserType.ADMIN_RESTAURANT != user.getUserType()) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_CREATE_ADDRESS);
         }
 
@@ -61,5 +64,13 @@ public class AddressService {
         user.getUserAddressAssociations().add(userAddressAssociation);
 
         return addressMapper.mapToAddressCreationResponseDto(address);
+    }
+
+    @Transactional
+    public void deleteAddress(Long addressId) {
+        val address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.ADDRESS_NOT_FOUND, addressId)));
+
+        addressRepository.delete(address);
     }
 }

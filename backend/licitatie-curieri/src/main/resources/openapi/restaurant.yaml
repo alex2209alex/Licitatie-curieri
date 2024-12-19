@@ -40,6 +40,99 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /CreateRestaurant:
+    post:
+      tags:
+        - Restaurant
+      summary: Create a new Restaurant
+      operationId: createRestaurant
+      requestBody:
+        description: Data needed to create a new restaurant
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRestaurant'
+      responses:
+        '201':
+          description: Restaurant created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateRestaurantResponse'
+        '400':
+          description: Invalid data provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: User is not allowed to create Restaurants.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /DeleteRestaurant:
+    delete:
+      tags:
+        - Restaurant
+      summary: Delete a Restaurant by name and address
+      operationId: deleteRestaurant
+      parameters:
+        - name: restaurant_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of Restaurant who need to be deleted
+          example: 100
+      responses:
+        '200':
+          description: Successfully deleted the Restaurant.
+        '400':
+          description: Invalid parameters provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Restaurant not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /UpdaterRstaurantName:
+    put:
+      tags:
+        - Restaurant
+      summary: Update a Restaurant's name
+      operationId: updateRestaurantByName
+      requestBody:
+        description: Data needed to update name for restaurant
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRestaurantName'
+      responses:
+        '200':
+          description: Restaurant updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateRestaurantNameResponse'
+        '404':
+          description: Restaurant not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+
 components:
   schemas:
     RestaurantDetails:
@@ -65,3 +158,69 @@ components:
           type: number
           format: double
           example: 26.096306
+
+    CreateRestaurant:
+      type: object
+      properties:
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
+        address:
+          description: Restaurant's description
+          type: string
+          maxLength: 100
+          example: Str. Strada Nr. 1
+        latitude:
+          description: Restaurant's latitude
+          type: number
+          format: double
+          example: 44.439663
+        longitude:
+          description: Restaurant's longitude
+          type: number
+          format: double
+          example: 26.096306
+
+    CreateRestaurantResponse:
+      type: object
+      properties:
+        id:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
+
+    UpdateRestaurantName:
+      type: object
+      properties:
+        id:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria
+
+    UpdateRestaurantNameResponse:
+      type: object
+      properties:
+        id:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Restaurant's name
+          type: string
+          maxLength: 100
+          example: Restaurant Pizzeria

@@ -188,6 +188,7 @@ components:
       enum:
         - CLIENT
         - COURIER
+        - ADMIN_RESTAURANT
     UserLogin:
       type: object
       required:

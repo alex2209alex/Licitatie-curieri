@@ -33,6 +33,7 @@ dependencies:
 
   # library for you can see IOS device in Android Studio
   device_preview: ^1.2.0
+  shared_preferences: ^2.0.17
 
   # library for http call
   http: ^1.2.2
