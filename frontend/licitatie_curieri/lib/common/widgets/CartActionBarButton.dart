@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:licitatie_curieri/restaurant/models/RestaurantMenuItemModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../restaurant/models/MenuItemModel.dart';
@@ -40,9 +41,12 @@ class CartActionBarButtonState extends State<CartActionBarButton> {
     });
   }
 
-  Future<void> addToCart(MenuItem menuItem, CartService cartService) async {
-    //  Add the menu item to the cart list
-    int count = await cartService.addItemToCart(menuItem);
+  Future<void> addToCart(MenuItem menuItem, CartService cartService, int restaurantId) async {
+
+    RestaurantMenuItem restaurantMenuItem = RestaurantMenuItem(restaurantId: restaurantId, menuItem: menuItem);
+
+    //  Add the restaurant menu item to the cart list
+    int count = await cartService.addItemToCart(restaurantMenuItem);
 
     setState(() {
       cartProvider!.setCounter(count);
