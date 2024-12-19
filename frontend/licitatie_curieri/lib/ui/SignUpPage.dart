@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_pickers/helpers/show_scroll_picker.dart';
+import 'package:licitatie_curieri/ui/AuthenticatePage.dart';
 import 'package:licitatie_curieri/ui/utils/AppColors.dart';
 import 'package:licitatie_curieri/ui/utils/Constants.dart';
 import 'package:licitatie_curieri/viewModel/UserViewModel.dart';
@@ -153,6 +154,18 @@ class SignUpPageState extends State<SignUpPage> {
                   }
                 },
                 child: isLoading ? const CircularProgressIndicator(color: AppColors.red) : const Text(Constants.SIGN_UP),
+              ),
+
+              const SizedBox(height: 20),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AuthenticatePage()),  // Navighează către pagina de înregistrare
+                  );
+                },
+                child: const Text(Constants.LOGIN),
               ),
             ],
           ),

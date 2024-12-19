@@ -4,11 +4,11 @@ import '../model/User.dart';
 import 'package:http/http.dart';
 
 class UserRepository {
-  final String baseUrl = 'http://192.168.1.130:8080/users';
+  final String baseUrl = 'http://192.168.100.42:8080/users';
 
   Future<bool> signUp(User user) async {
     final response = await post(
-      Uri.parse("${baseUrl}/signup"),
+      Uri.parse("$baseUrl/signup"),
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
@@ -44,6 +44,26 @@ class UserRepository {
       return true;
     } else {
       throw Exception('Verification failed. ${response.body}');
+    }
+  }
+
+  Future<bool> authentication (String email, String password) async {
+    final response = await post(
+      Uri.parse("$baseUrl/login"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+    );
+
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      throw Exception('Authentication failed. ${response.body}');
     }
   }
 }
