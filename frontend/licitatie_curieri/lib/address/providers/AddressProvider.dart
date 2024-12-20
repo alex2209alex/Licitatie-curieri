@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:licitatie_curieri/address/models/AddressModel.dart';
@@ -22,7 +24,7 @@ class AddressProvider with ChangeNotifier {
 
     try {
       _addresses = await AddressService().fetchAddresses();
-      _loadSelectedAddress();  // Try to load the last selected address
+      await _loadSelectedAddress();  // Try to load the last selected address
     } catch (error) {
       print("Error fetching addresses: $error");
     } finally {
@@ -31,6 +33,40 @@ class AddressProvider with ChangeNotifier {
     }
   }
 
+
+  Future<Address?> fetchAddressById(int addressId) async
+  {
+    _isLoading = true;
+    notifyListeners();
+
+    await fetchAddresses();
+
+    for(Address address in _addresses)
+      {
+        if(address.id == addressId)
+        {
+          return address;
+        }
+      }
+    return null;
+  }
+
+  Future<Address?> fetchAddressFromCoordinates(double latitude, double longitude) async
+  {
+    _isLoading = true;
+    notifyListeners();
+
+    await fetchAddresses();
+
+    for(Address address in _addresses)
+      {
+        if(address.latitude == latitude && address.longitude == longitude)
+          {
+            return address;
+          }
+      }
+    return null;
+  }
 
 
 
@@ -41,12 +77,11 @@ class AddressProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
   Future<void> saveSelectedAddress(Address address) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('selected_address_id', address.id);
     _selectedAddress = address;
+    _selectedAddressId = address.id;
     notifyListeners();
   }
 
@@ -81,4 +116,8 @@ class AddressProvider with ChangeNotifier {
     saveSelectedAddress(address);
     notifyListeners();
   }
+
+
+
+
 }

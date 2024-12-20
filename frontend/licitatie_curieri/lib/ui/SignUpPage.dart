@@ -136,7 +136,7 @@ class SignUpPageState extends State<SignUpPage> {
                     if (isSignedUp) {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const VerificationPage()),
+                        MaterialPageRoute(builder: (context) =>VerificationPage(selectedUserType: selectedUserType ?? UserType.CLIENT)),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

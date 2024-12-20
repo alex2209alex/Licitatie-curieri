@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:licitatie_curieri/address/screens/AddressScreen.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
 import 'package:provider/provider.dart';
@@ -20,14 +23,24 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
     super.initState();
 
 
-    WidgetsBinding.instance.addPostFrameCallback((_)
-    {
-      final restaurantProvider = Provider.of<RestaurantProvider>(context, listen: false);
-      restaurantProvider.fetchRestaurants();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      initData();
     });
 
   }
 
+  Future<void> initData() async
+  {
+    final restaurantProvider = Provider.of<RestaurantProvider>(context, listen: false);
+    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
+    await addressProvider.fetchAddresses();
+    if(addressProvider.selectedAddressId != null)
+      {
+        final selectedAddressId = addressProvider.selectedAddressId;
+        await restaurantProvider.fetchRestaurantsByUserIdForClientOnly(selectedAddressId!, addressProvider);
+      }
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +95,10 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
           MaterialPageRoute(
             builder: (context) => const AddressScreen(),
             ),
-          );
+          ).then((_)
+          {
+            initData();
+          });
         },
         child: const Icon(Icons.location_on),
         tooltip: 'Go to Addresses',

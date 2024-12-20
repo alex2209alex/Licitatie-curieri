@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:licitatie_curieri/restaurant/screens/RestaurantsManageScreen.dart';
 import 'package:licitatie_curieri/ui/utils/AppColors.dart';
 import 'package:licitatie_curieri/ui/utils/Constants.dart';
 import 'package:provider/provider.dart';
 
+import '../model/enum/UserType.dart';
 import '../restaurant/screens/RestaurantsScreen.dart';
 import '../viewModel/UserViewModel.dart';
 
 class VerificationPage extends StatefulWidget {
-  const VerificationPage({super.key});
+  final UserType selectedUserType;
+  const VerificationPage({super.key, required this.selectedUserType});
 
   @override
   VerificationPageState createState() => VerificationPageState();
@@ -63,11 +66,33 @@ class VerificationPageState extends State<VerificationPage> {
                     );
 
                     if (isVerified) {
-                      // navigate to main page
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => RestaurantsScreen()),
-                      );
+                      if(widget.selectedUserType == UserType.CLIENT)
+                        {
+                          // navigate to main page of CLIENT
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RestaurantsScreen()),
+                          );
+                        }
+                      else if(widget.selectedUserType == UserType.ADMIN_RESTAURANT)
+                        {
+                          // navigate to main page of ADMIN RESTAURANT
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RestaurantsManageScreen()),
+                          );
+                        }
+                      else
+                        {
+                          // TO DO
+                          // navigate to main page of COURIER
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RestaurantsScreen()),
+                          );
+                        }
+
+
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text(Constants.VERIFY_FAIL))
