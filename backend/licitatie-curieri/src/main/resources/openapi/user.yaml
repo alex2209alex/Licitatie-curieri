@@ -93,6 +93,35 @@ paths:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 
+  /users/getTwoFACode:
+    put:
+      tags:
+        - User
+      summary: Two Factor Auth with email code for an User
+      operationId: getTwoFACodeUser
+      requestBody:
+        description: Request body contains information related to verification code and email
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserTwoFAVerification'
+        required: true
+      responses:
+        '200':
+          description: User successfully verified.
+        '400':
+          description: Request body is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: Verification deadline expired. User was deleted.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
 
 components:
   schemas:
@@ -213,3 +242,17 @@ components:
           type: string
           description: JSON Web Token
           example: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbGV4X2lzYWM3MkB5YWhvby5jb20iLCJpYXQiOjE3MzQwNDI1MjcsImV4cCI6MTczNDY0NzMyN30.-lQlrmLP06IML36ls9hWzboJQrs5Udm1Uz65KY5B8aSvrui3AHSNAtqws64WuFViFuxGQe6yeKdEUsolg-uUaw
+    UserTwoFAVerification:
+      type: object
+      required:
+        - email
+        - verificationCode
+      properties:
+        email:
+          description: User's email
+          type: string
+          example: test.mops22@gmail.com
+        verificationCode:
+          description: email verification code
+          type: string
+          example: 123456

@@ -50,6 +50,12 @@ public class User {
     @Column(name = "is_verified")
     private boolean isVerified;
 
+    @Column(name = "two_fa_code")
+    private String twoFACode;
+
+    @Column(name = "verify_fa_code_deadline")
+    private Instant verifyFaCodeDeadline;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<UserAddressAssociation> userAddressAssociations = new ArrayList<>();
 }
