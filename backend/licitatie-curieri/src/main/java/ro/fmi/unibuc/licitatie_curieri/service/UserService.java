@@ -36,6 +36,17 @@ public class UserService {
 
         val user = userMapper.mapToUser(userCreationDto);
 
+        try {
+            EmailSender.sendEmail(
+                    user.getEmail(),
+                    user.getEmailVerificationCode(),
+                    "Verification code from Licitatie-Curieri",
+                    "Your code for verification new user account is: " + user.getEmailVerificationCode()
+            );
+        } catch (MessagingException e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
+
         return userMapper.mapToUserCreationResponseDto(userRepository.save(user));
     }
 
@@ -62,7 +73,12 @@ public class UserService {
 
         try {
             String code = EmailSender.generateCode();
-            EmailSender.sendEmail(user.getEmail(), code);
+            EmailSender.sendEmail(
+                    user.getEmail(),
+                    code,
+                    "2FA Code from Licitatie-Curieri",
+                    "Your code for 2FA login is: " + code
+            );
             user.setTwoFACode(code);
             user.setVerifyFaCodeDeadline(Instant.now().plusSeconds(300));
             userRepository.save(user);
