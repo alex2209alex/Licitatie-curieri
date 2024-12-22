@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:licitatie_curieri/restaurant/models/RestaurantModel.dart';
 import 'package:http/http.dart' as http;
 
+import '../../common/Utils.dart';
+
 class RestaurantService{
 
-  static const String baseUrl = "http://192.168.1.130:8080/restaurants";
+  static const String baseUrl = "'${Utils.baseUrl}/restaurants";
 
   Future<List<Restaurant>> fetchRestaurants() async {
 

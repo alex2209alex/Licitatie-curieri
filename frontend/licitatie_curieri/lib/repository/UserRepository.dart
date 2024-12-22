@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import '../common/Utils.dart';
 import '../model/User.dart';
 import 'package:http/http.dart';
 
 class UserRepository {
-  final String baseUrl = 'http://192.168.100.42:8080/users';
+  final String baseUrl = '${Utils.baseUrl}/users';
 
   Future<bool> signUp(User user) async {
     final response = await post(
