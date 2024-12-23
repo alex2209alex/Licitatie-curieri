@@ -40,4 +40,13 @@ public class UserController implements UserApi {
         log.info(String.format(LogMessageUtils.AUTHENTICATE_USER, userLoginDto.getEmail(), userLoginDto.getPassword()));
         return userService.loginUser(userLoginDto);
     }
+
+    @Override
+    public void getTwoFACodeUser(@RequestBody UserTwoFAVerificationDto userTwoFAVerificationDto) {
+        log.info(String.format(LogMessageUtils.TWO_FACTOR_AUTH_USER,
+                userTwoFAVerificationDto.getEmail(),
+                userTwoFAVerificationDto.getVerificationCode()
+        ));
+        userService.getTwoFACodeUser(userTwoFAVerificationDto);
+    }
 }

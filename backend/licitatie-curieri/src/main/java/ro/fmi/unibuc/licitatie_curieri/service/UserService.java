@@ -5,15 +5,15 @@ import lombok.val;
 import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.fmi.unibuc.licitatie_curieri.common.EmailSender;
 import ro.fmi.unibuc.licitatie_curieri.common.JwtUtils;
-import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
-import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
-import ro.fmi.unibuc.licitatie_curieri.common.exception.UnauthorizedException;
+import ro.fmi.unibuc.licitatie_curieri.common.exception.*;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
+import javax.mail.MessagingException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -57,10 +57,38 @@ public class UserService {
 
     @Transactional
     public UserLoginResponseDto loginUser(UserLoginDto userLoginDto) {
-        userRepository.findByEmailAndPassword(userLoginDto.getEmail(), userMapper.hashPassword(userLoginDto.getPassword()))
+        val user = userRepository.findByEmailAndPassword(userLoginDto.getEmail(), userMapper.hashPassword(userLoginDto.getPassword()))
                 .orElseThrow(() -> new UnauthorizedException(String.format(ErrorMessageUtils.AUTHORIZATION_FAILED)));
 
+        try {
+            String code = EmailSender.generateCode();
+            EmailSender.sendEmail(user.getEmail(), code);
+            user.setTwoFACode(code);
+            user.setVerifyFaCodeDeadline(Instant.now().plusSeconds(300));
+            userRepository.save(user);
+        } catch (MessagingException e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
+
         return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(userLoginDto.getEmail()));
+    }
+
+    @Transactional(noRollbackFor = ForbiddenException.class)
+    public void getTwoFACodeUser(UserTwoFAVerificationDto userTwoFAVerificationDto) {
+       val user = userRepository.findByEmailAndTwoFACode(
+               userTwoFAVerificationDto.getEmail(),
+               userTwoFAVerificationDto.getVerificationCode()
+               )
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.USER_NOT_FOUND, userTwoFAVerificationDto.getEmail())));
+
+        if (Instant.now().isAfter(user.getVerifyFaCodeDeadline())) {
+            user.setTwoFACode(null);
+            user.setVerifyFaCodeDeadline(null);
+            throw new ForbiddenException(ErrorMessageUtils.VERIFICATION_FAILED_TWO_FA);
+        } else {
+            user.setTwoFACode(null);
+            user.setVerifyFaCodeDeadline(null);
+        }
     }
 
     private void ensureUserIsUnverifiedAndVerificationTimeExpired(User user) {
