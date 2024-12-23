@@ -1,0 +1,104 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Order management
+  description: API related to management of Orders.
+paths:
+  /orders:
+    post:
+      tags:
+        - Order
+      summary: Creates an Order for an User. Only Users of type client are allowed to create Orders
+      operationId: createOrder
+      requestBody:
+        description: Request body contains information related to new Order
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreation'
+        required: true
+      responses:
+        '201':
+          description: Resource successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCreationResponse'
+        '400':
+          description: Request body is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: User is not allowed to create Orders.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+components:
+  schemas:
+    OrderCreation:
+      type: object
+      required:
+        - items
+      properties:
+        deliveryPriceLimit:
+          description: Max limit of Delivery price
+          type: number
+          format: double
+          minimum: 1
+          example: 10
+        items:
+          description: Items ordered
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OrderCreationItem'
+    OrderCreationItem:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Id of the ordered Item
+          type: integer
+          format: int64
+          example: 100
+    OrderCreationResponse:
+      type: object
+      properties:
+        deliveryPriceLimit:
+          description: Max limit of Delivery price
+          type: number
+          format: double
+          example: 10
+        price:
+          description: Price of Order before auction
+          type: number
+          format: double
+          example: 110.50
+        items:
+          description: Items ordered
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderCreationItemResponse'
+    OrderCreationItemResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Id of the ordered Item
+          type: integer
+          format: int64
+          example: 100
+        price:
+          description: Price of Item
+          type: number
+          format: double
+          example: 100.50
+        name:
+          description: Name of Item
+          type: string
+          example: Burger Texan
