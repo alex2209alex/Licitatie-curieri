@@ -34,7 +34,7 @@ class ListItemCustomCard extends StatelessWidget {
   {
     return ListItemCustomCard(
         title: restaurant.name,
-        description: restaurant.addressId.toString(),
+        description: restaurant.address!.details.toString(),
         imageUrl: "https://www.firstbenefits.org/wp-content/uploads/2017/10/placeholder.png",
         buttonText: buttonText,
         onButtonPressed: onButtonPressed
