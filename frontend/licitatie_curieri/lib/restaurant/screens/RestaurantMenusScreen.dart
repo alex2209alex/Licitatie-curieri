@@ -65,7 +65,7 @@ class _RestaurantMenusScreenState extends State<RestaurantMenusScreen> {
           return ListItemCustomCard.fromMenuItem(
             menuItem,
              "Add to cart",
-            () => (_cartKey.currentState)!.addToCart(menuItem, cartService),
+            () => (_cartKey.currentState)!.addToCart(menuItem, cartService, restaurantProvider.selectedRestaurant!.id),
           );
         },
       ),

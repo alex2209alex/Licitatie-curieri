@@ -1,9 +1,13 @@
+import 'package:licitatie_curieri/address/models/AddressModel.dart';
+
+import '../../address/providers/AddressProvider.dart';
+
 class Restaurant {
 
   int id;
   String name;
   int addressId;
-
+  Address? address;
 
 
 
@@ -19,8 +23,27 @@ class Restaurant {
     return Restaurant(
         id: json["id"],
         name: json["name"],
-        addressId: json["address"].toDouble()
+        addressId: -1 // ???
     );
+  }
+
+  static Future<Restaurant> fromJsonWithAddress(Map<String, dynamic> json, AddressProvider addressProvider) async {
+    double latitude = json["latitude"];
+    double longitude = json["longitude"];
+
+    Address? address = await addressProvider.fetchAddressFromCoordinates(latitude, longitude);
+    if(address == null)
+      {
+        throw Exception("Couldn't find the specified address latitude: $latitude, longitude: $longitude");
+      }
+
+    Restaurant restaurant = Restaurant(
+      id: json["id"],
+      name: json["name"],
+      addressId: address.id,
+    );
+    restaurant.address = address;
+    return restaurant;
   }
 
   Map<String, dynamic> toJson() {
