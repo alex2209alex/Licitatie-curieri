@@ -22,4 +22,6 @@ public class ErrorMessageUtils {
     public static final String RESTAURANT_NOT_FOUND = "Restaurant with id: %s not found";
     public static final String ADDRESS_NOT_FOUND = "Address with id: %s not found";
     public static final String AUTHORIZATION_FAILED = "Authorization failed";
+    public static final String USER_NOT_FOUND = "User with email: %s not found";
+    public static final String VERIFICATION_FAILED_TWO_FA = "2FA verification failed. User not authenticated";
 }

@@ -8,7 +8,7 @@ paths:
     get:
       tags:
         - Address
-      summary: Fetches Addresses of User. Only Users of type client can fetch Restaurants
+      summary: Fetches Addresses of User. Only Users of type client can fetch Addresses
       operationId: getAddresses
       responses:
         '200':
@@ -28,7 +28,7 @@ paths:
     post:
       tags:
         - Address
-      summary: Creates an Addresses for an User. Only Users of type client are allowed to create addresses
+      summary: Creates an Addresses for an User. Only Users of type client are allowed to create Addresses
       operationId: createAddress
       requestBody:
         description: Request body contains information related to new Address

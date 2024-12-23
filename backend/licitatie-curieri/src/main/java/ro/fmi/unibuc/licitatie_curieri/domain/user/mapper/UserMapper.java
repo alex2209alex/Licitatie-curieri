@@ -30,6 +30,8 @@ public interface UserMapper {
     @Mapping(target = "verificationDeadline", expression = "java(this.getVerificationDeadline())")
     @Mapping(target = "verified", constant = "false")
     @Mapping(target = "userAddressAssociations", ignore = true)
+    @Mapping(target = "twoFACode", ignore = true)
+    @Mapping(target = "verifyFaCodeDeadline", ignore = true)
     User mapToUser(UserCreationDto userCreationDto);
 
     UserCreationResponseDto mapToUserCreationResponseDto(User user);

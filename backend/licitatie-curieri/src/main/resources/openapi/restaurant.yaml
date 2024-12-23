@@ -40,7 +40,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
   /CreateRestaurant:
     post:
       tags:
@@ -73,7 +72,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
   /DeleteRestaurant:
     delete:
       tags:
@@ -104,8 +102,7 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
-  /UpdaterRstaurantName:
+  /UpdateRestaurantName:
     put:
       tags:
         - Restaurant
@@ -131,8 +128,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
-
 components:
   schemas:
     RestaurantDetails:
