@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../common/Utils.dart';
 import '../models/MenuItemModel.dart';
 class MenuItemService {
 
-  static const String baseUrl = "http://192.168.1.130:8080/MenuItems";
+  static const String baseUrl = "'${Utils.baseUrl}/MenuItems";
 
   Future<List<MenuItem>> fetchMenuItemsByRestaurant(int idRestaurant) async {
 

@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import '../common/Utils.dart';
 import '../model/User.dart';
 import 'package:http/http.dart';
 
 class UserRepository {
-  final String baseUrl = 'http://192.168.1.130:8080/users';
+  final String baseUrl = '${Utils.baseUrl}/users';
 
   Future<bool> signUp(User user) async {
     final response = await post(
@@ -64,6 +65,26 @@ class UserRepository {
       return true;
     } else {
       throw Exception('Authentication failed. ${response.body}');
+    }
+  }
+
+  Future<bool> twoFACode (String email, String verificationCode) async {
+    final response = await put(
+      Uri.parse("$baseUrl/getTwoFACode"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: jsonEncode({
+        'email': email,
+        'verificationCode': verificationCode,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('2FA failed. ${response.body}');
     }
   }
 }

@@ -108,7 +108,9 @@ class VerificationPageState extends State<VerificationPage> {
                     });
                   }
                 },
-                child: isLoading ? const CircularProgressIndicator(color: AppColors.red) : const Text(Constants.VERIFY),
+                child: isLoading
+                    ? const CircularProgressIndicator(color: AppColors.red)
+                    : const Text(Constants.VERIFY),
               ),
             ],
           ),

@@ -10,7 +10,6 @@ import 'package:licitatie_curieri/restaurant/screens/RestaurantsScreen.dart';
 import 'package:licitatie_curieri/ui/AuthenticatePage.dart';
 import 'package:provider/provider.dart';
 import 'package:licitatie_curieri/repository/UserRepository.dart';
-import 'package:licitatie_curieri/ui/SignUpPage.dart';
 import 'package:licitatie_curieri/viewModel/UserViewModel.dart';
 
 void main() {

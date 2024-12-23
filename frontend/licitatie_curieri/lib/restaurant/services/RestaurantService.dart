@@ -8,10 +8,10 @@ import 'package:provider/provider.dart';
 
 import '../../address/models/AddressModel.dart';
 
+import '../../common/Utils.dart';
+
 class RestaurantService{
-
-  static const String baseUrl = "http://192.168.1.130:8080";
-
+  static const String baseUrl = "'${Utils.baseUrl}/restaurants";
 
   // NOT WORKING
   Future<List<Restaurant>> fetchRestaurants() async {

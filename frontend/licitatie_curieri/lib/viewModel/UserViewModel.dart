@@ -36,6 +36,16 @@ class UserViewModel extends ChangeNotifier {
   }
 
   Future<bool> authentication(String email, String password) async {
-    return await userRepository.authentication(email, password);
+    bool isAuth = await userRepository.authentication(email, password);
+
+    if(isAuth){
+      userEmail = email;
+    }
+
+    return isAuth;
+  }
+
+  Future<bool> twoFACode(String verificationCode) async {
+    return await userRepository.twoFACode(userEmail, verificationCode);
   }
 }

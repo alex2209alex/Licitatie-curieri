@@ -5,6 +5,8 @@ import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 
+import '../../common/Utils.dart';
+
 class CreateAddressScreen extends StatefulWidget {
   const CreateAddressScreen({Key? key}) : super(key: key);
 
@@ -35,7 +37,7 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
     final address = _detailsController.text;
     if (address.isEmpty) return;
 
-    final apiKey = "";
+    const apiKey = Utils.mapsApiKey;
     final url =
         "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
 

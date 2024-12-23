@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/models/AddressModel.dart';
 
+import '../../common/Utils.dart';
+
 class AddressService {
-  static const String baseUrl = "http://192.168.1.130:8080/addresses";
+  static const String baseUrl = "'${Utils.baseUrl}/addresses";
 
   static List<Address> addresses = [];
 
