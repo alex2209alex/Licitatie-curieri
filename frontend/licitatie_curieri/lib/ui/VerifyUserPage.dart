@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:licitatie_curieri/restaurant/screens/RestaurantsManageScreen.dart';
+// import 'package:licitatie_curieri/restaurant/screens/RestaurantsManageScreen.dart';
 import 'package:licitatie_curieri/ui/utils/AppColors.dart';
 import 'package:licitatie_curieri/ui/utils/Constants.dart';
 import 'package:provider/provider.dart';
-
 import '../model/enum/UserType.dart';
 import '../restaurant/screens/RestaurantsScreen.dart';
 import '../viewModel/UserViewModel.dart';
@@ -77,10 +76,10 @@ class VerificationPageState extends State<VerificationPage> {
                       else if(widget.selectedUserType == UserType.ADMIN_RESTAURANT)
                         {
                           // navigate to main page of ADMIN RESTAURANT
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const RestaurantsManageScreen()),
-                          );
+                          // Navigator.pushReplacement(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => const RestaurantsManageScreen()),
+                          // );
                         }
                       else
                         {

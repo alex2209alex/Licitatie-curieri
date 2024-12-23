@@ -5,7 +5,7 @@ import 'package:licitatie_curieri/restaurant/providers/CartProvider.dart';
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/MenuItemProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
-import 'package:licitatie_curieri/restaurant/screens/RestaurantsManageScreen.dart';
+// import 'package:licitatie_curieri/restaurant/screens/RestaurantsManageScreen.dart';
 import 'package:licitatie_curieri/restaurant/screens/RestaurantsScreen.dart';
 import 'package:licitatie_curieri/ui/AuthenticatePage.dart';
 import 'package:provider/provider.dart';
