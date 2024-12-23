@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:licitatie_curieri/ui/TwoFACodePage.dart';
 import 'package:licitatie_curieri/ui/utils/AppColors.dart';
 import 'package:licitatie_curieri/ui/utils/Constants.dart';
 import 'package:licitatie_curieri/viewModel/UserViewModel.dart';
 import 'package:provider/provider.dart';
-import '../restaurant/screens/RestaurantsScreen.dart';
 import 'SignUpPage.dart';
-import 'VerifyUserPage.dart';
 
 class AuthenticatePage extends StatefulWidget {
   const AuthenticatePage({super.key});
@@ -73,7 +72,7 @@ class AuthenticatePageState extends State<AuthenticatePage> {
                     if (isLoggedIn) {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const RestaurantsScreen()),
+                        MaterialPageRoute(builder: (context) => const TwoFACodePage()),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +89,9 @@ class AuthenticatePageState extends State<AuthenticatePage> {
                     });
                   }
                 },
-                child: isLoading ? const CircularProgressIndicator(color: AppColors.red) : const Text(Constants.LOGIN),
+                child: isLoading
+                    ? const CircularProgressIndicator(color: AppColors.red)
+                    : const Text(Constants.LOGIN),
               ),
 
               const SizedBox(height: 20),
@@ -99,7 +100,7 @@ class AuthenticatePageState extends State<AuthenticatePage> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignUpPage()),  // Navighează către pagina de înregistrare
+                    MaterialPageRoute(builder: (context) => const SignUpPage()),
                   );
                 },
                 child: const Text(Constants.SIGN_UP),

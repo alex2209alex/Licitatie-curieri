@@ -15,6 +15,9 @@ class Constants {
   static const String VERIFY_FAIL = 'Failed to verify: ';
   static const String LOGIN = "Login";
   static const String LOGIN_FAIL = "Login failed! ";
+  static const String TWO_FA_CODE = "2FA code";
+  static const String TWO_FA = "2FA - ";
+  static const String TWO_FA_FAILED = "2FA failed! ";
 }
 
 

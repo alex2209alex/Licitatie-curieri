@@ -67,4 +67,24 @@ class UserRepository {
       throw Exception('Authentication failed. ${response.body}');
     }
   }
+
+  Future<bool> twoFACode (String email, String verificationCode) async {
+    final response = await put(
+      Uri.parse("$baseUrl/getTwoFACode"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: jsonEncode({
+        'email': email,
+        'verificationCode': verificationCode,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('2FA failed. ${response.body}');
+    }
+  }
 }
