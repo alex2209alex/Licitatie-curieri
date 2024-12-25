@@ -129,11 +129,53 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /GetAllMenusByRestaurantId:
+    get:
+      tags:
+        - Menu
+      summary: Fetches all Menus by restaurantId.
+      operationId: getAllMenusByRestaurantId
+      parameters:
+        - name: restaurant_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of Restaurant
+          example: 100
+      responses:
+        '200':
+          description: Resources successfully fetched.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuDetails'
+        '403':
+          description: User is not allowed to get Menus.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Menu with provided ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 components:
   schemas:
     CreateMenu:
       type: object
       properties:
+        idRestaurant:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
         name:
           description: Menu's name
           type: string

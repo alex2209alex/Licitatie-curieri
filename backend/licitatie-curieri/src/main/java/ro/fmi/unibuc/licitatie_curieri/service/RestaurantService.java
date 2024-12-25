@@ -11,13 +11,10 @@ import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
-import ro.fmi.unibuc.licitatie_curieri.domain.address.repository.AddressRepository;
-import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.mapper.RestaurantMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.repository.RestaurantRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
-import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserAddressAssociationRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.util.List;

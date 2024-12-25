@@ -13,7 +13,7 @@ public class Menu {
     @SequenceGenerator(name = "menus_gen", sequenceName = "menus_seq", allocationSize = 20)
     @GeneratedValue(generator = "menus_gen")
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "name")
     private String name;

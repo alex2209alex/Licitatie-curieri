@@ -24,6 +24,6 @@ public class ErrorMessageUtils {
     public static final String AUTHORIZATION_FAILED = "Authorization failed";
     public static final String USER_NOT_FOUND = "User with email: %s not found";
     public static final String VERIFICATION_FAILED_TWO_FA = "2FA verification failed. User not authenticated";
-    public static final String MENU_ALREADY_EXISTS = "%s already exists";
+    public static final String RESTAURANT_MENU_ALREADY_EXISTS = "Restaurant with id %d and menu with id %d already exists";
     public static final String MENU_NOT_FOUND = "Menu with id: %s not found";
 }

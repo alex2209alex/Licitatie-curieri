@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.LogMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.service.MenuService;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class MenuController implements MenuApi {
     @Override
     public CreateMenuResponseDto createMenu(@RequestBody CreateMenuDto createMenuDto) {
         log.info(String.format(LogMessageUtils.CREATE_MENU,
+                createMenuDto.getIdRestaurant(),
                 createMenuDto.getName(),
                 createMenuDto.getPrice(),
                 createMenuDto.getIngredientsList(),
@@ -52,5 +55,11 @@ public class MenuController implements MenuApi {
     public MenuDetailsDto getMenuById(@RequestParam(value = "menu_id") Long menuId) {
         log.info(String.format(LogMessageUtils.GET_MENU_BY_ID, menuId));
         return menuService.getMenuById(menuId);
+    }
+
+    @Override
+    public List<MenuDetailsDto> getAllMenusByRestaurantId(@RequestParam(value = "restaurant_id") Long restaurantId) {
+        log.info(String.format(LogMessageUtils.GET_ALL_MENUS_BY_RESTAURANT_ID, restaurantId));
+        return menuService.getAllMenusByRestaurantId(restaurantId);
     }
 }
