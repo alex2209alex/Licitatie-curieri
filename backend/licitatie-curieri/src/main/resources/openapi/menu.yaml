@@ -37,6 +37,37 @@ paths:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 
+  /DeleteMenu:
+    delete:
+      tags:
+        - Menu
+      summary: Delete a Menu by id
+      operationId: deleteMenu
+      parameters:
+        - name: menu_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of Menu who need to be deleted
+          example: 100
+      responses:
+        '200':
+          description: Successfully deleted the Menu.
+        '400':
+          description: Invalid parameters provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Menu not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
 components:
   schemas:
     CreateMenu:
@@ -67,6 +98,7 @@ components:
           type: number
           format: double
           example: 0.00
+
     CreateMenuResponse:
       type: object
       properties:

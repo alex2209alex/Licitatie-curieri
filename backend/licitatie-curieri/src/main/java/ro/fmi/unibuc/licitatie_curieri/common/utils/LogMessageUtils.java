@@ -19,4 +19,5 @@ public class LogMessageUtils {
     public static final String UPDATE_RESTAURANT_BY_NAME = "Restaurant with id: %d was updated with name: %s";
 
     public static final String CREATE_MENU = "createMenu operation was invoked with name %s, price: %f, ingredientsList %s, photo %s and discount %f";
+    public static final String DELETE_MENU = "Menu with id: %d was deleted";
 }
