@@ -3,10 +3,7 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.openapitools.model.CreateMenuDto;
-import org.openapitools.model.CreateMenuResponseDto;
-import org.openapitools.model.UpdateMenuDto;
-import org.openapitools.model.UpdateMenuResponseDto;
+import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
@@ -62,5 +59,13 @@ public class MenuService {
         menuRepository.save(menu);
 
         return menuMapper.toUpdateMenuResponseDto(menu);
+    }
+
+    @Transactional
+    public MenuDetailsDto getMenuById(Long menuId) {
+        val menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, menuId)));
+
+        return menuMapper.toMenuDetailsDto(menu);
     }
 }

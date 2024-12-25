@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.openapitools.model.CreateMenuDto;
 import org.openapitools.model.CreateMenuResponseDto;
+import org.openapitools.model.MenuDetailsDto;
 import org.openapitools.model.UpdateMenuResponseDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.Menu;
 
@@ -19,4 +20,6 @@ public interface MenuMapper {
     CreateMenuResponseDto toCreateMenuResponseDto(Menu menu);
 
     UpdateMenuResponseDto toUpdateMenuResponseDto(Menu menu);
+
+    MenuDetailsDto toMenuDetailsDto(Menu menu);
 }

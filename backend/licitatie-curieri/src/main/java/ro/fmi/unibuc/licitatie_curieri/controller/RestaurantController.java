@@ -7,7 +7,6 @@ import org.openapitools.model.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.LogMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.service.RestaurantService;
 
