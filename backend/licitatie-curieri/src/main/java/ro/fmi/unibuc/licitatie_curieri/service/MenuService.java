@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.openapitools.model.CreateMenuDto;
 import org.openapitools.model.CreateMenuResponseDto;
+import org.openapitools.model.UpdateMenuDto;
+import org.openapitools.model.UpdateMenuResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
@@ -45,5 +47,20 @@ public class MenuService {
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, menuId)));
 
         menuRepository.delete(menu);
+    }
+
+    @Transactional
+    public UpdateMenuResponseDto updateMenu(UpdateMenuDto updateMenuDto) {
+        val menu = menuRepository.findById(updateMenuDto.getId())
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, updateMenuDto.getId())));
+
+        menu.setName(updateMenuDto.getName());
+        menu.setIngredientsList(updateMenuDto.getIngredientsList());
+        menu.setPrice(updateMenuDto.getPrice());
+        menu.setDiscount(updateMenuDto.getDiscount());
+        menu.setPhoto(updateMenuDto.getPhoto());
+        menuRepository.save(menu);
+
+        return menuMapper.toUpdateMenuResponseDto(menu);
     }
 }
