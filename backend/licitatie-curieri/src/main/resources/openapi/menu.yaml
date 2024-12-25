@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Menu management
+  description: API related to management of Menus.
+paths:
+  /CreateMenu:
+    post:
+      tags:
+        - Menu
+      summary: Create a new Menu
+      operationId: createMenu
+      requestBody:
+        description: Data needed to create a new menu
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMenu'
+        required: true
+      responses:
+        '201':
+          description: Menu created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMenuResponse'
+        '400':
+          description: Invalid data provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: User is not allowed to create Menus.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+components:
+  schemas:
+    CreateMenu:
+      type: object
+      properties:
+        name:
+          description: Menu's name
+          type: string
+          maxLength: 100
+          example: Pizza Diavola
+        price:
+          description: Menu's price
+          type: number
+          format: double
+          example: 44.43
+        ingredientsList:
+          description: Menu's ingredients list
+          type: string
+          maxLength: 500
+          example: Tomato sauce, mozzarella cheese, spicy salami, fresh chili peppers, olives, oregano
+        photo:
+          description: Menu's photo
+          type: string
+          maxLength: 100
+          example: TBD...
+        discount:
+          description: Menu's discount
+          type: number
+          format: double
+          example: 0.00
+    CreateMenuResponse:
+      type: object
+      properties:
+        id:
+          description: Menu's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Menu's name
+          type: string
+          maxLength: 100
+          example: Pizza Diavola
+        price:
+          description: Menu's price
+          type: number
+          format: double
+          example: 44.43
+        ingredientsList:
+          description: Menu's ingredients list
+          type: string
+          maxLength: 500
+          example: Tomato sauce, mozzarella cheese, spicy salami, fresh chili peppers, olives, oregano
+        photo:
+          description: Menu's photo
+          type: string
+          maxLength: 100
+          example: TBD...
+        discount:
+          description: Menu's discount
+          type: number
+          format: double
+          example: 0.00
