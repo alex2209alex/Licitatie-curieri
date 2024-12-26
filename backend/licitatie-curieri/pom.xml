@@ -223,6 +223,27 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>Menu OpenApi generation</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/menu.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<modelNameSuffix>Dto</modelNameSuffix>
+							<configOptions>
+								<useResponseEntity>false</useResponseEntity>
+								<interfaceOnly>true</interfaceOnly>
+								<java8>true</java8>
+								<dateLibrary>java8</dateLibrary>
+								<useTags>true</useTags>
+								<useOptional>false</useOptional>
+								<unhandeledException>true</unhandeledException>
+								<useSpringBoot3>true</useSpringBoot3>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
