@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.EmailSender;
 import ro.fmi.unibuc.licitatie_curieri.common.JwtUtils;
+import ro.fmi.unibuc.licitatie_curieri.common.SmsSender;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.*;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
@@ -36,6 +37,20 @@ public class UserService {
 
         val user = userMapper.mapToUser(userCreationDto);
 
+        try {
+            EmailSender.sendEmail(
+                    user.getEmail(),
+                    user.getEmailVerificationCode(),
+                    "Verification code from Licitatie-Curieri",
+                    "Your code for verification new user account is: " + user.getEmailVerificationCode()
+            );
+        } catch (MessagingException e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
+
+        SmsSender smsSender = new SmsSender();
+        smsSender.sendSms(user.getPhoneNumber(), user.getPhoneVerificationCode());
+
         return userMapper.mapToUserCreationResponseDto(userRepository.save(user));
     }
 
@@ -62,7 +77,12 @@ public class UserService {
 
         try {
             String code = EmailSender.generateCode();
-            EmailSender.sendEmail(user.getEmail(), code);
+            EmailSender.sendEmail(
+                    user.getEmail(),
+                    code,
+                    "2FA Code from Licitatie-Curieri",
+                    "Your code for 2FA login is: " + code
+            );
             user.setTwoFACode(code);
             user.setVerifyFaCodeDeadline(Instant.now().plusSeconds(300));
             userRepository.save(user);
