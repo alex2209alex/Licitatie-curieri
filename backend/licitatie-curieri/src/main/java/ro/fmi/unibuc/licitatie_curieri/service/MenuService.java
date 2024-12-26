@@ -31,7 +31,7 @@ public class MenuService {
 
     @Transactional
     public CreateMenuResponseDto createMenu(CreateMenuDto createMenuDto) {
-        // TODO: only RESTAURANT_ADMIN can create menus. To be modified later
+        // TODO: only RESTAURANT_ADMIN can create menus. To be modified later - forbidden
         val restaurant = restaurantRepository.findById(createMenuDto.getIdRestaurant())
                 .orElseThrow(() ->
                         new NotFoundException(String.format(
@@ -64,7 +64,7 @@ public class MenuService {
 
     @Transactional
     public void deleteMenu(Long menuId) {
-        //TODO: only MENU_ADMIN can delete menus
+        // TODO: only RESTAURANT_ADMIN can delete menus. To be modified later - forbidden
         val menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, menuId)));
 
@@ -76,6 +76,7 @@ public class MenuService {
 
     @Transactional
     public UpdateMenuResponseDto updateMenu(UpdateMenuDto updateMenuDto) {
+        // TODO: only RESTAURANT_ADMIN can update menus. To be modified later - forbidden
         val menu = menuRepository.findById(updateMenuDto.getId())
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, updateMenuDto.getId())));
 
@@ -91,6 +92,7 @@ public class MenuService {
 
     @Transactional
     public MenuDetailsDto getMenuById(Long menuId) {
+        // TODO: only RESTAURANT_ADMIN can get menus. To be modified later - forbidden
         val menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, menuId)));
 
@@ -99,6 +101,7 @@ public class MenuService {
 
     @Transactional
     public List<MenuDetailsDto> getAllMenusByRestaurantId(Long restaurantId) {
+        // TODO: only RESTAURANT_ADMIN can get menus. To be modified later - forbidden
         List<RestaurantMenuAssociation> associations = restaurantMenuAssociationRepository.findByRestaurantId(restaurantId);
 
         if (associations.isEmpty()) {
