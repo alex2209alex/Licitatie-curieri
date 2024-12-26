@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.EmailSender;
 import ro.fmi.unibuc.licitatie_curieri.common.JwtUtils;
+import ro.fmi.unibuc.licitatie_curieri.common.SmsSender;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.*;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
@@ -46,6 +47,9 @@ public class UserService {
         } catch (MessagingException e) {
             throw new InternalServerErrorException(e.getMessage());
         }
+
+        SmsSender smsSender = new SmsSender();
+        smsSender.sendSms(user.getPhoneNumber(), user.getPhoneVerificationCode());
 
         return userMapper.mapToUserCreationResponseDto(userRepository.save(user));
     }
