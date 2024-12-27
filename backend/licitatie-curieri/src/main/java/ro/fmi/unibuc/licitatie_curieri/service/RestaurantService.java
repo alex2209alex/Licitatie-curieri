@@ -57,7 +57,7 @@ public class RestaurantService {
 
     @Transactional
     public CreateRestaurantResponseDto createRestaurant(CreateRestaurantDto createRestaurantDto) {
-        // TODO: only RESTAURANT_ADMIN can create restaurants. To be modified later
+        // TODO: only RESTAURANT_ADMIN can create restaurants. To be modified later - forbidden
         restaurantRepository.findByName(createRestaurantDto.getName())
                 .ifPresent(restaurant -> {
                     throw new BadRequestException(
@@ -77,7 +77,7 @@ public class RestaurantService {
 
     @Transactional
     public void deleteRestaurant(Long restaurantId) {
-        // TODO: only RESTAURANT_ADMIN can delete restaurants
+        // TODO: only RESTAURANT_ADMIN can delete restaurants - forbidden
         val restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId)));
 
@@ -88,6 +88,7 @@ public class RestaurantService {
 
     @Transactional
     public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto) {
+        // TODO: forbidden - doar ADMIN_RESTAURANT poate face update
         val restaurant = restaurantRepository.findById(updateRestaurantNameDto.getId())
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, updateRestaurantNameDto.getId())));
 

@@ -45,7 +45,7 @@ public class AddressService {
 
     @Transactional
     public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto) {
-        // TODO: the same address cannot be added again (same name, latitude and longitude)
+        // TODO: the same address cannot be added again (same name, latitude and longitude) - bad request
         val user = userRepository.findById(1L).get(); // TODO user needs to be retrieved from security context or some service class
 
         if (!user.isVerified()) {
