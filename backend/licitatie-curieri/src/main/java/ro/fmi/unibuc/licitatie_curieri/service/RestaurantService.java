@@ -39,7 +39,7 @@ public class RestaurantService {
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
-        if (UserType.CLIENT != user.getUserType()) {
+        if (user.getUserType() != UserType.CLIENT && user.getUserType() != UserType.ADMIN_RESTAURANT) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_GET_RESTAURANTS);
         }
 
@@ -59,6 +59,10 @@ public class RestaurantService {
     public CreateRestaurantResponseDto createRestaurant(CreateRestaurantDto createRestaurantDto, String email) {
         val user = userRepository.findByEmail(email).get();
 
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
         if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_CREATE_RESTAURANTS);
         }
@@ -72,7 +76,8 @@ public class RestaurantService {
                 });
 
         Long addressId = addressService.createAddress(
-                restaurantMapper.toAddressCreationDto(createRestaurantDto)
+                restaurantMapper.toAddressCreationDto(createRestaurantDto),
+                email
         ).getId();
 
         val restaurant = restaurantRepository.save(restaurantMapper.toRestaurant(createRestaurantDto, addressId));
@@ -83,6 +88,10 @@ public class RestaurantService {
     @Transactional
     public void deleteRestaurant(Long restaurantId, String email) {
         val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
 
         if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_DELETE_RESTAURANTS);
@@ -99,6 +108,10 @@ public class RestaurantService {
     @Transactional
     public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto, String email) {
         val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
 
         if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_UPDATE_RESTAURANTS);

@@ -1,4 +1,4 @@
-package ro.fmi.unibuc.licitatie_curieri.common;
+package ro.fmi.unibuc.licitatie_curieri.common.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

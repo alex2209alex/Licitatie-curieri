@@ -1,8 +1,7 @@
-package ro.fmi.unibuc.licitatie_curieri.common;
+package ro.fmi.unibuc.licitatie_curieri.common.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.xml.bind.DatatypeConverter;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;

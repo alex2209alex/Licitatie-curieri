@@ -7,15 +7,17 @@ import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
+import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
-import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.Menu;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.RestaurantMenuAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.RestaurantMenuAssociationId;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.mapper.MenuMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.repository.MenuRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.repository.RestaurantMenuAssociationRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.repository.RestaurantRepository;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,12 +28,22 @@ import java.util.stream.Collectors;
 public class MenuService {
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
     private final RestaurantMenuAssociationRepository restaurantMenuAssociationRepository;
     private final MenuMapper menuMapper;
 
     @Transactional
-    public CreateMenuResponseDto createMenu(CreateMenuDto createMenuDto) {
-        // TODO: only RESTAURANT_ADMIN can create menus. To be modified later - forbidden
+    public CreateMenuResponseDto createMenu(CreateMenuDto createMenuDto, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_CREATE_MENUS);
+        }
+
         val restaurant = restaurantRepository.findById(createMenuDto.getIdRestaurant())
                 .orElseThrow(() ->
                         new NotFoundException(String.format(
@@ -63,8 +75,17 @@ public class MenuService {
     }
 
     @Transactional
-    public void deleteMenu(Long menuId) {
-        // TODO: only RESTAURANT_ADMIN can delete menus. To be modified later - forbidden
+    public void deleteMenu(Long menuId, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_DELETE_MENUS);
+        }
+
         val menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, menuId)));
 
@@ -75,8 +96,17 @@ public class MenuService {
     }
 
     @Transactional
-    public UpdateMenuResponseDto updateMenu(UpdateMenuDto updateMenuDto) {
-        // TODO: only RESTAURANT_ADMIN can update menus. To be modified later - forbidden
+    public UpdateMenuResponseDto updateMenu(UpdateMenuDto updateMenuDto, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_UPDATE_MENUS);
+        }
+
         val menu = menuRepository.findById(updateMenuDto.getId())
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, updateMenuDto.getId())));
 
@@ -90,18 +120,36 @@ public class MenuService {
         return menuMapper.toUpdateMenuResponseDto(menu);
     }
 
-    @Transactional
-    public MenuDetailsDto getMenuById(Long menuId) {
-        // TODO: only RESTAURANT_ADMIN can get menus. To be modified later - forbidden
+    @Transactional(readOnly = true)
+    public MenuDetailsDto getMenuById(Long menuId, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT && user.getUserType() != UserType.CLIENT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_GET_MENUS);
+        }
+
         val menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.MENU_NOT_FOUND, menuId)));
 
         return menuMapper.toMenuDetailsDto(menu);
     }
 
-    @Transactional
-    public List<MenuDetailsDto> getAllMenusByRestaurantId(Long restaurantId) {
-        // TODO: only RESTAURANT_ADMIN can get menus. To be modified later - forbidden
+    @Transactional(readOnly = true)
+    public List<MenuDetailsDto> getAllMenusByRestaurantId(Long restaurantId, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT && user.getUserType() != UserType.CLIENT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_GET_MENUS);
+        }
+
         List<RestaurantMenuAssociation> associations = restaurantMenuAssociationRepository.findByRestaurantId(restaurantId);
 
         if (associations.isEmpty()) {

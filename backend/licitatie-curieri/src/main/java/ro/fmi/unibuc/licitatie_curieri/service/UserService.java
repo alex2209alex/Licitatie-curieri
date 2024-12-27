@@ -6,7 +6,7 @@ import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.EmailSender;
-import ro.fmi.unibuc.licitatie_curieri.common.JwtUtils;
+import ro.fmi.unibuc.licitatie_curieri.common.security.JwtUtils;
 import ro.fmi.unibuc.licitatie_curieri.common.SmsSender;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.*;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
@@ -16,7 +16,6 @@ import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import javax.mail.MessagingException;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

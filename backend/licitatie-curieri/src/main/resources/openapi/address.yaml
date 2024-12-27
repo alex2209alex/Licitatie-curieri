@@ -44,12 +44,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AddressCreationResponse'
-        '400':
-          description: Request body is invalid.
-          content:
-            application/json:
-              schema:
-                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
         '403':
           description: User is not allowed to create Addresses.
           content:
