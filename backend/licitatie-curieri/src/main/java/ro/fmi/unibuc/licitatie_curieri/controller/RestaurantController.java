@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.RestaurantApi;
 import org.openapitools.model.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,35 +22,45 @@ public class RestaurantController implements RestaurantApi {
 
     @Override
     public List<RestaurantDetailsDto> getRestaurants(@RequestParam(value = "address_id") Long addressId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (authentication != null) ? authentication.getName() : null;
+
         log.info(String.format(LogMessageUtils.GET_RESTAURANTS, addressId));
-        return restaurantService.getRestaurants(addressId);
+        return restaurantService.getRestaurants(addressId, email);
     }
 
     @Override
     public CreateRestaurantResponseDto createRestaurant(@RequestBody CreateRestaurantDto createRestaurantDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (authentication != null) ? authentication.getName() : null;
+
         log.info(String.format(LogMessageUtils.CREATE_RESTAURANT,
                 createRestaurantDto.getName(),
                 createRestaurantDto.getAddress(),
                 createRestaurantDto.getLatitude(),
                 createRestaurantDto.getLongitude()
         ));
-        return restaurantService.createRestaurant(createRestaurantDto);
+        return restaurantService.createRestaurant(createRestaurantDto, email);
     }
 
     @Override
     public void deleteRestaurant(@RequestParam(value = "restaurant_id") Long restaurantId){
-        log.info(String.format(LogMessageUtils.DELETE_RESTAURANT, restaurantId));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (authentication != null) ? authentication.getName() : null;
 
-        restaurantService.deleteRestaurant(restaurantId);
+        log.info(String.format(LogMessageUtils.DELETE_RESTAURANT, restaurantId));
+        restaurantService.deleteRestaurant(restaurantId, email);
     }
 
     @Override
     public UpdateRestaurantNameResponseDto updateRestaurantByName(@RequestBody UpdateRestaurantNameDto updateRestaurantNameDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (authentication != null) ? authentication.getName() : null;
+
         log.info(String.format(LogMessageUtils.UPDATE_RESTAURANT_BY_NAME,
                 updateRestaurantNameDto.getId(),
                 updateRestaurantNameDto.getName()
         ));
-
-        return restaurantService.updateRestaurantByName(updateRestaurantNameDto);
+        return restaurantService.updateRestaurantByName(updateRestaurantNameDto, email);
     }
 }
