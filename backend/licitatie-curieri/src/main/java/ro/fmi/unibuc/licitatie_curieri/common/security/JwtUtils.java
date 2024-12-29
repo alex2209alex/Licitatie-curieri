@@ -12,16 +12,17 @@ public class JwtUtils {
     private static final String SECRET_KEY = "MOPS";
     private static final long EXPIRATION_TIME = 604800000; // 7 days
 
+    private JwtUtils() {}
 
     // source: https://www.baeldung.com/java-json-web-tokens-jjwt
-    public static String generateToken(String userEmail) {
+    public static String generateToken(Long userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
         byte[] apiKeySecretBytes = Base64.getEncoder().encode(SECRET_KEY.getBytes());
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
 
         return Jwts.builder()
-                .setSubject(userEmail)
+                .setSubject(userId.toString())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, signingKey)

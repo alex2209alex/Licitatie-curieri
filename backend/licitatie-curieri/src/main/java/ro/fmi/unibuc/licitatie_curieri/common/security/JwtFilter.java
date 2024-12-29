@@ -42,11 +42,11 @@ public class JwtFilter extends OncePerRequestFilter {
                         .parseClaimsJws(token)
                         .getBody();
 
-                String email = claims.getSubject();
-                if (email != null) {
+                String userId = claims.getSubject();
+                if (userId != null) {
                     List<GrantedAuthority> authorities = Collections.emptyList();
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            email, null, authorities);
+                            userId, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (Exception e) {

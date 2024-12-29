@@ -2,14 +2,13 @@ package ro.fmi.unibuc.licitatie_curieri.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.openapitools.api.RestaurantApi;
-import org.openapitools.model.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.LogMessageUtils;
+import ro.fmi.unibuc.licitatie_curieri.controller.restaurant.api.RestaurantApi;
+import ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models.*;
 import ro.fmi.unibuc.licitatie_curieri.service.RestaurantService;
 
 import java.util.List;
@@ -21,46 +20,37 @@ public class RestaurantController implements RestaurantApi {
     private final RestaurantService restaurantService;
 
     @Override
-    public List<RestaurantDetailsDto> getRestaurants(@RequestParam(value = "address_id") Long addressId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+    public List<RestaurantDetailsDto> getRestaurants(@RequestParam(value = "address_id", required = false) Long addressId) {
+        log.info(LogMessageUtils.GET_RESTAURANTS);
 
-        log.info(String.format(LogMessageUtils.GET_RESTAURANTS, addressId));
-        return restaurantService.getRestaurants(addressId, email);
+        return restaurantService.getRestaurants(addressId);
     }
 
     @Override
-    public CreateRestaurantResponseDto createRestaurant(@RequestBody CreateRestaurantDto createRestaurantDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+    public RestaurantDetailsDto getRestaurant(@PathVariable(value = "restaurant_id") Long restaurantId) {
+        log.info(String.format(LogMessageUtils.GET_RESTAURANT, restaurantId));
 
-        log.info(String.format(LogMessageUtils.CREATE_RESTAURANT,
-                createRestaurantDto.getName(),
-                createRestaurantDto.getAddress(),
-                createRestaurantDto.getLatitude(),
-                createRestaurantDto.getLongitude()
-        ));
-        return restaurantService.createRestaurant(createRestaurantDto, email);
+        return restaurantService.getRestaurant(restaurantId);
     }
 
     @Override
-    public void deleteRestaurant(@RequestParam(value = "restaurant_id") Long restaurantId){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+    public RestaurantCreationResponseDto createRestaurant(@RequestBody RestaurantCreationDto createRestaurantDto) {
+        log.info(String.format(LogMessageUtils.CREATE_RESTAURANT, createRestaurantDto.getName()));
 
-        log.info(String.format(LogMessageUtils.DELETE_RESTAURANT, restaurantId));
-        restaurantService.deleteRestaurant(restaurantId, email);
+        return restaurantService.createRestaurant(createRestaurantDto);
     }
 
     @Override
-    public UpdateRestaurantNameResponseDto updateRestaurantByName(@RequestBody UpdateRestaurantNameDto updateRestaurantNameDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+    public RestaurantUpdateResponseDto updateRestaurant(@PathVariable("restaurant_id") Long restaurantId, @RequestBody RestaurantUpdateDto restaurantUpdateDto) {
+        log.info(String.format(LogMessageUtils.UPDATE_RESTAURANT, restaurantId));
 
-        log.info(String.format(LogMessageUtils.UPDATE_RESTAURANT_BY_NAME,
-                updateRestaurantNameDto.getId(),
-                updateRestaurantNameDto.getName()
-        ));
-        return restaurantService.updateRestaurantByName(updateRestaurantNameDto, email);
+        return restaurantService.updateRestaurant(restaurantId, restaurantUpdateDto);
+    }
+
+    @Override
+    public void removeRestaurant(@PathVariable(value = "restaurant_id") Long restaurantId) {
+        log.info(String.format(LogMessageUtils.REMOVE_RESTAURANT, restaurantId));
+
+        restaurantService.removeRestaurant(restaurantId);
     }
 }

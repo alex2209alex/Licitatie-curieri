@@ -90,7 +90,7 @@ components:
         details:
           description: Address's details
           type: string
-          maxLength: 100
+          maxLength: 1000
           example: Str. Strada Nr. 1
         latitude:
           description: Address's latitude

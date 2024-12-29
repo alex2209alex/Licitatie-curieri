@@ -2,14 +2,14 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.EmailSender;
-import ro.fmi.unibuc.licitatie_curieri.common.security.JwtUtils;
 import ro.fmi.unibuc.licitatie_curieri.common.SmsSender;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.*;
+import ro.fmi.unibuc.licitatie_curieri.common.security.JwtUtils;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
+import ro.fmi.unibuc.licitatie_curieri.controller.user.models.*;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
@@ -89,15 +89,15 @@ public class UserService {
             throw new InternalServerErrorException(e.getMessage());
         }
 
-        return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(userLoginDto.getEmail()));
+        return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(user.getId()));
     }
 
     @Transactional(noRollbackFor = ForbiddenException.class)
     public void getTwoFACodeUser(UserTwoFAVerificationDto userTwoFAVerificationDto) {
-       val user = userRepository.findByEmailAndTwoFACode(
-               userTwoFAVerificationDto.getEmail(),
-               userTwoFAVerificationDto.getVerificationCode()
-               )
+        val user = userRepository.findByEmailAndTwoFACode(
+                        userTwoFAVerificationDto.getEmail(),
+                        userTwoFAVerificationDto.getVerificationCode()
+                )
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.USER_NOT_FOUND, userTwoFAVerificationDto.getEmail())));
 
         if (Instant.now().isAfter(user.getVerifyFaCodeDeadline())) {
