@@ -23,6 +23,7 @@ public interface RestaurantMapper {
     AddressCreationDto toAddressCreationDto(CreateRestaurantDto createRestaurantDto);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "menuItems", ignore = true)
     @Mapping(target = "name", source = "createRestaurantDto.name")
     @Mapping(target = "address", source = "addressId", qualifiedByName = "mapAddressId")
     Restaurant toRestaurant(CreateRestaurantDto createRestaurantDto, Long addressId);

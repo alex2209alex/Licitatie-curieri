@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
+import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.MenuItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "restaurants")
@@ -22,4 +26,7 @@ public class Restaurant {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "address_id")
     private Address address;
+
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.EAGER)
+    private List<MenuItem> menuItems = new ArrayList<>();
 }
