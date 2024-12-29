@@ -4,12 +4,12 @@ import '../../common/Utils.dart';
 import '../models/MenuItemModel.dart';
 class MenuItemService {
 
-  static const String baseUrl = "'${Utils.baseUrl}/MenuItems";
+  static const String baseUrl = "'${Utils.baseUrl}/menu-items";
 
-  Future<List<MenuItem>> fetchMenuItemsByRestaurant(int idRestaurant) async {
+  Future<List<MenuItem>> fetchMenuItemsByRestaurant(int restaurantId) async {
 
     // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/restaurant/$idRestaurant");
+    Uri uri = Uri.parse("$baseUrl?restaurantId=$restaurantId");
     final response = await http.get(uri);
     if(response.statusCode == 200)
       {
@@ -18,14 +18,12 @@ class MenuItemService {
       }
     else
       {
-        throw Exception("Failed to fetch MenuItems from restaurant $idRestaurant");
+        throw Exception("Failed to fetch MenuItems from restaurant $restaurantId");
       }
   }
-
-
-  Future<MenuItem> fetchMenuItemById(int idMenu) async {
+  Future<MenuItem> fetchMenuItemById(int menuItemId) async {
     // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/$idMenu");
+    Uri uri = Uri.parse("$baseUrl/$menuItemId");
     final response = await http.get(uri);
     if(response.statusCode == 200)
       {
@@ -33,7 +31,7 @@ class MenuItemService {
       }
     else
       {
-        throw Exception("Failed to fetch MenuItem $idMenu");
+        throw Exception("Failed to fetch MenuItem $menuItemId");
       }
   }
 
@@ -55,9 +53,9 @@ Future<MenuItem> createMenuItem(MenuItem menuItem) async {
     }
 }
 
-Future<MenuItem> updateMenuItem(int id, MenuItem menuItem) async {
+Future<MenuItem> updateMenuItem(int menuItemId, MenuItem menuItem) async {
   // To Do: later check the path for api
-  Uri uri = Uri.parse("$baseUrl/$id");
+  Uri uri = Uri.parse("$baseUrl/$menuItemId");
 
   final response = await http.put(
     uri,
@@ -72,19 +70,19 @@ Future<MenuItem> updateMenuItem(int id, MenuItem menuItem) async {
     }
   else
     {
-      throw Exception("Failed to update MenuItem $id");
+      throw Exception("Failed to update MenuItem $menuItemId");
     }
 }
 
 
-Future<void> deleteMenuItem(int id) async {
+Future<void> removeMenuItem(int menuItemId) async {
   // To Do: later check the path for api
-  Uri uri = Uri.parse("$baseUrl/$id");
+  Uri uri = Uri.parse("$baseUrl/$menuItemId");
 
   final response = await http.delete(uri);
   if(response.statusCode != 204)
     {
-      throw Exception("Failed to delete MenuItem $id");
+      throw Exception("Failed to delete MenuItem $menuItemId");
     }
 
 
