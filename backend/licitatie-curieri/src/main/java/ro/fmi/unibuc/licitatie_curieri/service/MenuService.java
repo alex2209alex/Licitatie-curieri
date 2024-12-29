@@ -3,13 +3,13 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
+import ro.fmi.unibuc.licitatie_curieri.controller.menu.models.*;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.RestaurantMenuAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.RestaurantMenuAssociationId;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.mapper.MenuMapper;
@@ -20,7 +20,6 @@ import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,14 +39,14 @@ public class MenuService {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
 
-        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+        if(user.getUserType() != UserType.RESTAURANT_ADMIN) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_CREATE_MENUS);
         }
 
         val restaurant = restaurantRepository.findById(createMenuDto.getIdRestaurant())
                 .orElseThrow(() ->
                         new NotFoundException(String.format(
-                                ErrorMessageUtils.RESTAURANT_NOT_FOUND,
+                                ErrorMessageUtils.RESTAURANT_WITH_ID_NOT_FOUND,
                                 createMenuDto.getIdRestaurant())
                         ));
 
@@ -82,7 +81,7 @@ public class MenuService {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
 
-        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+        if(user.getUserType() != UserType.RESTAURANT_ADMIN) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_DELETE_MENUS);
         }
 
@@ -103,7 +102,7 @@ public class MenuService {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
 
-        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+        if(user.getUserType() != UserType.RESTAURANT_ADMIN) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_UPDATE_MENUS);
         }
 
@@ -128,7 +127,7 @@ public class MenuService {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
 
-        if(user.getUserType() != UserType.ADMIN_RESTAURANT && user.getUserType() != UserType.CLIENT) {
+        if(user.getUserType() != UserType.RESTAURANT_ADMIN && user.getUserType() != UserType.CLIENT) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_GET_MENUS);
         }
 
@@ -146,20 +145,20 @@ public class MenuService {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
 
-        if(user.getUserType() != UserType.ADMIN_RESTAURANT && user.getUserType() != UserType.CLIENT) {
+        if(user.getUserType() != UserType.RESTAURANT_ADMIN && user.getUserType() != UserType.CLIENT) {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_GET_MENUS);
         }
 
         List<RestaurantMenuAssociation> associations = restaurantMenuAssociationRepository.findByRestaurantId(restaurantId);
 
         if (associations.isEmpty()) {
-            throw new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId));
+            throw new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_WITH_ID_NOT_FOUND, restaurantId));
         }
 
         return associations.stream()
                 .map(RestaurantMenuAssociation::getMenu)
                 .distinct()
                 .map(menuMapper::toMenuDetailsDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

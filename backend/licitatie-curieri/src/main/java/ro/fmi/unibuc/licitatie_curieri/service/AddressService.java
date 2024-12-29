@@ -2,75 +2,56 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.openapitools.model.AddressCreationDto;
-import org.openapitools.model.AddressCreationResponseDto;
-import org.openapitools.model.AddressDetailsDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
-import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
+import ro.fmi.unibuc.licitatie_curieri.controller.address.models.AddressCreationDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.address.models.AddressCreationResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.address.models.AddressDetailsDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.mapper.AddressMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.repository.AddressRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociationId;
-import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
-import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AddressService {
-    private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
+    private final UserInformationService userInformationService;
 
     @Transactional(readOnly = true)
-    public List<AddressDetailsDto> getAddresses(String userId) {
-        val user = userRepository.findById(Long.valueOf(userId)).get();
+    public List<AddressDetailsDto> getAddresses() {
+        ensureCurrentUserIsVerifiedClient(ErrorMessageUtils.ONLY_CLIENT_CAN_GET_ADDRESSES);
 
-        if (!user.isVerified()) {
-            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
-        }
-        if (UserType.CLIENT != user.getUserType()) {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_GET_ADDRESSES);
-        }
-
-        return user.getUserAddressAssociations().stream()
+        return userInformationService.getCurrentUser().getUserAddressAssociations().stream()
                 .map(UserAddressAssociation::getAddress)
                 .map(addressMapper::mapToAddressDetailsDto)
                 .toList();
     }
 
     @Transactional
-    public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto, String userId) {
-        val user = userRepository.findById(Long.valueOf(userId)).get();
+    public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto) {
+        ensureCurrentUserIsVerifiedClient(ErrorMessageUtils.ONLY_CLIENT_CAN_CREATE_ADDRESSES);
 
-        if (!user.isVerified()) {
-            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
-        }
+        val persistedAddress = addressRepository.save(addressMapper.mapToAddress(addressCreationDto));
 
-        if (UserType.CLIENT != user.getUserType() &&
-        UserType.ADMIN_RESTAURANT != user.getUserType()) {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_CREATE_ADDRESS);
-        }
-
-        val address = addressRepository.save(addressMapper.mapToAddress(addressCreationDto));
-
-        val userAddressAssociationId = new UserAddressAssociationId(user.getId(), address.getId());
+        val user = userInformationService.getCurrentUser();
+        val userAddressAssociationId = new UserAddressAssociationId(user.getId(), persistedAddress.getId());
         val userAddressAssociation = new UserAddressAssociation();
         userAddressAssociation.setId(userAddressAssociationId);
         user.getUserAddressAssociations().add(userAddressAssociation);
 
-        return addressMapper.mapToAddressCreationResponseDto(address);
+        return addressMapper.mapToAddressCreationResponseDto(persistedAddress);
     }
 
-    @Transactional
-    public void deleteAddress(Long addressId) {
-        val address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.ADDRESS_NOT_FOUND, addressId)));
-
-        addressRepository.delete(address);
+    private void ensureCurrentUserIsVerifiedClient(String errorMessage) {
+        userInformationService.ensureCurrentUserIsVerified();
+        if (!userInformationService.isCurrentUserClient()) {
+            throw new ForbiddenException(errorMessage);
+        }
     }
 }

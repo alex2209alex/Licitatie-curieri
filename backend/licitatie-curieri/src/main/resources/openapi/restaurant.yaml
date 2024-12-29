@@ -15,9 +15,9 @@ paths:
           schema:
             type: integer
             format: int64
-          required: true
+          required: false
           in: query
-          description: ID of User's Address around which he is searching for Restaurants
+          description: ID of User's Address around which he is searching for Restaurants. Is is required for client Users
           example: 100
       responses:
         '200':

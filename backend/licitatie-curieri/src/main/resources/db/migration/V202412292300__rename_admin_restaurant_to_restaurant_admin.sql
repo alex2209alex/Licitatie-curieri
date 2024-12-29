@@ -1,0 +1,3 @@
+UPDATE users
+SET user_type = 'RESTAURANT_ADMIN'
+WHERE user_type = 'ADMIN_RESTAURANT';
