@@ -24,18 +24,18 @@ public class AddressController implements AddressApi {
     @Override
     public List<AddressDetailsDto> getAddresses() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+        String userId = (authentication != null) ? authentication.getName() : null;
 
         log.info(LogMessageUtils.GET_ADDRESSES);
-        return addressService.getAddresses(email);
+        return addressService.getAddresses(userId);
     }
 
     @Override
     public AddressCreationResponseDto createAddress(@RequestBody AddressCreationDto addressCreationDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+        String userId = (authentication != null) ? authentication.getName() : null;
 
         log.info(LogMessageUtils.CREATE_ADDRESS);
-        return addressService.createAddress(addressCreationDto, email);
+        return addressService.createAddress(addressCreationDto, userId);
     }
 }
