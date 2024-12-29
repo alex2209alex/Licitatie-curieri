@@ -3,6 +3,10 @@ package ro.fmi.unibuc.licitatie_curieri.common.utils;
 public class ErrorMessageUtils {
     private ErrorMessageUtils() {
     }
+
+    public static final String ONLY_CLIENT_CAN_GET_ADDRESSES = "Only client can get addresses";
+    public static final String ONLY_CLIENT_CAN_CREATE_ADDRESSES = "Only client can create addresses";
+
     public static final String EMAIL_ALREADY_USED_FOR_USER_TYPE = "Email %s is already used for user type %s";
     public static final String USER_WITH_EMAIL_AND_USER_TYPE_AWAITING_VERIFICATION = "User with email %s and user type %s is awaiting verification";
     public static final String EMAIL_INVALID = "Email is invalid";
@@ -23,10 +27,6 @@ public class ErrorMessageUtils {
     public static final String ONLY_ADMIN_REST_CAN_DELETE_RESTAURANTS = "Only admin restaurant can delete restaurants";
     public static final String ONLY_ADMIN_REST_CAN_UPDATE_RESTAURANTS = "Only admin restaurant can update restaurants";
 
-    public static final String ONLY_CLIENT_CAN_GET_ADDRESSES = "Only client can get addresses";
-    public static final String ADDRESS_NOT_FOUND = "Address with id: %s not found";
-    public static final String ONLY_CLIENT_AND_ADMIN_REST_CAN_CREATE_ADDRESS = "Only client and admin restaurant can create address";
-
     public static final String RESTAURANT_MENU_ALREADY_EXISTS = "Restaurant with id %d and menu with id %d already exists";
     public static final String MENU_NOT_FOUND = "Menu with id: %s not found";
     public static final String ONLY_CLIENT_AND_ADMIN_REST_CAN_GET_MENUS = "Only client and admin restaurant can get menus";
@@ -36,4 +36,5 @@ public class ErrorMessageUtils {
 
     public static final String USER_IS_UNVERIFIED = "User is unverified";
     public static final String RESTAURANT_NOT_FOUND = "Restaurant with id: %s not found";
+    public static final String AUTHENTICATION_IS_NULL = "Authentication is null";
 }

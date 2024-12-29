@@ -12,6 +12,7 @@ public class JwtUtils {
     private static final String SECRET_KEY = "MOPS";
     private static final long EXPIRATION_TIME = 604800000; // 7 days
 
+    private JwtUtils() {}
 
     // source: https://www.baeldung.com/java-json-web-tokens-jjwt
     public static String generateToken(Long userId) {
