@@ -1,0 +1,104 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Offer management
+  description: API related to management of courier Offers.
+paths:
+  /orders:
+    post:
+      tags:
+        - Offer
+      summary: Makes an Offer for an Order by a courier. Only Users of type courier are allowed to make Offers
+      operationId: makeOffer
+      requestBody:
+        description: Request body contains information related to new Offer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferCreation'
+        required: true
+      responses:
+        '201':
+          description: Offer successfully made.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferCreationResponse'
+        '400':
+          description: Request body is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: User is not allowed to create Offers to mentioned Order.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+components:
+  schemas:
+    OfferCreation:
+      type: object
+      required:
+        - orderId
+        - deliveryPrice
+        - courierLatitude
+        - courierLongitude
+      properties:
+        orderId:
+          description: Id of Order for which Offer is made
+          type: integer
+          format: int64
+        deliveryPrice:
+          description: Bid for price of delivery
+          type: integer
+          format: int64
+          minimum: 0
+          example: 1
+        courierLatitude:
+          description: Courier's latitude
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+          example: 44.439663
+        courierLongitude:
+          description: Courier's longitude
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+          example: 26.096306
+    OfferCreationResponse:
+      type: object
+      properties:
+        orderId:
+          description: Id of Order for which Offer is made
+          type: integer
+          format: int64
+        deliveryPrice:
+          description: Bid for price of delivery
+          type: integer
+          format: int64
+          example: 1
+        restaurantLatitude:
+          description: Restaurant's latitude
+          type: number
+          format: double
+          example: 44.439663
+        restaurantLongitude:
+          description: Restaurant's longitude
+          type: number
+          format: double
+          example: 26.096306
+        addressLatitude:
+          description: Address's latitude
+          type: number
+          format: double
+          example: 44.439663
+        addressLongitude:
+          description: Address's longitude
+          type: number
+          format: double
+          example: 26.096306
