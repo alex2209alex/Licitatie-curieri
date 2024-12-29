@@ -74,20 +74,20 @@ public class UserService {
         val user = userRepository.findByEmailAndPassword(userLoginDto.getEmail(), userMapper.hashPassword(userLoginDto.getPassword()))
                 .orElseThrow(() -> new UnauthorizedException(String.format(ErrorMessageUtils.AUTHORIZATION_FAILED)));
 
-//        try {
-//            String code = EmailSender.generateCode();
-//            EmailSender.sendEmail(
-//                    user.getEmail(),
-//                    code,
-//                    "2FA Code from Licitatie-Curieri",
-//                    "Your code for 2FA login is: " + code
-//            );
-//            user.setTwoFACode(code);
-//            user.setVerifyFaCodeDeadline(Instant.now().plusSeconds(300));
-//            userRepository.save(user);
-//        } catch (MessagingException e) {
-//            throw new InternalServerErrorException(e.getMessage());
-//        }
+        try {
+            String code = EmailSender.generateCode();
+            EmailSender.sendEmail(
+                    user.getEmail(),
+                    code,
+                    "2FA Code from Licitatie-Curieri",
+                    "Your code for 2FA login is: " + code
+            );
+            user.setTwoFACode(code);
+            user.setVerifyFaCodeDeadline(Instant.now().plusSeconds(300));
+            userRepository.save(user);
+        } catch (MessagingException e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
 
         return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(user.getId()));
     }
