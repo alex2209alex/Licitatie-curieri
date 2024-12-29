@@ -2,8 +2,6 @@ package ro.fmi.unibuc.licitatie_curieri.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.openapitools.api.MenuApi;
-import org.openapitools.model.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.LogMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.service.MenuService;
-
+import ro.fmi.unibuc.licitatie_curieri.controller.menu.api.MenuApi;
+import ro.fmi.unibuc.licitatie_curieri.controller.menu.models.*;
 import java.util.List;
 
 @Slf4j

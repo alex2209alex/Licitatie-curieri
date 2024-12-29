@@ -25,10 +25,7 @@ public class AddressService {
 
     @Transactional(readOnly = true)
     public List<AddressDetailsDto> getAddresses() {
-        userInformationService.ensureCurrentUserIsVerified();
-        if (!userInformationService.isCurrentUserClient()) {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_GET_ADDRESSES);
-        }
+        ensureCurrentUserIsVerifiedClient(ErrorMessageUtils.ONLY_CLIENT_CAN_GET_ADDRESSES);
 
         return userInformationService.getCurrentUser().getUserAddressAssociations().stream()
                 .map(UserAddressAssociation::getAddress)
@@ -38,10 +35,7 @@ public class AddressService {
 
     @Transactional
     public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto) {
-        userInformationService.ensureCurrentUserIsVerified();
-        if (!userInformationService.isCurrentUserClient()) {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_CREATE_ADDRESSES);
-        }
+        ensureCurrentUserIsVerifiedClient(ErrorMessageUtils.ONLY_CLIENT_CAN_CREATE_ADDRESSES);
 
         val persistedAddress = addressRepository.save(addressMapper.mapToAddress(addressCreationDto));
 
@@ -52,5 +46,12 @@ public class AddressService {
         user.getUserAddressAssociations().add(userAddressAssociation);
 
         return addressMapper.mapToAddressCreationResponseDto(persistedAddress);
+    }
+
+    private void ensureCurrentUserIsVerifiedClient(String errorMessage) {
+        userInformationService.ensureCurrentUserIsVerified();
+        if (!userInformationService.isCurrentUserClient()) {
+            throw new ForbiddenException(errorMessage);
+        }
     }
 }
