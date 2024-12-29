@@ -7,7 +7,7 @@ paths:
   /menu-items:
     get:
       tags:
-        - MenuItems
+        - MenuItem
       summary: Fetches all MenuItems for Restaurant.
       operationId: getAllMenuItemsForRestaurant
       parameters:
@@ -79,7 +79,7 @@ paths:
   /menu-items/{menu_item_id}:
     get:
       tags:
-        - MenuItems
+        - MenuItem
       summary: Fetches MenuItem by Id.
       operationId: getMenuItem
       parameters:
@@ -112,7 +112,7 @@ paths:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
     put:
       tags:
-        - MenuItems
+        - MenuItem
       summary: Update a Menu Item
       operationId: updateMenuItem
       parameters:
@@ -158,7 +158,7 @@ paths:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
     delete:
       tags:
-        - MenuItems
+        - MenuItem
       summary: Removes a Menu Item from Restaurant Menu
       operationId: removeMenuItem
       parameters:
