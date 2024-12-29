@@ -33,8 +33,8 @@ public class RestaurantService {
     private final UserAddressAssociationService userAddressAssociationService;
 
     @Transactional(readOnly = true)
-    public List<RestaurantDetailsDto> getRestaurants(Long addressId, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public List<RestaurantDetailsDto> getRestaurants(Long addressId, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -56,8 +56,8 @@ public class RestaurantService {
     }
 
     @Transactional
-    public CreateRestaurantResponseDto createRestaurant(CreateRestaurantDto createRestaurantDto, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public CreateRestaurantResponseDto createRestaurant(CreateRestaurantDto createRestaurantDto, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -77,7 +77,7 @@ public class RestaurantService {
 
         Long addressId = addressService.createAddress(
                 restaurantMapper.toAddressCreationDto(createRestaurantDto),
-                email
+                userId
         ).getId();
 
         val restaurant = restaurantRepository.save(restaurantMapper.toRestaurant(createRestaurantDto, addressId));
@@ -86,8 +86,8 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void deleteRestaurant(Long restaurantId, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public void deleteRestaurant(Long restaurantId, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -106,8 +106,8 @@ public class RestaurantService {
     }
 
     @Transactional
-    public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);

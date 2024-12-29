@@ -27,8 +27,8 @@ public class AddressService {
     private final AddressMapper addressMapper;
 
     @Transactional(readOnly = true)
-    public List<AddressDetailsDto> getAddresses(String email) {
-        val user = userRepository.findByEmail(email).get();
+    public List<AddressDetailsDto> getAddresses(String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -44,8 +44,8 @@ public class AddressService {
     }
 
     @Transactional
-    public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);

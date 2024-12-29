@@ -23,7 +23,7 @@ public class MenuController implements MenuApi {
     @Override
     public CreateMenuResponseDto createMenu(@RequestBody CreateMenuDto createMenuDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+        String userId = (authentication != null) ? authentication.getName() : null;
 
         log.info(String.format(LogMessageUtils.CREATE_MENU,
                 createMenuDto.getIdRestaurant(),
@@ -33,22 +33,22 @@ public class MenuController implements MenuApi {
                 createMenuDto.getPhoto(),
                 createMenuDto.getDiscount()
         ));
-        return menuService.createMenu(createMenuDto, email);
+        return menuService.createMenu(createMenuDto, userId);
     }
 
     @Override
     public void deleteMenu(@RequestParam(value = "menu_id") Long menuId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+        String userId = (authentication != null) ? authentication.getName() : null;
 
         log.info(String.format(LogMessageUtils.DELETE_MENU, menuId));
-        menuService.deleteMenu(menuId, email);
+        menuService.deleteMenu(menuId, userId);
     }
 
     @Override
     public UpdateMenuResponseDto updateMenu(@RequestBody UpdateMenuDto updateMenuDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+        String userId = (authentication != null) ? authentication.getName() : null;
 
         log.info(String.format(LogMessageUtils.UPDATE_MENU,
                 updateMenuDto.getName(),
@@ -57,24 +57,24 @@ public class MenuController implements MenuApi {
                 updateMenuDto.getPhoto(),
                 updateMenuDto.getDiscount()
         ));
-        return menuService.updateMenu(updateMenuDto, email);
+        return menuService.updateMenu(updateMenuDto, userId);
     }
 
     @Override
     public MenuDetailsDto getMenuById(@RequestParam(value = "menu_id") Long menuId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+        String userId = (authentication != null) ? authentication.getName() : null;
 
         log.info(String.format(LogMessageUtils.GET_MENU_BY_ID, menuId));
-        return menuService.getMenuById(menuId, email);
+        return menuService.getMenuById(menuId, userId);
     }
 
     @Override
     public List<MenuDetailsDto> getAllMenusByRestaurantId(@RequestParam(value = "restaurant_id") Long restaurantId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (authentication != null) ? authentication.getName() : null;
+        String userId = (authentication != null) ? authentication.getName() : null;
 
         log.info(String.format(LogMessageUtils.GET_ALL_MENUS_BY_RESTAURANT_ID, restaurantId));
-        return menuService.getAllMenusByRestaurantId(restaurantId, email);
+        return menuService.getAllMenusByRestaurantId(restaurantId, userId);
     }
 }

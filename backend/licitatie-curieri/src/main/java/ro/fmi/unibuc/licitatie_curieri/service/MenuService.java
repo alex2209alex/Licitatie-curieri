@@ -33,8 +33,8 @@ public class MenuService {
     private final MenuMapper menuMapper;
 
     @Transactional
-    public CreateMenuResponseDto createMenu(CreateMenuDto createMenuDto, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public CreateMenuResponseDto createMenu(CreateMenuDto createMenuDto, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -75,8 +75,8 @@ public class MenuService {
     }
 
     @Transactional
-    public void deleteMenu(Long menuId, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public void deleteMenu(Long menuId, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -96,8 +96,8 @@ public class MenuService {
     }
 
     @Transactional
-    public UpdateMenuResponseDto updateMenu(UpdateMenuDto updateMenuDto, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public UpdateMenuResponseDto updateMenu(UpdateMenuDto updateMenuDto, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -121,8 +121,8 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public MenuDetailsDto getMenuById(Long menuId, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public MenuDetailsDto getMenuById(Long menuId, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -139,8 +139,8 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public List<MenuDetailsDto> getAllMenusByRestaurantId(Long restaurantId, String email) {
-        val user = userRepository.findByEmail(email).get();
+    public List<MenuDetailsDto> getAllMenusByRestaurantId(Long restaurantId, String userId) {
+        val user = userRepository.findById(Long.valueOf(userId)).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
