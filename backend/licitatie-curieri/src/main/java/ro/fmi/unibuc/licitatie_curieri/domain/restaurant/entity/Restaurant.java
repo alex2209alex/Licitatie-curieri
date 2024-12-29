@@ -23,6 +23,9 @@ public class Restaurant {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "was_removed")
+    private Boolean wasRemoved;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "address_id")
     private Address address;

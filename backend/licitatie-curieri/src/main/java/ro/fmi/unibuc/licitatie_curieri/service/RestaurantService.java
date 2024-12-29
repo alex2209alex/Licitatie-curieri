@@ -28,7 +28,6 @@ public class RestaurantService {
     private final AddressRepository addressRepository;
     private final RestaurantRepository restaurantRepository;
     private final RestaurantMapper restaurantMapper;
-    private final UserAddressAssociationService userAddressAssociationService;
     private final UserInformationService userInformationService;
 
     @Transactional(readOnly = true)
@@ -65,7 +64,7 @@ public class RestaurantService {
         ensureCurrentUserIsVerifiedRestaurantAdmin(ErrorMessageUtils.ONLY_RESTAURANT_ADMIN_CAN_GET_RESTAURANT);
 
         val restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_WITH_ID_NOT_FOUND, restaurantId)));
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId)));
 
         return restaurantMapper.toRestaurantDetailsDto(restaurant);
     }
@@ -85,7 +84,7 @@ public class RestaurantService {
         ensureCurrentUserIsVerifiedRestaurantAdmin(ErrorMessageUtils.ONLY_RESTAURANT_ADMIN_CAN_UPDATE_RESTAURANTS);
 
         val restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_WITH_ID_NOT_FOUND, restaurantId)));
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId)));
 
         restaurant.setName(restaurantUpdateDto.getName());
         restaurantRepository.save(restaurant);
@@ -98,10 +97,11 @@ public class RestaurantService {
         ensureCurrentUserIsVerifiedRestaurantAdmin(ErrorMessageUtils.ONLY_RESTAURANT_ADMIN_CAN_REMOVE_RESTAURANTS);
 
         val restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_WITH_ID_NOT_FOUND, restaurantId)));
+                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId)));
 
-        restaurantRepository.delete(restaurant);
-        userAddressAssociationService.deleteUserAddressAssociationByAddressId(restaurant.getAddress().getId());
+        restaurant.setWasRemoved(true);
+
+        restaurantRepository.save(restaurant);
     }
 
     private boolean isWithinRange(RestaurantDetailsDto restaurantDetailsDto, Address address) {

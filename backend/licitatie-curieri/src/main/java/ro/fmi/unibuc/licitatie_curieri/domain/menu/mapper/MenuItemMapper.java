@@ -3,10 +3,7 @@ package ro.fmi.unibuc.licitatie_curieri.domain.menu.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.openapitools.model.MenuItemCreationDto;
-import org.openapitools.model.MenuItemCreationResponseDto;
-import org.openapitools.model.MenuItemDetailsDto;
-import org.openapitools.model.MenuItemUpdateResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.menuitem.models.*;
 import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.MenuItem;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 
@@ -15,6 +12,8 @@ import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface MenuItemMapper {
+    MenuItemDetailsDto toMenuItemDetailsDto(MenuItem menuItem);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "wasRemoved", constant = "false")
     @Mapping(target = "name", source = "menuItemCreationDto.name")
@@ -23,6 +22,4 @@ public interface MenuItemMapper {
     MenuItemCreationResponseDto toMenuItemCreationResponseDto(MenuItem menuItem);
 
     MenuItemUpdateResponseDto toMenuItemUpdateResponseDto(MenuItem menuItem);
-
-    MenuItemDetailsDto toMenuItemDetailsDto(MenuItem menuItem);
 }
