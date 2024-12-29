@@ -21,7 +21,9 @@ class RestaurantMapperTest {
         Assertions.assertNotNull(restaurantDetailsDto);
         Assertions.assertEquals(restaurant.getId(), restaurantDetailsDto.getId());
         Assertions.assertEquals(restaurant.getName(), restaurantDetailsDto.getName());
-        Assertions.assertEquals(restaurant.getAddress().getLatitude(), restaurantDetailsDto.getLatitude());
-        Assertions.assertEquals(restaurant.getAddress().getLongitude(), restaurantDetailsDto.getLongitude());
+        Assertions.assertEquals(restaurant.getAddress().getId(), restaurantDetailsDto.getAddress().getId());
+        Assertions.assertEquals(restaurant.getAddress().getDetails(), restaurantDetailsDto.getAddress().getDetails());
+        Assertions.assertEquals(restaurant.getAddress().getLatitude(), restaurantDetailsDto.getAddress().getLatitude());
+        Assertions.assertEquals(restaurant.getAddress().getLongitude(), restaurantDetailsDto.getAddress().getLongitude());
     }
 }

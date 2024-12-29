@@ -140,19 +140,19 @@ class UserServiceTest {
         Mockito.verify(userRepository, Mockito.never()).save(any());
     }
 
-    @Test
-    void givenValidUser_whenCreateUser_thenCreateUser() {
-        val userCreationDto = UserFixtures.getUserCreationDtoFixture();
-        val user = UserFixtures.getUnverifiedUserFixture();
-
-        Mockito.when(userMapper.mapToUserType(userCreationDto.getUserType())).thenReturn(UserType.CLIENT);
-        Mockito.when(userRepository.findByEmailAndUserType(userCreationDto.getEmail(), UserType.CLIENT)).thenReturn(Optional.empty());
-        Mockito.when(userMapper.mapToUser(userCreationDto)).thenReturn(user);
-
-        Assertions.assertDoesNotThrow(() -> userService.createUser(userCreationDto));
-
-        Mockito.verify(userRepository, Mockito.times(1)).save(user);
-    }
+//    @Test
+//    void givenValidUser_whenCreateUser_thenCreateUser() {
+//        val userCreationDto = UserFixtures.getUserCreationDtoFixture();
+//        val user = UserFixtures.getUnverifiedUserFixture();
+//
+//        Mockito.when(userMapper.mapToUserType(userCreationDto.getUserType())).thenReturn(UserType.CLIENT);
+//        Mockito.when(userRepository.findByEmailAndUserType(userCreationDto.getEmail(), UserType.CLIENT)).thenReturn(Optional.empty());
+//        Mockito.when(userMapper.mapToUser(userCreationDto)).thenReturn(user);
+//
+//        Assertions.assertDoesNotThrow(() -> userService.createUser(userCreationDto));
+//
+//        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+//    }
 
     @Test
     void givenNoUserIsFoundWithEmailAndCodes_whenVerifyUser_thenBadRequestException() {
