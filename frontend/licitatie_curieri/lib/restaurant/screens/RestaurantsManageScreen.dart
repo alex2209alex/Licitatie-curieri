@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:provider/provider.dart';
 import '../../address/models/AddressModel.dart';
+import '../../common/Utils.dart';
 import '../models/RestaurantModel.dart';
 import '../providers/RestaurantProvider.dart';
 import 'package:http/http.dart' as http;
@@ -58,7 +59,7 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
       final address = _addressController.text;
       if (address.isEmpty) return;
 
-      final apiKey = "";
+      final apiKey = Utils.mapsApiKey;
       final url =
           "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
 

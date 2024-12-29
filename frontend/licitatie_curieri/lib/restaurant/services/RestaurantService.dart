@@ -12,7 +12,7 @@ import '../../common/GetToken.dart';
 import '../../common/Utils.dart';
 
 class RestaurantService{
-  static const String baseUrl = '${Utils.baseUrl}/restaurants';
+  static const String baseUrl = '${Utils.baseUrl}';
   final GetToken getToken = GetToken();
 
   // NOT WORKING
@@ -106,7 +106,7 @@ class RestaurantService{
     final response = await http.post(
       uri,
       headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
       body: json.encode(requestBody),
