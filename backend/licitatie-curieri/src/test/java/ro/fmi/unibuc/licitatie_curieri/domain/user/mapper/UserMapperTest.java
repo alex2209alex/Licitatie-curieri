@@ -18,11 +18,12 @@ class UserMapperTest {
 
     @Test
     void testMapToUserType() {
-        Assertions.assertEquals(2, UserType.values().length);
-        Assertions.assertEquals(2, UserTypeDto.values().length);
-
+        Assertions.assertEquals(3, UserType.values().length);
+        Assertions.assertEquals(3, UserTypeDto.values().length);
+        
         Assertions.assertEquals(UserType.CLIENT, userMapper.mapToUserType(UserTypeDto.CLIENT));
         Assertions.assertEquals(UserType.COURIER, userMapper.mapToUserType(UserTypeDto.COURIER));
+        Assertions.assertEquals(UserType.ADMIN_RESTAURANT, userMapper.mapToUserType(UserTypeDto.ADMIN_RESTAURANT));
     }
 
     @Test
