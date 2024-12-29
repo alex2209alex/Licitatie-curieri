@@ -6,7 +6,8 @@ import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.EmailSender;
-import ro.fmi.unibuc.licitatie_curieri.common.JwtUtils;
+import ro.fmi.unibuc.licitatie_curieri.common.security.JwtUtils;
+import ro.fmi.unibuc.licitatie_curieri.common.SmsSender;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.*;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
@@ -15,7 +16,6 @@ import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import javax.mail.MessagingException;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +35,20 @@ public class UserService {
         ensureValidPassword(userCreationDto.getPassword(), userCreationDto.getPasswordConfirmation());
 
         val user = userMapper.mapToUser(userCreationDto);
+
+        try {
+            EmailSender.sendEmail(
+                    user.getEmail(),
+                    user.getEmailVerificationCode(),
+                    "Verification code from Licitatie-Curieri",
+                    "Your code for verification new user account is: " + user.getEmailVerificationCode()
+            );
+        } catch (MessagingException e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
+
+        SmsSender smsSender = new SmsSender();
+        smsSender.sendSms(user.getPhoneNumber(), user.getPhoneVerificationCode());
 
         return userMapper.mapToUserCreationResponseDto(userRepository.save(user));
     }
@@ -62,7 +76,12 @@ public class UserService {
 
         try {
             String code = EmailSender.generateCode();
-            EmailSender.sendEmail(user.getEmail(), code);
+            EmailSender.sendEmail(
+                    user.getEmail(),
+                    code,
+                    "2FA Code from Licitatie-Curieri",
+                    "Your code for 2FA login is: " + code
+            );
             user.setTwoFACode(code);
             user.setVerifyFaCodeDeadline(Instant.now().plusSeconds(300));
             userRepository.save(user);

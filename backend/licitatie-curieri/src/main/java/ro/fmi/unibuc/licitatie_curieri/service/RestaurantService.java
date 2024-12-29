@@ -11,13 +11,10 @@ import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
-import ro.fmi.unibuc.licitatie_curieri.domain.address.repository.AddressRepository;
-import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.mapper.RestaurantMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.repository.RestaurantRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
-import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserAddressAssociationRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
 
 import java.util.List;
@@ -36,14 +33,14 @@ public class RestaurantService {
     private final UserAddressAssociationService userAddressAssociationService;
 
     @Transactional(readOnly = true)
-    public List<RestaurantDetailsDto> getRestaurants(Long addressId) {
-        val user = userRepository.findById(1L).get(); // TODO user needs to be retrieved from security context or some service class
+    public List<RestaurantDetailsDto> getRestaurants(Long addressId, String email) {
+        val user = userRepository.findByEmail(email).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
-        if (UserType.CLIENT != user.getUserType()) {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_GET_RESTAURANTS);
+        if (user.getUserType() != UserType.CLIENT && user.getUserType() != UserType.ADMIN_RESTAURANT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_GET_RESTAURANTS);
         }
 
         val address = user.getUserAddressAssociations().stream()
@@ -59,8 +56,17 @@ public class RestaurantService {
     }
 
     @Transactional
-    public CreateRestaurantResponseDto createRestaurant(CreateRestaurantDto createRestaurantDto) {
-        // TODO: only RESTAURANT_ADMIN can create restaurants. To be modified later
+    public CreateRestaurantResponseDto createRestaurant(CreateRestaurantDto createRestaurantDto, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_CREATE_RESTAURANTS);
+        }
+
         restaurantRepository.findByName(createRestaurantDto.getName())
                 .ifPresent(restaurant -> {
                     throw new BadRequestException(
@@ -70,7 +76,8 @@ public class RestaurantService {
                 });
 
         Long addressId = addressService.createAddress(
-                restaurantMapper.toAddressCreationDto(createRestaurantDto)
+                restaurantMapper.toAddressCreationDto(createRestaurantDto),
+                email
         ).getId();
 
         val restaurant = restaurantRepository.save(restaurantMapper.toRestaurant(createRestaurantDto, addressId));
@@ -79,8 +86,17 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void deleteRestaurant(Long restaurantId) {
-        // TODO: only RESTAURANT_ADMIN can delete restaurants
+    public void deleteRestaurant(Long restaurantId, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_DELETE_RESTAURANTS);
+        }
+
         val restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, restaurantId)));
 
@@ -90,7 +106,17 @@ public class RestaurantService {
     }
 
     @Transactional
-    public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto) {
+    public UpdateRestaurantNameResponseDto updateRestaurantByName(UpdateRestaurantNameDto updateRestaurantNameDto, String email) {
+        val user = userRepository.findByEmail(email).get();
+
+        if (!user.isVerified()) {
+            throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
+        }
+
+        if(user.getUserType() != UserType.ADMIN_RESTAURANT) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_ADMIN_REST_CAN_UPDATE_RESTAURANTS);
+        }
+
         val restaurant = restaurantRepository.findById(updateRestaurantNameDto.getId())
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.RESTAURANT_NOT_FOUND, updateRestaurantNameDto.getId())));
 

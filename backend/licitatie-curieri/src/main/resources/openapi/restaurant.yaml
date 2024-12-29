@@ -40,6 +40,7 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
   /CreateRestaurant:
     post:
       tags:
@@ -72,11 +73,12 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
   /DeleteRestaurant:
     delete:
       tags:
         - Restaurant
-      summary: Delete a Restaurant by name and address
+      summary: Delete a Restaurant by id
       operationId: deleteRestaurant
       parameters:
         - name: restaurant_id
@@ -90,8 +92,8 @@ paths:
       responses:
         '200':
           description: Successfully deleted the Restaurant.
-        '400':
-          description: Invalid parameters provided.
+        '403':
+          description: User is not allowed to delete Restaurants.
           content:
             application/json:
               schema:
@@ -102,6 +104,7 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
   /UpdateRestaurantName:
     put:
       tags:
@@ -122,12 +125,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateRestaurantNameResponse'
+        '403':
+          description: User is not allowed to update Restaurants.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
         '404':
           description: Restaurant not found.
           content:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
 components:
   schemas:
     RestaurantDetails:

@@ -6,7 +6,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 public class EmailSender {
-    public static void sendEmail(String recipientEmail, String code) throws MessagingException {
+    public static void sendEmail(String recipientEmail, String code, String subject, String text) throws MessagingException {
         String from = "";
         String pass = "";
         String host = "smtp.gmail.com";
@@ -27,8 +27,8 @@ public class EmailSender {
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(from));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
-        message.setSubject("2FA Code from Licitatie-Curieri");
-        message.setText("Your code for 2FA login is: " + code);
+        message.setSubject(subject);
+        message.setText(text);
 
         // Trimiterea mesajului
         Transport.send(message);

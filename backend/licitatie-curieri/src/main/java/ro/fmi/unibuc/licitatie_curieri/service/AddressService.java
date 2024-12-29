@@ -27,8 +27,8 @@ public class AddressService {
     private final AddressMapper addressMapper;
 
     @Transactional(readOnly = true)
-    public List<AddressDetailsDto> getAddresses() {
-        val user = userRepository.findById(1L).get(); // TODO user needs to be retrieved from security context or some service class
+    public List<AddressDetailsDto> getAddresses(String email) {
+        val user = userRepository.findByEmail(email).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
@@ -44,16 +44,16 @@ public class AddressService {
     }
 
     @Transactional
-    public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto) {
-        // TODO: the same address cannot be added again (same name, latitude and longitude)
-        val user = userRepository.findById(1L).get(); // TODO user needs to be retrieved from security context or some service class
+    public AddressCreationResponseDto createAddress(AddressCreationDto addressCreationDto, String email) {
+        val user = userRepository.findByEmail(email).get();
 
         if (!user.isVerified()) {
             throw new ForbiddenException(ErrorMessageUtils.USER_IS_UNVERIFIED);
         }
+
         if (UserType.CLIENT != user.getUserType() &&
         UserType.ADMIN_RESTAURANT != user.getUserType()) {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_CREATE_ADDRESS);
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_AND_ADMIN_REST_CAN_CREATE_ADDRESS);
         }
 
         val address = addressRepository.save(addressMapper.mapToAddress(addressCreationDto));

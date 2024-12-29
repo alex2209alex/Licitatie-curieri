@@ -1,0 +1,352 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Menu management
+  description: API related to management of Menus.
+paths:
+  /CreateMenu:
+    post:
+      tags:
+        - Menu
+      summary: Create a new Menu
+      operationId: createMenu
+      requestBody:
+        description: Data needed to create a new menu
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMenu'
+        required: true
+      responses:
+        '201':
+          description: Menu created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMenuResponse'
+        '400':
+          description: Invalid data provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: User is not allowed to create Menus.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Restaurant with provided id was not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /DeleteMenu:
+    delete:
+      tags:
+        - Menu
+      summary: Delete a Menu by id
+      operationId: deleteMenu
+      parameters:
+        - name: menu_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of Menu who need to be deleted
+          example: 100
+      responses:
+        '200':
+          description: Successfully deleted the Menu.
+        '403':
+          description: User is not allowed to delete Menus.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Menu not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /UpdateMenu:
+    put:
+      tags:
+        - Menu
+      summary: Update a Menu
+      operationId: updateMenu
+      requestBody:
+        description: Data needed to update a menu
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMenu'
+      responses:
+        '200':
+          description: Menu updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMenuResponse'
+        '403':
+          description: User is not allowed to update Menus.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Menu not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /GetMenuById:
+    get:
+      tags:
+        - Menu
+      summary: Fetches Menus by menuId.
+      operationId: getMenuById
+      parameters:
+        - name: menu_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of Menu
+          example: 100
+      responses:
+        '200':
+          description: Resources successfully fetched.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuDetails'
+        '403':
+          description: User is not allowed to get Menus.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Menu with provided ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+  /GetAllMenusByRestaurantId:
+    get:
+      tags:
+        - Menu
+      summary: Fetches all Menus by restaurantId.
+      operationId: getAllMenusByRestaurantId
+      parameters:
+        - name: restaurant_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+          in: query
+          description: ID of Restaurant
+          example: 100
+      responses:
+        '200':
+          description: Resources successfully fetched.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuDetails'
+        '403':
+          description: User is not allowed to get Menus.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Menu with provided ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+
+components:
+  schemas:
+    CreateMenu:
+      type: object
+      properties:
+        idRestaurant:
+          description: Restaurant's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Menu's name
+          type: string
+          maxLength: 100
+          example: Pizza Diavola
+        price:
+          description: Menu's price
+          type: number
+          format: double
+          example: 44.43
+        ingredientsList:
+          description: Menu's ingredients list
+          type: string
+          maxLength: 500
+          example: Tomato sauce, mozzarella cheese, spicy salami, fresh chili peppers, olives, oregano
+        photo:
+          description: Menu's photo
+          type: string
+          maxLength: 100
+          example: TBD...
+        discount:
+          description: Menu's discount
+          type: number
+          format: double
+          example: 0.00
+
+    CreateMenuResponse:
+      type: object
+      properties:
+        id:
+          description: Menu's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Menu's name
+          type: string
+          maxLength: 100
+          example: Pizza Diavola
+        price:
+          description: Menu's price
+          type: number
+          format: double
+          example: 44.43
+        ingredientsList:
+          description: Menu's ingredients list
+          type: string
+          maxLength: 500
+          example: Tomato sauce, mozzarella cheese, spicy salami, fresh chili peppers, olives, oregano
+        photo:
+          description: Menu's photo
+          type: string
+          maxLength: 100
+          example: TBD...
+        discount:
+          description: Menu's discount
+          type: number
+          format: double
+          example: 0.00
+
+    UpdateMenu:
+      type: object
+      properties:
+        id:
+          description: Menu's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Menu's name
+          type: string
+          maxLength: 100
+          example: Pizza Diavola2
+        price:
+          description: Menu's price
+          type: number
+          format: double
+          example: 44.43
+        ingredientsList:
+          description: Menu's ingredients list
+          type: string
+          maxLength: 500
+          example: Tomato sauce, mozzarella cheese, spicy salami, fresh chili peppers, olives, oregano
+        photo:
+          description: Menu's photo
+          type: string
+          maxLength: 100
+          example: TBD...
+        discount:
+          description: Menu's discount
+          type: number
+          format: double
+          example: 0.00
+
+    UpdateMenuResponse:
+      type: object
+      properties:
+        id:
+          description: Menu's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Menu's name
+          type: string
+          maxLength: 100
+          example: Pizza Diavola2
+        price:
+          description: Menu's price
+          type: number
+          format: double
+          example: 44.43
+        ingredientsList:
+          description: Menu's ingredients list
+          type: string
+          maxLength: 500
+          example: Tomato sauce, mozzarella cheese, spicy salami, fresh chili peppers, olives, oregano
+        photo:
+          description: Menu's photo
+          type: string
+          maxLength: 100
+          example: TBD...
+        discount:
+          description: Menu's discount
+          type: number
+          format: double
+          example: 0.00
+
+    MenuDetails:
+      type: object
+      properties:
+        id:
+          description: Menu's ID
+          type: integer
+          format: int64
+          example: 100
+        name:
+          description: Menu's name
+          type: string
+          maxLength: 100
+          example: Pizza Diavola2
+        price:
+          description: Menu's price
+          type: number
+          format: double
+          example: 44.43
+        ingredientsList:
+          description: Menu's ingredients list
+          type: string
+          maxLength: 500
+          example: Tomato sauce, mozzarella cheese, spicy salami, fresh chili peppers, olives, oregano
+        photo:
+          description: Menu's photo
+          type: string
+          maxLength: 100
+          example: TBD...
+        discount:
+          description: Menu's discount
+          type: number
+          format: double
+          example: 0.00
