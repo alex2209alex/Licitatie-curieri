@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import '../common/GetToken.dart';
 import '../common/Utils.dart';
 import '../model/User.dart';
 import 'package:http/http.dart';
 
 class UserRepository {
   final String baseUrl = '${Utils.baseUrl}/users';
+  final GetToken getToken = GetToken();
 
   Future<bool> signUp(User user) async {
     final response = await post(
@@ -48,7 +50,7 @@ class UserRepository {
     }
   }
 
-  Future<bool> authentication (String email, String password) async {
+  Future<String> authentication (String email, String password) async {
     final response = await post(
       Uri.parse("$baseUrl/login"),
       headers: {
@@ -62,18 +64,31 @@ class UserRepository {
     );
 
     if (response.statusCode == 201) {
-      return true;
+      var jsonResponse = jsonDecode(response.body);
+      String token = jsonResponse['token'];
+      if (token != null && token.isNotEmpty) {
+        return token;
+      } else {
+        throw Exception('Token not found in response');
+      }
     } else {
       throw Exception('Authentication failed. ${response.body}');
     }
   }
 
   Future<bool> twoFACode (String email, String verificationCode) async {
+    String? token = await getToken.getToken();
+
+    if (token == null) {
+      throw Exception("Authentication token not found");
+    }
+
     final response = await put(
       Uri.parse("$baseUrl/getTwoFACode"),
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
         'email': email,

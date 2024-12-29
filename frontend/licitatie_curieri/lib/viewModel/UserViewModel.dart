@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/User.dart';
 import '../repository/UserRepository.dart';
@@ -36,13 +37,16 @@ class UserViewModel extends ChangeNotifier {
   }
 
   Future<bool> authentication(String email, String password) async {
-    bool isAuth = await userRepository.authentication(email, password);
+    String token = await userRepository.authentication(email, password);
 
-    if(isAuth){
+    if(token != null && token.isNotEmpty){
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('authToken', token);
       userEmail = email;
+      return true;
+    } else {
+      return false;
     }
-
-    return isAuth;
   }
 
   Future<bool> twoFACode(String verificationCode) async {
