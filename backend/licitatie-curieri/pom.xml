@@ -222,7 +222,7 @@
 								<useTags>true</useTags>
 								<useOptional>false</useOptional>
 								<unhandeledException>true</unhandeledException>
-								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.restaurant.address</invokerPackage>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.restaurant</invokerPackage>
 								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.restaurant.api</apiPackage>
 								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models</modelPackage>
 								<useSpringBoot3>true</useSpringBoot3>
@@ -230,12 +230,12 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>Menu OpenApi generation</id>
+						<id>MenuItem OpenApi generation</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/openapi/menu.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/menuitem.yaml</inputSpec>
 							<generatorName>spring</generatorName>
 							<modelNameSuffix>Dto</modelNameSuffix>
 							<configOptions>
@@ -246,9 +246,33 @@
 								<useTags>true</useTags>
 								<useOptional>false</useOptional>
 								<unhandeledException>true</unhandeledException>
-								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.restaurant.menu</invokerPackage>
-								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.menu.api</apiPackage>
-								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.menu.models</modelPackage>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.menuitem</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.menuitem.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.menuitem.models</modelPackage>
+								<useSpringBoot3>true</useSpringBoot3>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Order OpenApi generation</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/order.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<modelNameSuffix>Dto</modelNameSuffix>
+							<configOptions>
+								<useResponseEntity>false</useResponseEntity>
+								<interfaceOnly>true</interfaceOnly>
+								<java8>true</java8>
+								<dateLibrary>java8</dateLibrary>
+								<useTags>true</useTags>
+								<useOptional>false</useOptional>
+								<unhandeledException>true</unhandeledException>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.order</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.order.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.order.models</modelPackage>
 								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>

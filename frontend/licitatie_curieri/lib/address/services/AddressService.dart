@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/models/AddressModel.dart';
 
@@ -13,11 +14,12 @@ class AddressService {
 
   Future<List<Address>> fetchAddresses() async {
     String? token = await getToken.getToken();
-
+    log("token $token");
     if (token == null) {
       throw Exception("Authentication token not found");
     }
 
+    log("AUTH TOKEN: ${token.toString()}");
     Uri uri = Uri.parse(baseUrl);
     final response = await http.get(
       uri,
@@ -94,6 +96,7 @@ class AddressService {
     }
 
     Uri uri = Uri.parse(baseUrl);
+    log("AUTH TOKEN: ${token.toString()}");
     final response = await http.post(
       uri,
       headers: {
@@ -102,8 +105,6 @@ class AddressService {
       },
       body: json.encode(address.toJson()),
     );
-
-    print("adresa pt post: " + json.encode(address.toJson()));
 
     if (response.statusCode == 201) {
       return Address.fromJson(json.decode(response.body));

@@ -24,19 +24,19 @@ public class UserInformationService {
     public User getCurrentUser() {
         val userId = getCurrentUserId();
 
-        return userRepository.findById(userId).orElseThrow(() -> new ForbiddenException(ErrorMessageUtils.AUTHENTICATION_IS_NULL));
+        return userRepository.findById(userId).orElseThrow(() -> new ForbiddenException(ErrorMessageUtils.AUTHENTICATION_TOKEN_IS_INVALID));
     }
 
     public boolean isCurrentUserClient() {
-        return UserType.CLIENT == getCurrentUser().getUserType();
+        return UserType.CLIENT.name().equals(getCurrentUserType());
     }
 
     public boolean isCurrentUserCourier() {
-        return UserType.COURIER == getCurrentUser().getUserType();
+        return UserType.COURIER.name().equals(getCurrentUserType());
     }
 
     public boolean isCurrentUserRestaurantAdmin() {
-        return UserType.RESTAURANT_ADMIN == getCurrentUser().getUserType();
+        return UserType.RESTAURANT_ADMIN.name().equals(getCurrentUserType());
     }
 
     private Long getCurrentUserId() {
@@ -45,6 +45,15 @@ public class UserInformationService {
             return Long.parseLong(authentication.getName());
         }
 
-        throw new ForbiddenException(ErrorMessageUtils.AUTHENTICATION_IS_NULL);
+        throw new ForbiddenException(ErrorMessageUtils.AUTHENTICATION_TOKEN_IS_INVALID);
+    }
+
+    private String getCurrentUserType() {
+        val authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            return (String) authentication.getCredentials();
+        }
+
+        throw new ForbiddenException(ErrorMessageUtils.AUTHENTICATION_TOKEN_IS_INVALID);
     }
 }

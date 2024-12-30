@@ -10,6 +10,8 @@ import '../providers/RestaurantProvider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'RestaurantMenusManageScreen.dart';
+
 class RestaurantsManageScreen extends StatefulWidget {
   const RestaurantsManageScreen({Key? key}) : super(key: key);
 
@@ -20,14 +22,15 @@ class RestaurantsManageScreen extends StatefulWidget {
 class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _name;
-  double? _latitude;
-  double? _longitude;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<RestaurantProvider>(context, listen: false).fetchRestaurants();
+      setState(() {
+
+      });
     });
   }
 
@@ -152,9 +155,6 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
                     _updateRestaurant(
                       context,
                       restaurant.id,
-                      _addressController.text,
-                      double.parse(_latitudeController.text),
-                      double.parse(_longitudeController.text),
                     );
                   }
                   Navigator.of(ctx).pop();
@@ -170,7 +170,7 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
 
   Future<void> _addRestaurant(
       BuildContext context,
-      String address,
+      String addressDetails,
       double latitude,
       double longitude,
       ) async {
@@ -178,10 +178,10 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
     final newRestaurant = Restaurant(
       id: 0, // DOESN'T MATTER
       name: _name!,
-      addressId: 0, // DOESN'T MATTER
+      address: Address(id: 0, details: addressDetails, latitude: latitude, longitude: longitude), // DOESN'T MATTER
     );
     final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-    final response = await provider.createRestaurant(newRestaurant, Address(id: 0,details: address,latitude: latitude,longitude: longitude), addressProvider);
+    final response = await provider.createRestaurant(newRestaurant, addressProvider);
     final responseJson = json.decode(response.body);
     if (responseJson.containsKey('id')) {
       final createdRestaurantId = responseJson['id'];
@@ -195,17 +195,13 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
   Future<void> _updateRestaurant(
       BuildContext context,
       int id,
-      String address,
-      double latitude,
-      double longitude,
       ) async {
     final provider = Provider.of<RestaurantProvider>(context, listen: false);
     final updatedRestaurant = Restaurant(
       id: id,
       name: _name!,
-      addressId: 0, // Adjust as needed
+      address: Address(id: 0, details: "", latitude: 0, longitude: 0),
     );
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
 
     await provider.updateRestaurant(id, updatedRestaurant);
   }
@@ -231,18 +227,17 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
   }
 
 
-  Future<void> _deleteRestaurant(BuildContext context, int id) async {
+  Future<void> _removeRestaurant(BuildContext context, int id) async {
     final provider = Provider.of<RestaurantProvider>(context, listen: false);
-    await provider.deleteRestaurant(id);
+    await provider.removeRestaurant(id);
     setState(() {
-
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final restaurantProvider = Provider.of<RestaurantProvider>(context);
-
+    log("Restaurants length: " + restaurantProvider.restaurants.length.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text("Manage Restaurants"),
@@ -256,17 +251,31 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
           final restaurant = restaurantProvider.restaurants[index];
           return ListTile(
             title: Text(restaurant.name),
-            subtitle: Text("${restaurant.address?.details ?? "Address Not Found" }"),
+            subtitle: Text("${restaurant.address.details}"),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                IconButton(
+                  icon: const Icon(Icons.menu_book),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RestaurantMenusManageScreen(
+                          restaurantId: restaurant.id,
+                          restaurantName: restaurant.name,
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () => _showAddEditDialog(context, restaurant: restaurant),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete),
-                  onPressed: () => _deleteRestaurant(context, restaurant.id),
+                  onPressed: () => _removeRestaurant(context, restaurant.id),
                 ),
               ],
             ),

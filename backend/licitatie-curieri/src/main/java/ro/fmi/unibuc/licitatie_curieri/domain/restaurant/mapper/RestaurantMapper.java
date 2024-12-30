@@ -28,7 +28,9 @@ public interface RestaurantMapper {
     RestaurantCreationResponseDto toRestaurantCreationResponseDto(Restaurant restaurant);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "menuItems", ignore = true)
     @Mapping(target = "name", source = "createRestaurantDto.name")
+    @Mapping(target = "wasRemoved", constant = "false")
     Restaurant toRestaurant(RestaurantCreationDto createRestaurantDto, Address address);
 
     @Mapping(target = "addressId", source = "address.id")

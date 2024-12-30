@@ -1,5 +1,5 @@
 enum UserType {
   CLIENT,
   COURIER,
-  ADMIN_RESTAURANT
+  RESTAURANT_ADMIN
 }

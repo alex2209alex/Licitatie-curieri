@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:licitatie_curieri/address/models/AddressModel.dart';
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:licitatie_curieri/restaurant/services/RestaurantService.dart';
+
 import '../models/RestaurantModel.dart';
 
 class RestaurantProvider with ChangeNotifier {
@@ -38,7 +36,7 @@ class RestaurantProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      _restaurants = await RestaurantService().fetchRestaurantsByUserIdForClientOnly(id, addressProvider);
+      _restaurants = await RestaurantService().fetchRestaurantsByAddressIdForClientOnly(id, addressProvider);
     } catch (error) {
       print("Error fetching restaurants for address $id: $error");
     } finally {
@@ -47,24 +45,18 @@ class RestaurantProvider with ChangeNotifier {
     }
   }
 
-  Future<http.Response> createRestaurant(Restaurant restaurant, Address address, AddressProvider addressProvider) async {
+  Future<http.Response> createRestaurant(Restaurant restaurant, AddressProvider addressProvider) async {
     _isLoading = true;
     notifyListeners();
     try {
-      final response = await RestaurantService().createRestaurant(restaurant, address);
+      final response = await RestaurantService().createRestaurant(restaurant);
 
       if (response.statusCode == 201) {
-        final data = json.decode(response.body);
-        final createdAddress = await addressProvider.fetchAddressFromCoordinates(address.latitude, address.longitude);
-        final createdRestaurant = Restaurant(id: data["id"], name: data["name"], addressId: createdAddress!.id);
-        createdRestaurant.address = createdAddress;
-        _restaurants.add(createdRestaurant);
+        await fetchRestaurants();
       } else {
         print("Error: Failed to create restaurant. Status code: ${response.statusCode}");
       }
-
       return response;
-
     } catch (error) {
       print("Error creating restaurant: $error");
       rethrow;
@@ -79,10 +71,7 @@ class RestaurantProvider with ChangeNotifier {
     notifyListeners();
     try {
       await RestaurantService().updateRestaurant(id, updatedRestaurant);
-      final index = _restaurants.indexWhere((r) => r.id == id);
-      if (index != -1) {
-        _restaurants[index] = updatedRestaurant;
-      }
+      await fetchRestaurants();
     } catch (error) {
       print("Error updating restaurant $id: $error");
     } finally {
@@ -91,15 +80,15 @@ class RestaurantProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteRestaurant(int id) async {
+  Future<void> removeRestaurant(int id) async {
     _isLoading = true;
     notifyListeners();
     try {
-      await RestaurantService().deleteRestaurant(id);
-      _restaurants.removeWhere((r) => r.id == id);
+      await RestaurantService().removeRestaurant(id);
+      await fetchRestaurants();
     } catch(error)
     {
-      print("Error deleting restaurant $id: $error");
+      print("Error removing restaurant $id: $error");
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -108,14 +97,6 @@ class RestaurantProvider with ChangeNotifier {
 
   void setSelectedRestaurant(Restaurant restaurant) {
     _selectedRestaurant = restaurant;
-    notifyListeners();
-  }
-
-  void initWithoutBackEnd() {
-    _restaurants = [
-      Restaurant(id: 1, name: "Shaormeria 1", addressId: 1),
-      Restaurant(id: 2, name: "Shaormeria 2", addressId: 2)
-    ];
     notifyListeners();
   }
 
