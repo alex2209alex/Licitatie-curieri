@@ -14,7 +14,7 @@ class AddressService {
 
   Future<List<Address>> fetchAddresses() async {
     String? token = await getToken.getToken();
-
+    log("token $token");
     if (token == null) {
       throw Exception("Authentication token not found");
     }

@@ -1,10 +1,16 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
+import 'package:licitatie_curieri/common/GetToken.dart';
+import 'package:provider/provider.dart';
+
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
-import '../models/MenuItemModel.dart';
 import '../models/RestaurantMenuItemModel.dart';
+import '../providers/CartProvider.dart';
 import '../services/CartService.dart';
 
 class CartScreen extends StatefulWidget {
@@ -15,122 +21,137 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  GlobalKey<CartActionBarButtonState> _cartKey = GlobalKey();
+  final CartService cartService = CartService();
 
-  CartService cartService = CartService();
+  Future<void> _placeOrder(List<RestaurantMenuItem> restaurantMenuItems) async {
+    const String apiUrl = "http://192.168.100.97:8080/orders";
+
+    final int addressId =
+        Provider.of<AddressProvider>(context, listen: false).selectedAddressId!;
+    final double deliveryPriceLimit = 14.43;
+
+    // Prepare items for the request body
+    final List<Map<String, dynamic>> items = restaurantMenuItems.map((rmi) {
+      log("rmi id ${rmi.menuItem.id}");
+      return {
+        "id": rmi.menuItem.id,
+        "quantity": 1,
+      };
+    }).toList();
+
+    if (items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Your cart is empty!")),
+      );
+      return;
+    }
+
+    final Map<String, dynamic> requestBody = {
+      "addressId": addressId,
+      "deliveryPriceLimit": deliveryPriceLimit,
+      "items": items,
+    };
+
+    String? token = await GetToken().getToken();
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Order placed successfully!")),
+        );
+
+        // Clear the cart
+        await cartService.saveCartItems([]);
+        context.read<CartProvider>().setCounter(0);
+        setState(() {});
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to place order: ${response.body}"),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<List<RestaurantMenuItem>> cartItems = cartService.getCartItems();
-    List<MenuItem> items = [];
-    List<RestaurantMenuItem> restaurantMenuItems = [];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Cart"),
         centerTitle: true,
         actions: [
-          CartActionBarButton(key: _cartKey, canRedirect: false),
+          CartActionBarButton(
+            key: GlobalKey<CartActionBarButtonState>(),
+            canRedirect: false,
+          ),
           const SizedBox(width: 20.0),
         ],
       ),
-      body: Column(
-        children: [
-          FutureBuilder<List<RestaurantMenuItem>>(
-            future: cartItems,
+      body: Consumer<CartProvider>(
+        builder: (context, cartProvider, child) {
+          return FutureBuilder<List<RestaurantMenuItem>>(
+            future: cartService.getCartItems(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
-              }
-              else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("There are no items in your cart"));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(
+                    child: Text("There are no items in your cart"));
               }
 
-              restaurantMenuItems = snapshot.data!;
-              items = restaurantMenuItems.map((rmi) => rmi.menuItem).toList();
+              final restaurantMenuItems = snapshot.data!;
+              final items =
+                  restaurantMenuItems.map((rmi) => rmi.menuItem).toList();
 
-              return Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: items.length,
-                  itemBuilder: (context, i) {
-                    final menuItem = items[i];
-                    return ListItemCustomCard.fromMenuItem(
-                      menuItem,
-                      "Remove",
-                      () {
-                        (_cartKey.currentState)!.removeFromCart(i, cartService);
-                
-                        //  Delete this widget from the cart screen
-                        setState(() {
-                          items.removeAt(i);
-                        });
-                      }
-                    );
-                  },
-                ),
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, i) {
+                        final menuItem = items[i];
+                        return ListItemCustomCard.fromMenuItem(
+                          menuItem,
+                          "Remove",
+                          () async {
+                            await cartService.removeItemAtIndex(i);
+                            cartProvider
+                                .setCounter(restaurantMenuItems.length - 1);
+                            setState(() {});
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: FloatingActionButton.extended(
+                      heroTag: "orderButton",
+                      onPressed: () => _placeOrder(restaurantMenuItems),
+                      icon: const Icon(Icons.shopping_cart_checkout_sharp),
+                      label: const Text("Place order"),
+                    ),
+                  ),
+                ],
               );
             },
-          ),
-        ],
-      ),
-
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 50.0, right: 50.0, bottom: 20.0, top: 20.0),
-        child: FloatingActionButton.extended(
-          heroTag: "orderButton",
-          onPressed: () {
-            //  Debug info
-            for (RestaurantMenuItem rmi in restaurantMenuItems) {
-              print("-----\nRestaurant ID: ${rmi.restaurantId}");
-              print("MenuItem ID: ${rmi.menuItem.id}, name ${rmi.menuItem.name}");
-            }
-
-            //  Return if cart is empty
-            List<List<int>> sentData = restaurantMenuItems.map((rmi) => [rmi.restaurantId, rmi.menuItem.id]).toList();
-            if (sentData.isEmpty) {
-              return;
-            }
-
-            //  Show popup if items are from >1 restaurants
-            bool moreThanOneRestaurant = false;
-            int uniqueRestaurantId = sentData[0][0];
-            for (List<int> menuRestaurantPair in sentData) {
-              if (menuRestaurantPair[0] != uniqueRestaurantId) {
-                moreThanOneRestaurant = true;
-                break;
-              }
-            }
-
-            if (moreThanOneRestaurant) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const AlertDialog(
-                    content: Text("You cannot order items from more than one restaurant!"),
-                  );
-                },
-              );
-            }
-            else {
-              //  Send final JSON to backend (W.I.P.)
-              print("\n\nFinal JSON: ");
-              print(jsonEncode(sentData));
-            }
-          },
-
-          icon: const Row(
-            children: [
-              Icon(Icons.shopping_cart_checkout_sharp),
-            ],
-          ),
-          label: const Text(
-              "Place order",
-              overflow: TextOverflow.ellipsis
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 }
-
