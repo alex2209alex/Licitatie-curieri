@@ -6,16 +6,18 @@ class MenuItem{
   String ingredientsList;
   String photo;
   double discount;
+  int restaurantId;
 
 
 
   MenuItem({
-   required this.id,
-   required this.name,
-   required this.price,
-   required this.ingredientsList,
-   required this.photo,
-   required this.discount
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.ingredientsList,
+    required this.photo,
+    required this.discount,
+    required this.restaurantId
 });
 
 
@@ -26,7 +28,9 @@ class MenuItem{
         price: json["price"].toDouble(),
         ingredientsList: json["ingredientsList"],
         photo: json["photo"],
-        discount: json["discount"].toDouble());
+        discount: json["discount"].toDouble(),
+        restaurantId: json["restaurantId"]
+    );
 
   }
 
@@ -37,7 +41,8 @@ class MenuItem{
       "price":price,
       "ingredientsList":ingredientsList,
       "photo":photo,
-      "discount":discount
+      "discount":discount,
+      "restaurantId":restaurantId
     };
 
   }
