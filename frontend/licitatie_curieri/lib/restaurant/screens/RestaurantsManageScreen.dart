@@ -5,6 +5,7 @@ import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:provider/provider.dart';
 import '../../address/models/AddressModel.dart';
 import '../../common/Utils.dart';
+import '../../common/widgets/LogoutActionBarButton.dart';
 import '../models/RestaurantModel.dart';
 import '../providers/RestaurantProvider.dart';
 import 'package:http/http.dart' as http;
@@ -249,6 +250,10 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
       appBar: AppBar(
         title: const Text("Manage Restaurants"),
         centerTitle: true,
+
+        actions: [
+          LogoutActionBarButton(),
+        ]
       ),
       body: restaurantProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
