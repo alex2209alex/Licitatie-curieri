@@ -56,9 +56,7 @@ public interface OrderMapper {
                 .map(orderMenuItemAssociation -> {
                     val orderCreationItemResponseDto = new OrderCreationItemResponseDto();
                     orderCreationItemResponseDto.setId(orderMenuItemAssociation.getId().getMenuItemId());
-                    orderCreationItemResponseDto.setName(orderMenuItemAssociation.getMenuItem().getName());
                     orderCreationItemResponseDto.setQuantity(orderMenuItemAssociation.getQuantity());
-                    orderCreationItemResponseDto.setPrice(orderMenuItemAssociation.getMenuItem().getPrice() * orderMenuItemAssociation.getQuantity());
                     return orderCreationItemResponseDto;
                 })
                 .toList();

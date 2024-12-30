@@ -20,6 +20,7 @@ import ro.fmi.unibuc.licitatie_curieri.domain.order.repository.OrderRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,7 @@ public class OrderService {
         val menuItemQuantityHashMap = new HashMap<Long, Integer>();
         double foodPrice = 0;
         for (val orderCreationItemDto : orderCreationDto.getItems()) {
-            if (menuItemPriceMap.containsKey(orderCreationItemDto.getId())) {
+            if (menuItemQuantityHashMap.containsKey(orderCreationItemDto.getId())) {
                 menuItemQuantityHashMap.put(orderCreationItemDto.getId(), menuItemQuantityHashMap.get(orderCreationItemDto.getId()) + orderCreationItemDto.getQuantity());
             } else {
                 menuItemQuantityHashMap.put(orderCreationItemDto.getId(), orderCreationItemDto.getQuantity());
@@ -78,6 +79,7 @@ public class OrderService {
         val order = orderMapper.mapToOrder(orderCreationDto, foodPrice, clientAddress);
 
         val persistedOrder = orderRepository.save(order);
+        persistedOrder.setOrderMenuItemAssociations(new ArrayList<>());
         menuItemQuantityHashMap.forEach((menuItemId, quantity) -> {
             val orderMenuItemAssociationId = new OrderMenuItemAssociationId();
             orderMenuItemAssociationId.setOrderId(persistedOrder.getId());
@@ -88,7 +90,7 @@ public class OrderService {
             persistedOrder.getOrderMenuItemAssociations().add(orderMenuItemAssociation);
         });
 
-        return orderMapper.mapToOrderCreationResponse(order);
+        return orderMapper.mapToOrderCreationResponse(persistedOrder);
     }
 
     private Restaurant getRestaurant(OrderCreationDto orderCreationDto) {

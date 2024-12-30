@@ -121,12 +121,3 @@ components:
           type: integer
           format: int32
           example: 4
-        price:
-          description: Price of Item
-          type: number
-          format: double
-          example: 100.50
-        name:
-          description: Name of Item
-          type: string
-          example: Burger Texan
