@@ -29,7 +29,7 @@ class MenuItem{
         ingredientsList: json["ingredientsList"],
         photo: json["photo"],
         discount: json["discount"].toDouble(),
-        restaurantId: json["restaurantId"]
+        restaurantId: -1
     );
 
   }
