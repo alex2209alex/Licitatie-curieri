@@ -10,6 +10,8 @@ import '../providers/RestaurantProvider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'RestaurantMenusManageScreen.dart';
+
 class RestaurantsManageScreen extends StatefulWidget {
   const RestaurantsManageScreen({Key? key}) : super(key: key);
 
@@ -235,7 +237,7 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
   @override
   Widget build(BuildContext context) {
     final restaurantProvider = Provider.of<RestaurantProvider>(context);
-    log("Restaurants lenght: " + restaurantProvider.restaurants.length.toString());
+    log("Restaurants length: " + restaurantProvider.restaurants.length.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text("Manage Restaurants"),
@@ -253,6 +255,20 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                IconButton(
+                  icon: const Icon(Icons.menu_book),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RestaurantMenusManageScreen(
+                          restaurantId: restaurant.id,
+                          restaurantName: restaurant.name,
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () => _showAddEditDialog(context, restaurant: restaurant),

@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
+import 'package:licitatie_curieri/common/GetToken.dart';
 import '../../common/Utils.dart';
 import '../models/MenuItemModel.dart';
 class MenuItemService {
-
-  static const String baseUrl = "'${Utils.baseUrl}/menu-items";
-
+  static const String baseUrl = "${Utils.baseUrl}/menu-items";
+  final GetToken getToken = GetToken();
   Future<List<MenuItem>> fetchMenuItemsByRestaurant(int restaurantId) async {
 
     // To Do: later check the path for api
@@ -36,11 +37,16 @@ class MenuItemService {
   }
 
 Future<MenuItem> createMenuItem(MenuItem menuItem) async {
-  // To Do: later check the path for api
+    String? token = await getToken.getToken();
+  // TODO: later check the path for api
   Uri uri = Uri.parse(baseUrl);
+  log("createMenuItem body: ${json.encode(menuItem.toJson())}");
   final response = await http.post(
     uri,
-    headers: {'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
     body: json.encode(menuItem.toJson())
   );
   if(response.statusCode == 200)

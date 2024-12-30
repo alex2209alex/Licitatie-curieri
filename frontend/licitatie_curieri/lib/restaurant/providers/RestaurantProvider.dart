@@ -88,7 +88,7 @@ class RestaurantProvider with ChangeNotifier {
       await fetchRestaurants();
     } catch(error)
     {
-      print("Error deleting restaurant $id: $error");
+      print("Error removing restaurant $id: $error");
     } finally {
       _isLoading = false;
       notifyListeners();

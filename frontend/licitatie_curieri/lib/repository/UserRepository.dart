@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import 'package:http/http.dart';
+
 import '../common/GetToken.dart';
 import '../common/Utils.dart';
 import '../model/User.dart';
-import 'package:http/http.dart';
 
 class UserRepository {
   final String baseUrl = '${Utils.baseUrl}/users';
@@ -26,11 +27,8 @@ class UserRepository {
     }
   }
 
-  Future<bool> verifyUser(
-      String email,
-      String emailVerificationCode,
-      String phoneVerificationCode
-      ) async {
+  Future<bool> verifyUser(String email, String emailVerificationCode,
+      String phoneVerificationCode) async {
     final response = await put(
       Uri.parse("$baseUrl/$email/verification"),
       headers: {
@@ -50,17 +48,17 @@ class UserRepository {
     }
   }
 
-  Future<String> authentication (String email, String password) async {
+  Future<String> authentication(String email, String password) async {
     final response = await post(
       Uri.parse("$baseUrl/login"),
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
     );
 
     if (response.statusCode == 201) {
@@ -76,7 +74,7 @@ class UserRepository {
     }
   }
 
-  Future<bool> twoFACode (String email, String verificationCode) async {
+  Future<bool> twoFACode(String email, String verificationCode) async {
     String? token = await getToken.getToken();
 
     if (token == null) {

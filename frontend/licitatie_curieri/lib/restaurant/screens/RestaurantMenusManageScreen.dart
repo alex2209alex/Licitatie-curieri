@@ -1,271 +1,255 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:provider/provider.dart';
-import '../../address/models/AddressModel.dart';
-import '../../common/Utils.dart';
-import '../models/RestaurantModel.dart';
-import '../providers/RestaurantProvider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-class RestaurantsMenuManageScreen extends StatefulWidget {
-  const RestaurantsMenuManageScreen({Key? key}) : super(key: key);
+import '../models/MenuItemModel.dart';
+import '../providers/MenuItemProvider.dart';
+
+class RestaurantMenusManageScreen extends StatefulWidget {
+  final int restaurantId;
+  final String restaurantName;
+
+  const RestaurantMenusManageScreen(
+      {Key? key, required this.restaurantId, required this.restaurantName})
+      : super(key: key);
 
   @override
-  State<RestaurantsMenuManageScreen> createState() => _RestaurantsMenuManageScreenState();
+  State<RestaurantMenusManageScreen> createState() =>
+      _RestaurantMenusManageScreenState();
 }
 
-class _RestaurantsMenuManageScreenState extends State<RestaurantsMenuManageScreen> {
+class _RestaurantMenusManageScreenState
+    extends State<RestaurantMenusManageScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _name;
+  String? _itemName;
+  double? _itemPrice;
+  String? _ingredientsList;
+  String? _photo;
+  double? _discount;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<RestaurantProvider>(context, listen: false).fetchRestaurants();
-      setState(() {
-
-      });
+      Provider.of<MenuItemProvider>(context, listen: false)
+          .fetchMenuItems(widget.restaurantId);
     });
+    log("MenuItem Manage Screen for Restaurant ${widget.restaurantName} id ${widget.restaurantId}");
   }
 
-  void _showAddEditDialog(BuildContext context, {Restaurant? restaurant}) {
-
-    final TextEditingController _addressController = TextEditingController();
-    final TextEditingController _latitudeController = TextEditingController();
-    final TextEditingController _longitudeController = TextEditingController();
-    bool isEditing = false;
-    bool isValidAddress = false;
-
-    if (restaurant != null) {
-      _name = restaurant.name;
-      _addressController.text = "";
-      _latitudeController.text = "";
-      _longitudeController.text = "";
-      isValidAddress = true;
+  void _showAddEditDialog(BuildContext context, {MenuItem? menuItem}) {
+    if (menuItem != null) {
+      _itemName = menuItem.name;
+      _itemPrice = menuItem.price;
+      _ingredientsList = menuItem.ingredientsList;
+      _photo = menuItem.photo;
+      _discount = menuItem.discount;
     } else {
-      _name = null;
-      _addressController.clear();
-      _latitudeController.clear();
-      _longitudeController.clear();
-      isValidAddress = false;
-    }
-
-    Future<void> _fetchCoordinatesForAddress() async {
-      isValidAddress = false;
-
-      final address = _addressController.text;
-      if (address.isEmpty) return;
-
-      final apiKey = Utils.mapsApiKey;
-      final url =
-          "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
-
-      try {
-        final response = await http.get(Uri.parse(url));
-        final data = json.decode(response.body);
-
-        if (data['status'] == 'OK') {
-          final location = data['results'][0]['geometry']['location'];
-          final latitude = location['lat'];
-          final longitude = location['lng'];
-
-          _latitudeController.text = latitude.toString();
-          _longitudeController.text = longitude.toString();
-          isValidAddress = true;
-        } else {
-          isValidAddress = false;
-          _showErrorDialog(context, "Invalid address. Please try again.");
-        }
-      } catch (e) {
-        isValidAddress = false;
-        _showErrorDialog(context, "An error occurred. Please try again.");
-      }
+      _itemName = null;
+      _itemPrice = null;
+      _ingredientsList = null;
+      _photo = null;
+      _discount = null;
     }
 
     showDialog(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setState) => AlertDialog(
-          title: Text(restaurant == null ? "Add MenuItem" : "Edit MenuItem"),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  initialValue: _name,
-                  decoration: const InputDecoration(labelText: "Name"),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter a name.";
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => _name = value,
-                ),
-                TextField(
-                  controller: _addressController,
-                  decoration: const InputDecoration(labelText: "Address"),
-                  onTap: () => setState(() => isEditing = true),
-                  onChanged: (_) => setState(() => isEditing = true),
-                  onEditingComplete: () async {
-                    setState(() => isEditing = false);
-                    await _fetchCoordinatesForAddress();
-                    setState(() {});
-                  },
-                ),
-                TextField(
-                  controller: _latitudeController,
-                  decoration: const InputDecoration(labelText: "Latitude"),
-                  readOnly: true,
-                ),
-                TextField(
-                  controller: _longitudeController,
-                  decoration: const InputDecoration(labelText: "Longitude"),
-                  readOnly: true,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: (isEditing || !isValidAddress)
-                  ? null
-                  : () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  if (restaurant == null) {
-                    _addRestaurant(
-                      context,
-                      _addressController.text,
-                      double.parse(_latitudeController.text),
-                      double.parse(_longitudeController.text),
-                    );
-                  } else {
-                    _updateRestaurant(
-                      context,
-                      restaurant.id,
-                    );
+      builder: (ctx) => AlertDialog(
+        title: Text(menuItem == null ? "Add Menu Item" : "Edit Menu Item"),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                initialValue: _itemName,
+                decoration: const InputDecoration(labelText: "Item Name"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter an item name.";
                   }
-                  Navigator.of(ctx).pop();
-                }
-              },
-              child: Text(restaurant == null ? "Add" : "Update"),
-            ),
-          ],
+                  return null;
+                },
+                onSaved: (value) => _itemName = value,
+              ),
+              TextFormField(
+                initialValue: _itemPrice?.toString(),
+                decoration: const InputDecoration(labelText: "Price"),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a price.";
+                  }
+                  if (double.tryParse(value) == null) {
+                    return "Please enter a number.";
+                  }
+                  if(double.parse(value) < 0.00)
+                    {
+                      return "Please enter a valid number.";
+                    }
+                  return null;
+                },
+                onSaved: (value) => _itemPrice = double.parse(value!),
+              ),
+              TextFormField(
+                initialValue: _ingredientsList?.toString(),
+                decoration: const InputDecoration(labelText: "Ingredients"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a list of ingredients.";
+                  }
+                  return null;
+                },
+                onSaved: (value) => _ingredientsList = value,
+              ),
+              TextFormField(
+                initialValue: _photo?.toString(),
+                decoration: const InputDecoration(labelText: "Photo"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a photo path.";
+                  }
+                  return null;
+                },
+                onSaved: (value) => _photo = value,
+              ),
+              TextFormField(
+                initialValue: _discount?.toString(),
+                decoration: const InputDecoration(labelText: "Discount"),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter a discount.";
+                  }
+                  if (double.tryParse(value) == null) {
+                    return "Please enter number.";
+                  }
+                  if(double.parse(value) < 0.00 || double.parse(value) >100.00)
+                    {
+                      return "Please enter a valid number.";
+                    }
+                  return null;
+                },
+                onSaved: (value) => _discount = double.parse(value!),
+              ),
+            ],
+          ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                if (menuItem == null) {
+                  _addMenuItem(context);
+                } else {
+                  _updateMenuItem(context, menuItem.id);
+                }
+                Navigator.of(ctx).pop();
+              }
+            },
+            child: Text(menuItem == null ? "Add" : "Update"),
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> _addRestaurant(
-      BuildContext context,
-      String addressDetails,
-      double latitude,
-      double longitude,
-      ) async {
-    final provider = Provider.of<RestaurantProvider>(context, listen: false);
-    final newRestaurant = Restaurant(
-      id: 0, // DOESN'T MATTER
-      name: _name!,
-      address: Address(id: 0, details: addressDetails, latitude: latitude, longitude: longitude), // DOESN'T MATTER
+  Future<void> _addMenuItem(BuildContext context) async {
+    final provider = Provider.of<MenuItemProvider>(context, listen: false);
+    final newItem = MenuItem(
+      id: 0,
+      name: _itemName!,
+      price: _itemPrice!,
+      ingredientsList: _ingredientsList!,
+      photo: _photo!,
+      discount: _discount!,
+      restaurantId: widget.restaurantId,
     );
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-    final response = await provider.createRestaurant(newRestaurant, addressProvider);
-    final responseJson = json.decode(response.body);
-    if (responseJson.containsKey('id')) {
-      final createdRestaurantId = responseJson['id'];
-      newRestaurant.id = createdRestaurantId;
-      log('Restaurant created with ID: $createdRestaurantId');
-    } else {
-      _showErrorDialog(context, 'Failed to create restaurant.');
-    }
+    await provider.createMenuItem(newItem);
+    await provider.fetchMenuItems(widget.restaurantId);
   }
 
-  Future<void> _updateRestaurant(
-      BuildContext context,
-      int id,
-      ) async {
-    final provider = Provider.of<RestaurantProvider>(context, listen: false);
-    final updatedRestaurant = Restaurant(
+  Future<void> _updateMenuItem(BuildContext context, int id) async {
+    final provider = Provider.of<MenuItemProvider>(context, listen: false);
+    final updatedItem = MenuItem(
       id: id,
-      name: _name!,
-      address: Address(id: 0, details: "", latitude: 0, longitude: 0),
+      name: _itemName!,
+      price: _itemPrice!,
+      ingredientsList: _ingredientsList!,
+      photo: _photo!,
+      discount: _discount!,
+      restaurantId: widget.restaurantId,
     );
-
-    await provider.updateRestaurant(id, updatedRestaurant);
+    await provider.updateMenuItem(id, updatedItem);
+    await provider.fetchMenuItems(widget.restaurantId);
   }
 
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-
-  Future<void> _removeRestaurant(BuildContext context, int id) async {
-    final provider = Provider.of<RestaurantProvider>(context, listen: false);
-    await provider.removeRestaurant(id);
-    setState(() {
-    });
+  Future<void> _removeMenuItem(BuildContext context, int id) async {
+    final provider = Provider.of<MenuItemProvider>(context, listen: false);
+    await provider.removeMenuItem(id);
   }
 
   @override
   Widget build(BuildContext context) {
-    final restaurantProvider = Provider.of<RestaurantProvider>(context);
-    log("Restaurants lenght: " + restaurantProvider.restaurants.length.toString());
+    final menuItemProvider = Provider.of<MenuItemProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Manage Restaurants"),
+        title: Text("Menus for ${widget.restaurantName}"),
         centerTitle: true,
       ),
-      body: restaurantProvider.isLoading
+      body: menuItemProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
-        itemCount: restaurantProvider.restaurants.length,
-        itemBuilder: (ctx, index) {
-          final restaurant = restaurantProvider.restaurants[index];
-          return ListTile(
-            title: Text(restaurant.name),
-            subtitle: Text("${restaurant.address.details}"),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => _showAddEditDialog(context, restaurant: restaurant),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => _removeRestaurant(context, restaurant.id),
-                ),
-              ],
+              itemCount: menuItemProvider.menuItems.length,
+              itemBuilder: (ctx, index) {
+                final menuItem = menuItemProvider.menuItems[index];
+                return ListTile(
+                  title: Text(menuItem.name),
+                  subtitle:
+                      menuItem.discount == 0 ?
+                      Text("Price: \$${menuItem.price.toStringAsFixed(2)}")
+                  :Row(
+                        children: [
+                          Text(
+                            "Price: \$${menuItem.price.toStringAsFixed(2)}",
+                            style: const TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "\$${menuItem.getFinalPrice().toStringAsFixed(2)}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () =>
+                            _showAddEditDialog(context, menuItem: menuItem),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => _removeMenuItem(context, menuItem.id),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddEditDialog(context),
         child: const Icon(Icons.add),
