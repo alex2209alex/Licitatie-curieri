@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
-import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 
 import java.time.Instant;
@@ -26,16 +25,22 @@ public class Order {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "food_price")
+    private Double foodPrice;
+
+    @Column(name = "delivery_price")
+    private Double deliveryPrice;
+
     @Column(name = "auction_deadline")
     private Instant auctionDeadline;
 
-    @Column(name = "status")
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus orderStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private User customer;
+    @JoinColumn(name = "client_id")
+    private User client;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "courier_id")
@@ -44,10 +49,6 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<OrderMenuItemAssociation> orderMenuItemAssociations = new ArrayList<>();

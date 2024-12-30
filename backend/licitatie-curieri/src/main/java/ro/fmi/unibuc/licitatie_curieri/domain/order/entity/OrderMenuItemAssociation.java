@@ -17,6 +17,9 @@ public class OrderMenuItemAssociation {
     @EmbeddedId
     private OrderMenuItemAssociationId id;
 
+    @Column(name = "quantity")
+    private Integer quantity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private Order order;
