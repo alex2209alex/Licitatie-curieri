@@ -49,7 +49,7 @@ Future<MenuItem> createMenuItem(MenuItem menuItem) async {
     },
     body: json.encode(menuItem.toJson())
   );
-  if(response.statusCode == 200)
+  if(response.statusCode == 201)
     {
       return MenuItem.fromJson(json.decode(response.body));
     }
