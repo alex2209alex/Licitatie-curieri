@@ -5,10 +5,13 @@ import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:provider/provider.dart';
 import '../../address/models/AddressModel.dart';
 import '../../common/Utils.dart';
+import '../../common/widgets/LogoutActionBarButton.dart';
 import '../models/RestaurantModel.dart';
 import '../providers/RestaurantProvider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'MenusManageScreen.dart';
 
 class RestaurantsManageScreen extends StatefulWidget {
   const RestaurantsManageScreen({Key? key}) : super(key: key);
@@ -247,6 +250,10 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
       appBar: AppBar(
         title: const Text("Manage Restaurants"),
         centerTitle: true,
+
+        actions: [
+          LogoutActionBarButton(),
+        ]
       ),
       body: restaurantProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -268,6 +275,22 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
                   icon: const Icon(Icons.delete),
                   onPressed: () => _deleteRestaurant(context, restaurant.id),
                 ),
+
+                Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child:
+                    FloatingActionButton(
+                        heroTag: UniqueKey(),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MenusManageScreen(restaurantId: restaurant.id),
+                            ),
+                          );
+                        },
+                        child: const Icon(Icons.restaurant_menu))
+                )
               ],
             ),
           );

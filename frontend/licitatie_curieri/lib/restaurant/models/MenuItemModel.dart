@@ -1,6 +1,7 @@
 class MenuItem{
 
   int id;
+  int idRestaurant;
   String name;
   double price;
   String ingredientsList;
@@ -11,6 +12,7 @@ class MenuItem{
 
   MenuItem({
    required this.id,
+   required this.idRestaurant,
    required this.name,
    required this.price,
    required this.ingredientsList,
@@ -22,6 +24,7 @@ class MenuItem{
   factory MenuItem.fromJson(Map<String, dynamic> json) {
     return MenuItem(
         id: json["id"],
+        idRestaurant: json["idRestaurant"] ?? 0,  // To do: remove after adding "idRestaurant" column in database TO-DO: WIP: W.I.P.
         name: json["name"],
         price: json["price"].toDouble(),
         ingredientsList: json["ingredientsList"],
@@ -33,6 +36,7 @@ class MenuItem{
   Map<String, dynamic> toJson(){
     return {
       "id":id,
+      "idRestaurant":idRestaurant,
       "name":name,
       "price":price,
       "ingredientsList":ingredientsList,

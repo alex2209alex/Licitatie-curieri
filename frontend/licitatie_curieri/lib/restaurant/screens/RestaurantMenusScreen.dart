@@ -56,12 +56,12 @@ class _RestaurantMenusScreenState extends State<RestaurantMenusScreen> {
       ),
       body: menuProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : menuProvider.MenuItems.isEmpty
+          : menuProvider.menuItems.isEmpty
           ? const Center(child: Text("No menus found."))
           : ListView.builder(
-        itemCount: menuProvider.MenuItems.length,
+        itemCount: menuProvider.menuItems.length,
         itemBuilder: (context, i) {
-          final menuItem = menuProvider.MenuItems[i];
+          final menuItem = menuProvider.menuItems[i];
           return ListItemCustomCard.fromMenuItem(
             menuItem,
              "Add to cart",
