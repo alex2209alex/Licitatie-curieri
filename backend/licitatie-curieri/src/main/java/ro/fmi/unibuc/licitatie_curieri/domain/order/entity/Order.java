@@ -6,10 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
-import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.MenuItem;
+import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,15 +26,15 @@ public class Order {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "licitation_deadline", nullable = false)
-    private Instant liciationDeadline;
+    @Column(name = "auction_deadline")
+    private Instant auctionDeadline;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
     private User customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,11 +42,13 @@ public class Order {
     private User courier;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id", nullable = false)
+    @JoinColumn(name = "address_id")
     private Address address;
 
-    @ElementCollection
-    @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
-    @Column(name = "menu_id")
-    private List<MenuItem> orderList; // IDs of menu items
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<OrderMenuItemAssociation> orderMenuItemAssociations = new ArrayList<>();
 }

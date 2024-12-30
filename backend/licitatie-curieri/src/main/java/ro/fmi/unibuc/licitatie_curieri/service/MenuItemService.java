@@ -9,8 +9,8 @@ import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.controller.menuitem.models.*;
-import ro.fmi.unibuc.licitatie_curieri.domain.menu.mapper.MenuItemMapper;
-import ro.fmi.unibuc.licitatie_curieri.domain.menu.repository.MenuItemRepository;
+import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.mapper.MenuItemMapper;
+import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.repository.MenuItemRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.repository.RestaurantRepository;
 
 import java.util.List;

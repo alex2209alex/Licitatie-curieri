@@ -41,8 +41,15 @@ components:
     OrderCreation:
       type: object
       required:
+        - addressId
+        - deliveryPriceLimit
         - items
       properties:
+        addressId:
+          description: Id of the Order's Address
+          type: integer
+          format: int64
+          example: 100
         deliveryPriceLimit:
           description: Max limit of Delivery price
           type: number
@@ -59,15 +66,33 @@ components:
       type: object
       required:
         - id
+        - quantity
       properties:
         id:
           description: Id of the ordered Item
           type: integer
           format: int64
           example: 100
+        quantity:
+          description: Quantity of the ordered Item
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100
+          example: 4
     OrderCreationResponse:
       type: object
       properties:
+        addressId:
+          description: Id of the Order's Address
+          type: integer
+          format: int64
+          example: 100
+        auctionDeadLine:
+          description: Auction deadline
+          type: string
+          format: date-time
+          example: 2025-01-01T07L00:00.00Z
         deliveryPriceLimit:
           description: Max limit of Delivery price
           type: number
@@ -85,14 +110,17 @@ components:
             $ref: '#/components/schemas/OrderCreationItemResponse'
     OrderCreationItemResponse:
       type: object
-      required:
-        - id
       properties:
         id:
           description: Id of the ordered Item
           type: integer
           format: int64
           example: 100
+        quantity:
+          description: Quantity of the ordered Item
+          type: integer
+          format: int32
+          example: 4
         price:
           description: Price of Item
           type: number

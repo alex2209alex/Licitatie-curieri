@@ -1,10 +1,10 @@
-package ro.fmi.unibuc.licitatie_curieri.domain.menu.mapper;
+package ro.fmi.unibuc.licitatie_curieri.domain.menuitem.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ro.fmi.unibuc.licitatie_curieri.controller.menuitem.models.*;
-import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.MenuItem;
+import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.entity.MenuItem;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 
 @Mapper(

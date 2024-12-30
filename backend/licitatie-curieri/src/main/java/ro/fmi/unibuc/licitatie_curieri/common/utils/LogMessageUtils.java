@@ -12,6 +12,8 @@ public class LogMessageUtils {
     public static final String UPDATE_MENU_ITEM = "updateMenuItem operation was invoked for MenuItem with Id %s";
     public static final String REMOVE_MENU_ITEM = "removeMenuItem operation was invoked for MenuItem with Id %s";
 
+    public static final String CREATE_ORDER = "createOrder operation was invoked";
+
     public static final String GET_RESTAURANTS = "getRestaurants operation was invoked";
     public static final String GET_RESTAURANT = "getRestaurant operation was invoked with Id %s";
     public static final String CREATE_RESTAURANT = "createRestaurant operation with name %s";

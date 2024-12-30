@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
-import ro.fmi.unibuc.licitatie_curieri.domain.menu.entity.MenuItem;
+import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.entity.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;

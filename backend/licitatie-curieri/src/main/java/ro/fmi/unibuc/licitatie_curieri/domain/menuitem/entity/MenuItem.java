@@ -1,4 +1,4 @@
-package ro.fmi.unibuc.licitatie_curieri.domain.menu.entity;
+package ro.fmi.unibuc.licitatie_curieri.domain.menuitem.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,8 +11,8 @@ import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 @NoArgsConstructor
 public class MenuItem {
     @Id
-    @SequenceGenerator(name = "menus_gen", sequenceName = "menus_seq", allocationSize = 20)
-    @GeneratedValue(generator = "menus_gen")
+    @SequenceGenerator(name = "menu_items_gen", sequenceName = "menu_items_seq", allocationSize = 20)
+    @GeneratedValue(generator = "menu_items_gen")
     @Column(name = "id")
     private Long id;
 
