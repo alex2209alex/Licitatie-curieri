@@ -38,5 +38,5 @@ public class ErrorMessageUtils {
     public static final String VERIFICATION_FAILED_TWO_FA = "2FA verification failed. User not authenticated";
 
     public static final String USER_IS_UNVERIFIED = "User is unverified";
-    public static final String AUTHENTICATION_IS_NULL = "Authentication is null";
+    public static final String AUTHENTICATION_TOKEN_IS_INVALID = "Authentication token is invalid";
 }

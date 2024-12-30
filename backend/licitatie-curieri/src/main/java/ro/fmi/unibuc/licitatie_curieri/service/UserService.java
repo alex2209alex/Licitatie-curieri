@@ -89,7 +89,7 @@ public class UserService {
             throw new InternalServerErrorException(e.getMessage());
         }
 
-        return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(user.getId()));
+        return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(user.getId(), user.getUserType()));
     }
 
     @Transactional(noRollbackFor = ForbiddenException.class)
