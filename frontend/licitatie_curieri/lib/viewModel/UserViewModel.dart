@@ -11,7 +11,7 @@ class UserViewModel extends ChangeNotifier {
   UserViewModel(this.userRepository);
 
   Future<bool> signUp(User user) async {
-    if(user.password == user.passwordConfirmation) {
+    if (user.password == user.passwordConfirmation) {
       bool isSignedUp = await userRepository.signUp(user);
 
       if (isSignedUp) {
@@ -25,21 +25,15 @@ class UserViewModel extends ChangeNotifier {
   }
 
   Future<bool> verifyUser(
-      String emailVerificationCode,
-      String phoneVerificationCode
-      ) async {
-
+      String emailVerificationCode, String phoneVerificationCode) async {
     return await userRepository.verifyUser(
-        userEmail,
-        emailVerificationCode,
-        phoneVerificationCode
-    );
+        userEmail, emailVerificationCode, phoneVerificationCode);
   }
 
   Future<bool> authentication(String email, String password) async {
     String token = await userRepository.authentication(email, password);
 
-    if(token != null && token.isNotEmpty){
+    if (token != null && token.isNotEmpty) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('authToken', token);
       userEmail = email;
