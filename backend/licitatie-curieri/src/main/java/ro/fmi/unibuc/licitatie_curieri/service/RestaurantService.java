@@ -49,12 +49,14 @@ public class RestaurantService {
                     .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.USER_ADDRESS_WITH_ID_NOT_FOUND, addressId)));
 
             return restaurantRepository.findAll().stream()
+                    .filter(restaurant -> !restaurant.getWasRemoved())
                     .map(restaurantMapper::toRestaurantDetailsDto)
                     .filter(restaurantDetailsDto -> isWithinRange(restaurantDetailsDto, address))
                     .toList();
         }
 
         return restaurantRepository.findAll().stream()
+                .filter(restaurant -> !restaurant.getWasRemoved())
                 .map(restaurantMapper::toRestaurantDetailsDto)
                 .toList();
     }
