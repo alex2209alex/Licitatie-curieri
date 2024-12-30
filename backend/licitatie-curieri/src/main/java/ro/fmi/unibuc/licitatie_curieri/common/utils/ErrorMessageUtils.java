@@ -16,7 +16,9 @@ public class ErrorMessageUtils {
     public static final String ONLY_RESTAURANT_ADMIN_CAN_REMOVE_MENU_ITEMS = "Only restaurant admin can remove Menu Items";
 
     public static final String ONLY_CLIENT_CAN_CREATE_ORDERS = "Only client can create Orders";
+    public static final String ORDER_TOO_FAR = "Order too far";
     public static final String NOT_ALL_MENU_ITEMS_BELONG_TO_SAME_RESTAURANT = "Not all Menu Items belong to the same Restaurant";
+
 
     public static final String ONLY_CLIENT_AND_RESTAURANT_ADMIN_CAN_GET_RESTAURANTS = "Only client and restaurant admin can get Restaurants";
     public static final String MISSING_ADDRESS_ID = "Client requires addressId to view Restaurants";

@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.fmi.unibuc.licitatie_curieri.common.distancecalculator.DistanceCalculator;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models.*;
-import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.repository.AddressRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.mapper.RestaurantMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.repository.RestaurantRepository;
@@ -22,9 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class RestaurantService {
-    private static final double SEARCH_RANGE = 10;
-    private static final double EARTH_RADIUS = 6371;
-
     private final AddressRepository addressRepository;
     private final RestaurantRepository restaurantRepository;
     private final RestaurantMapper restaurantMapper;
@@ -51,7 +48,7 @@ public class RestaurantService {
             return restaurantRepository.findAll().stream()
                     .filter(restaurant -> !restaurant.getWasRemoved())
                     .map(restaurantMapper::toRestaurantDetailsDto)
-                    .filter(restaurantDetailsDto -> isWithinRange(restaurantDetailsDto, address))
+                    .filter(restaurantDetailsDto -> DistanceCalculator.isWithinRange(restaurantDetailsDto.getAddress().getLatitude(), restaurantDetailsDto.getAddress().getLongitude(), address.getLatitude(), address.getLongitude()))
                     .toList();
         }
 
@@ -106,27 +103,7 @@ public class RestaurantService {
         restaurantRepository.save(restaurant);
     }
 
-    private boolean isWithinRange(RestaurantDetailsDto restaurantDetailsDto, Address address) {
-        return SEARCH_RANGE >= calculateDistance(restaurantDetailsDto.getAddress().getLatitude(), restaurantDetailsDto.getAddress().getLongitude(), address.getLatitude(), address.getLongitude());
-    }
 
-    // Source https://www.baeldung.com/java-find-distance-between-points
-    private double calculateDistance(double startLat, double startLong, double endLat, double endLong) {
-        double dLat = Math.toRadians((endLat - startLat));
-        double dLong = Math.toRadians((endLong - startLong));
-
-        startLat = Math.toRadians(startLat);
-        endLat = Math.toRadians(endLat);
-
-        double a = haversine(dLat) + Math.cos(startLat) * Math.cos(endLat) * haversine(dLong);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return EARTH_RADIUS * c;
-    }
-
-    private double haversine(double val) {
-        return Math.pow(Math.sin(val / 2), 2);
-    }
 
     private void ensureCurrentUserIsVerifiedRestaurantAdmin(String errorMessage) {
         userInformationService.ensureCurrentUserIsVerified();
