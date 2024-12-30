@@ -7,6 +7,7 @@ import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:licitatie_curieri/common/GetToken.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/Utils.dart';
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
 import '../models/RestaurantMenuItemModel.dart';
@@ -24,7 +25,7 @@ class _CartScreenState extends State<CartScreen> {
   final CartService cartService = CartService();
 
   Future<void> _placeOrder(List<RestaurantMenuItem> restaurantMenuItems) async {
-    const String apiUrl = "http://192.168.100.97:8080/orders";
+    const String apiUrl = '${Utils.baseUrl}/orders';
 
     final int addressId =
         Provider.of<AddressProvider>(context, listen: false).selectedAddressId!;
