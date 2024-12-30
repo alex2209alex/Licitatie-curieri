@@ -39,10 +39,6 @@ public class Order {
     private OrderStatus orderStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id")
-    private User client;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "courier_id")
     private User courier;
 
