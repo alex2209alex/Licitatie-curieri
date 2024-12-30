@@ -34,8 +34,12 @@ class _RestaurantMenusManageScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<MenuItemProvider>(context, listen: false)
           .fetchMenuItems(widget.restaurantId);
+      setState(() {
+
+      });
     });
     log("MenuItem Manage Screen for Restaurant ${widget.restaurantName} id ${widget.restaurantId}");
+    log("MenuItems number ${Provider.of<MenuItemProvider>(context, listen: false).menuItems.length}");
   }
 
   void _showAddEditDialog(BuildContext context, {MenuItem? menuItem}) {
@@ -193,6 +197,7 @@ class _RestaurantMenusManageScreenState
   Future<void> _removeMenuItem(BuildContext context, int id) async {
     final provider = Provider.of<MenuItemProvider>(context, listen: false);
     await provider.removeMenuItem(id);
+    await provider.fetchMenuItems(widget.restaurantId);
   }
 
   @override
@@ -209,6 +214,7 @@ class _RestaurantMenusManageScreenState
               itemCount: menuItemProvider.menuItems.length,
               itemBuilder: (ctx, index) {
                 final menuItem = menuItemProvider.menuItems[index];
+                menuItem.restaurantId = widget.restaurantId;
                 return ListTile(
                   title: Text(menuItem.name),
                   subtitle:

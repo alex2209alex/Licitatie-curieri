@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:licitatie_curieri/restaurant/services/MenuItemService.dart';
 
@@ -15,12 +17,13 @@ class MenuItemProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> fetchMenuItems(int restaurantId) async {
+    log("fetchMenuItems invoked for Restaurant with id $restaurantId");
     _isLoading = true;
     notifyListeners();
 
     try {
       _menuItems =
-          await MenuItemService().fetchMenuItemsByRestaurant(restaurantId);
+          await MenuItemService().fetchMenuItems(restaurantId);
     } catch (error) {
       print("Error fetching menuItems from Restaurant $restaurantId: $error");
     } finally {
