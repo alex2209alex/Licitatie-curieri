@@ -11,7 +11,9 @@ import '../viewModel/UserViewModel.dart';
 
 class VerificationPage extends StatefulWidget {
   final UserType selectedUserType;
-  const VerificationPage({super.key, required this.selectedUserType});
+  final String email;
+  final String password;
+  const VerificationPage({super.key, required this.selectedUserType, required this.email, required this.password});
 
   @override
   VerificationPageState createState() => VerificationPageState();
@@ -66,6 +68,7 @@ class VerificationPageState extends State<VerificationPage> {
                     );
 
                     if (isVerified) {
+                      await userViewModel.authentication(widget.email,widget.password);
                       if(widget.selectedUserType == UserType.CLIENT)
                         {
                           // navigate to main page of CLIENT
@@ -74,7 +77,7 @@ class VerificationPageState extends State<VerificationPage> {
                             MaterialPageRoute(builder: (context) => const RestaurantsScreen()),
                           );
                         }
-                      else if(widget.selectedUserType == UserType.ADMIN_RESTAURANT)
+                      else if(widget.selectedUserType == UserType.RESTAURANT_ADMIN)
                         {
                           // navigate to main page of ADMIN RESTAURANT
                            Navigator.pushReplacement(

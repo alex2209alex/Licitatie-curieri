@@ -1,12 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:device_preview/device_preview.dart';
+
+import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:licitatie_curieri/restaurant/models/RestaurantModel.dart';
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-
-import '../../address/models/AddressModel.dart';
 
 import '../../common/GetToken.dart';
 import '../../common/Utils.dart';
@@ -15,15 +12,15 @@ class RestaurantService{
   static const String baseUrl = '${Utils.baseUrl}';
   final GetToken getToken = GetToken();
 
-  // NOT WORKING
   Future<List<Restaurant>> fetchRestaurants() async {
+    log("fetchRestaurants invoked");
     String? token = await getToken.getToken();
 
     if (token == null) {
       throw Exception("Authentication token not found");
     }
 
-    Uri uri = Uri.parse(baseUrl);
+    Uri uri = Uri.parse("$baseUrl/restaurants");
     final response = await http.get(
       uri,
       headers: {
@@ -43,9 +40,8 @@ class RestaurantService{
       }
   }
 
-
   // TO GET RESTAURANTS FOR CLIENT WITHIN AREA
-  Future<List<Restaurant>> fetchRestaurantsByUserIdForClientOnly(int id, AddressProvider addressProvider) async {
+  Future<List<Restaurant>> fetchRestaurantsByAddressIdForClientOnly(int id, AddressProvider addressProvider) async {
     String? token = await getToken.getToken();
 
     if (token == null) {
@@ -70,7 +66,7 @@ class RestaurantService{
         for (var jsonData in data)
           {
             try{
-              Restaurant restaurant = await Restaurant.fromJsonWithAddress(jsonData, addressProvider);
+              Restaurant restaurant = await Restaurant.fromJson(jsonData);
               restaurants.add(restaurant);
             }
             catch(e)
@@ -86,19 +82,19 @@ class RestaurantService{
       }
   }
 
-  Future<http.Response> createRestaurant(Restaurant restaurant, Address address) async {
+  Future<http.Response> createRestaurant(Restaurant restaurant) async {
     String? token = await getToken.getToken();
 
     if (token == null) {
       throw Exception("Authentication token not found");
     }
 
-    Uri uri = Uri.parse("$baseUrl/CreateRestaurant");
+    Uri uri = Uri.parse("$baseUrl/restaurants");
     final requestBody = {
       "name": restaurant.name,
-      "address": address.details,
-      "latitude": address.latitude,
-      "longitude": address.longitude
+      "addressDetails": restaurant.address.details,
+      "latitude": restaurant.address.latitude,
+      "longitude": restaurant.address.longitude
     };
 
     log(json.encode(requestBody).toString());
@@ -115,37 +111,37 @@ class RestaurantService{
     return response;
   }
 
-  Future<void> updateRestaurant(int id, Restaurant restaurant) async {
+  Future<void> updateRestaurant(int restaurantId, Restaurant restaurant) async {
     String? token = await getToken.getToken();
 
     if (token == null) {
       throw Exception("Authentication token not found");
     }
 
-    Uri uri = Uri.parse("$baseUrl/UpdateRestaurantName");
+    Uri uri = Uri.parse("$baseUrl/restaurants/$restaurantId");
     final response = await http.put(
       uri,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: json.encode(restaurant.toJson()),
+      body: json.encode(restaurant.toUpdateJson()),
     );
 
-    log(json.encode("update restaurant ${restaurant.toJson()}"));
+    log(json.encode("update restaurant ${restaurant.toUpdateJson()}"));
     if (response.statusCode != 200) {
       throw Exception("Failed to update restaurant");
     }
   }
 
-  Future<void> deleteRestaurant(int id) async {
+  Future<void> removeRestaurant(int id) async {
     String? token = await getToken.getToken();
 
     if (token == null) {
       throw Exception("Authentication token not found");
     }
 
-    Uri uri = Uri.parse("$baseUrl/DeleteRestaurant?restaurant_id=$id");
+    Uri uri = Uri.parse("$baseUrl/restaurants/$id");
     final response = await http.delete(
       uri,
       headers: {
@@ -158,10 +154,4 @@ class RestaurantService{
       throw Exception("Failed to delete restaurant code ${response.statusCode}");
     }
   }
-
-
-
-
-
 }
-
