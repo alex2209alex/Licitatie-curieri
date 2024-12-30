@@ -10,14 +10,14 @@ import '../providers/RestaurantProvider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class RestaurantsManageScreen extends StatefulWidget {
-  const RestaurantsManageScreen({Key? key}) : super(key: key);
+class RestaurantsMenuManageScreen extends StatefulWidget {
+  const RestaurantsMenuManageScreen({Key? key}) : super(key: key);
 
   @override
-  State<RestaurantsManageScreen> createState() => _RestaurantsManageScreenState();
+  State<RestaurantsMenuManageScreen> createState() => _RestaurantsMenuManageScreenState();
 }
 
-class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
+class _RestaurantsMenuManageScreenState extends State<RestaurantsMenuManageScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _name;
 
@@ -90,7 +90,7 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
-          title: Text(restaurant == null ? "Add Restaurant" : "Edit Restaurant"),
+          title: Text(restaurant == null ? "Add MenuItem" : "Edit MenuItem"),
           content: Form(
             key: _formKey,
             child: Column(

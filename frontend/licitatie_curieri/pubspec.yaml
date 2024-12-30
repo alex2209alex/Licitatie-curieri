@@ -38,6 +38,9 @@ dependencies:
   # library for http call
   http: ^1.2.2
 
+  # library for JWT
+  dart_jsonwebtoken: ^2.3.0
+
   # library for UI
   flutter_form_builder: ^9.5.0
   flutter_material_pickers: ^3.7.0

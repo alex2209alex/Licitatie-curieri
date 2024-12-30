@@ -15,6 +15,7 @@ class RestaurantService{
   Future<List<Restaurant>> fetchRestaurants() async {
     log("fetchRestaurants invoked");
     String? token = await getToken.getToken();
+    log("token $token");
 
     if (token == null) {
       throw Exception("Authentication token not found");

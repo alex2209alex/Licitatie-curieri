@@ -16,7 +16,7 @@ class Restaurant {
     return Restaurant(
         id: json["id"],
         name: json["name"],
-        address: Address(id: json["addressId"], details: json["addressDetails"], latitude: json["latitude"], longitude: json["longitude"])
+        address: Address(id: json["address"]["id"], details: json["address"]["details"], latitude: json["address"]["latitude"], longitude: json["address"]["longitude"])
     );
   }
 

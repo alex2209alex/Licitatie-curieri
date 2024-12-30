@@ -1,14 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:licitatie_curieri/address/screens/AddressScreen.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
 import 'package:provider/provider.dart';
+
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
 import 'RestaurantMenusScreen.dart';
-
 
 class RestaurantsScreen extends StatefulWidget {
   const RestaurantsScreen({Key? key}) : super(key: key);
@@ -18,85 +16,96 @@ class RestaurantsScreen extends StatefulWidget {
 }
 
 class _RestaurantsScreenState extends State<RestaurantsScreen> {
+  bool noSelectedAddress = false;
+
   @override
   void initState() {
     super.initState();
 
-
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       initData();
     });
-
   }
 
-  Future<void> initData() async
-  {
-    final restaurantProvider = Provider.of<RestaurantProvider>(context, listen: false);
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
+  Future<void> initData() async {
+    final restaurantProvider =
+        Provider.of<RestaurantProvider>(context, listen: false);
+    final addressProvider =
+        Provider.of<AddressProvider>(context, listen: false);
     await addressProvider.fetchAddresses();
-    if(addressProvider.selectedAddressId != null)
-      {
-        final selectedAddressId = addressProvider.selectedAddressId;
-        await restaurantProvider.fetchRestaurantsByUserIdForClientOnly(selectedAddressId!, addressProvider);
-      }
-
+    if (addressProvider.selectedAddressId != null) {
+      final selectedAddressId = addressProvider.selectedAddressId;
+      await restaurantProvider.fetchRestaurantsByUserIdForClientOnly(
+          selectedAddressId!, addressProvider);
+      setState(() {
+        noSelectedAddress = false;
+      });
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Restaurants'),
         centerTitle: true,
-
         actions: [
           CartActionBarButton(canRedirect: true),
           SizedBox(width: 20.0),
         ],
       ),
-      body: Consumer<RestaurantProvider>(
-        builder: (context, restaurantProvider, _) {
-          if (restaurantProvider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (restaurantProvider.restaurants.isEmpty) {
-            return const Center(
-              child: Text("No restaurants found."),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: restaurantProvider.restaurants.length,
-            itemBuilder: (context, i) {
-              final restaurant = restaurantProvider.restaurants[i];
-              return ListItemCustomCard.fromRestaurant(
-                restaurant,
-                "View",
-                    () {
-                    restaurantProvider.setSelectedRestaurant(restaurant);
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RestaurantMenusScreen(),
-                    ),
+      body: noSelectedAddress
+          ? const Center(
+              child: Text(
+                "Please select an address to view restaurants.",
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            )
+          : Consumer<RestaurantProvider>(
+              builder: (context, restaurantProvider, _) {
+                if (restaurantProvider.isLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              );
-            },
-          );
-        },
-      ),
+                }
+
+                if (restaurantProvider.restaurants.isEmpty) {
+                  return const Center(
+                    child: Text("No restaurants found."),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: restaurantProvider.restaurants.length,
+                  itemBuilder: (context, i) {
+                    final restaurant = restaurantProvider.restaurants[i];
+                    return ListItemCustomCard.fromRestaurant(
+                      restaurant,
+                      "View",
+                      () {
+                        restaurantProvider.setSelectedRestaurant(restaurant);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RestaurantMenusScreen(),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         heroTag: UniqueKey(),
         onPressed: () {
-          Navigator.push(context,
-          MaterialPageRoute(
-            builder: (context) => const AddressScreen(),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddressScreen(),
             ),
-          ).then((_)
-          {
+          ).then((_) {
             initData();
           });
         },
