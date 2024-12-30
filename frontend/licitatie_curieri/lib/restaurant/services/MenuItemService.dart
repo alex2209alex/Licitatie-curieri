@@ -3,9 +3,11 @@ import 'package:http/http.dart' as http;
 import '../../common/GetToken.dart';
 import '../../common/Utils.dart';
 import '../models/MenuItemModel.dart';
+import 'dart:developer';
+
 class MenuItemService {
 
-  static const String baseUrl = '${Utils.baseUrl}/MenuItems';
+  static const String baseUrl = '${Utils.baseUrl}';
   final GetToken getToken = GetToken();
 
   Future<List<MenuItem>> fetchMenuItemsByRestaurant(int idRestaurant) async {
@@ -15,8 +17,7 @@ class MenuItemService {
       throw Exception("Authentication token not found");
     }
 
-    // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/restaurant/$idRestaurant");
+    Uri uri = Uri.parse("$baseUrl/GetAllMenusByRestaurantId?restaurant_id=$idRestaurant");
     final response = await http.get(
       uri,
       headers: {
@@ -24,6 +25,13 @@ class MenuItemService {
         'Authorization': 'Bearer $token',
       },
     );
+
+    log('Status code: ${response.statusCode}');
+    log('URI: $uri');
+    log('Headers: ${json.encode({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    })}');
 
     if(response.statusCode == 200)
       {
@@ -44,8 +52,7 @@ class MenuItemService {
       throw Exception("Authentication token not found");
     }
 
-    // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/$idMenu");
+    Uri uri = Uri.parse("$baseUrl/GetMenuById?menu_id=$idMenu");
     final response = await http.get(
       uri,
       headers: {
@@ -53,6 +60,12 @@ class MenuItemService {
         'Authorization': 'Bearer $token',
       },
     );
+
+    log('URI: $uri');
+    log('Headers: ${json.encode({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    })}');
 
     if(response.statusCode == 200)
       {
@@ -64,31 +77,42 @@ class MenuItemService {
       }
   }
 
-  Future<MenuItem> createMenuItem(MenuItem menuItem) async {
+  Future<http.Response> createMenuItem(MenuItem menuItem) async {
     String? token = await getToken.getToken();
 
     if (token == null) {
       throw Exception("Authentication token not found");
     }
 
-    // To Do: later check the path for api
-    Uri uri = Uri.parse(baseUrl);
+    Uri uri = Uri.parse("$baseUrl/CreateMenu");
+    final requestBody = {
+      "idRestaurant": menuItem.idRestaurant,
+      "name": menuItem.name,
+      "price": menuItem.price,
+      "ingredientsList": menuItem.ingredientsList,
+      "photo": menuItem.photo,
+      "discount": menuItem.discount,
+    };
+
+    log(json.encode(requestBody).toString());
+
     final response = await http.post(
       uri,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: json.encode(menuItem.toJson())
+      body: json.encode(requestBody),
     );
-    if(response.statusCode == 200)
-      {
-        return MenuItem.fromJson(json.decode(response.body));
-      }
-    else
-      {
-        throw Exception("Failed to create MenuItem");
-      }
+
+    log('URI: $uri');
+    log('Headers: ${json.encode({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    })}');
+    log('Body: [${json.encode(requestBody)}]');
+
+    return response;
   }
 
   Future<MenuItem> updateMenuItem(int id, MenuItem menuItem) async {
@@ -99,7 +123,7 @@ class MenuItemService {
     }
 
     // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/$id");
+    Uri uri = Uri.parse("$baseUrl/UpdateMenu");
 
     final response = await http.put(
       uri,
@@ -128,8 +152,7 @@ class MenuItemService {
       throw Exception("Authentication token not found");
     }
 
-    // To Do: later check the path for api
-    Uri uri = Uri.parse("$baseUrl/$id");
+    Uri uri = Uri.parse("$baseUrl/DeleteMenu?menu_id=$id");
     final response = await http.delete(
       uri,
       headers: {
@@ -138,7 +161,7 @@ class MenuItemService {
       },
     );
 
-    if(response.statusCode != 204)
+    if(response.statusCode != 200)
       {
         throw Exception("Failed to delete MenuItem $id");
       }

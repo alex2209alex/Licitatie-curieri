@@ -30,7 +30,10 @@ class _CartScreenState extends State<CartScreen> {
         title: const Text("My Cart"),
         centerTitle: true,
         actions: [
-          CartActionBarButton(key: _cartKey, canRedirect: false),
+          Offstage(
+              offstage: true,
+              child: CartActionBarButton(key: _cartKey, canRedirect: false)
+          ),
           const SizedBox(width: 20.0),
         ],
       ),

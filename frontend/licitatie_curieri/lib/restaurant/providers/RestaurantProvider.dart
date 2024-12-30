@@ -30,6 +30,10 @@ class RestaurantProvider with ChangeNotifier {
       print("Error fetching restaurants: $error");
     } finally{
       _isLoading = false;
+
+      //  To do: Remove once fetching works. TO-DO: WIP: W.I.P.:
+      initWithoutBackEnd();
+
       notifyListeners();
     }
   }
