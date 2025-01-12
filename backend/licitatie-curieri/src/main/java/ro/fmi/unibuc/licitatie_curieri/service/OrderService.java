@@ -12,6 +12,7 @@ import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationItemDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderDetailsDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.repository.MenuItemRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderMenuItemAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderMenuItemAssociationId;
@@ -98,5 +99,24 @@ public class OrderService {
                 .orElseThrow(() -> new BadRequestException(ErrorMessageUtils.MENU_ITEM_NOT_FOUND));
 
         return menuItem.getRestaurant();
+    }
+
+    @Transactional
+    public OrderDetailsDto getOrderDetails(Long orderId) {
+        val currentUser = userInformationService.getCurrentUser();
+
+        if(!userInformationService.isCurrentUserCourier())
+        {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_VIEW_ORDER_DETAILS);
+        }
+
+        val order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BadRequestException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
+
+        if(!order.getCourier().getId().equals(currentUser.getId())){
+            throw new ForbiddenException(ErrorMessageUtils.COURIER_NOT_ASSOCIATED_WITH_ORDER);
+        }
+
+        return orderMapper.mapToOrderDetailsDto(order);
     }
 }

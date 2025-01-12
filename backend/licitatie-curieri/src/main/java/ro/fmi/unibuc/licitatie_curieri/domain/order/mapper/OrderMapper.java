@@ -8,6 +8,7 @@ import org.mapstruct.ReportingPolicy;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationItemResponseDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderDetailsDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.Order;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderStatus;
@@ -36,6 +37,10 @@ public interface OrderMapper {
     @Mapping(target = "price", source = "foodPrice")
     @Mapping(target = "items", source = ".", qualifiedByName = "getOrderCreationItemResponseDtos")
     OrderCreationResponseDto mapToOrderCreationResponse(Order order);
+
+    @Mapping(target = "deliveryAddress", source = "address")
+    @Mapping(target = "items", source = ".", qualifiedByName = "getOrderCreationItemResponseDtos")
+    OrderDetailsDto mapToOrderDetailsDto(Order order);
 
     default Instant getAuctionDeadline() {
         return Instant.now().plusSeconds(180);
