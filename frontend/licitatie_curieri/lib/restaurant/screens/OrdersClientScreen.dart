@@ -58,18 +58,29 @@ class _OrdersClientScreenState extends State<OrdersClientScreen> {
                   itemCount: orderProvider.orders.length,
                   itemBuilder: (context, i) {
                     final order = orderProvider.orders[i];
-                    return ListItemCustomCard.fromOrder(
-                      order,
-                      "View",
-                      () {
-                        orderProvider.setSelectedOrder(order);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const OrdersClientScreen(),   // To do: To-Do: W.I.P.: WIP: Change to detailed order screen
-                          ),
-                        );
-                      },
+                    return ListTile(
+                      title: Text(order.restaurantName),
+                      subtitle:
+                      Text("Stare: ${order.orderStatus}.\nComanda de ${order.foodPrice} RON"),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.open_in_new),
+                            onPressed: ()
+                            {
+                              // TO-DO: TO DO: W.I.P.: WIP: Navigate to detailed order screen
+                            }),
+                          if (order.orderStatus != "CANCELLED")
+                            IconButton(
+                              icon: const Icon(Icons.cancel),
+                              onPressed: () {
+                                orderProvider.cancelOrder(order.id);
+                                setState() { };
+                              }
+                            ),
+                        ],
+                      ),
                     );
                   },
                 );
