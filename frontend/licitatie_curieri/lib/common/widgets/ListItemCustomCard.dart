@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:licitatie_curieri/restaurant/models/MenuItemModel.dart';
 import 'package:licitatie_curieri/restaurant/models/RestaurantModel.dart';
+import '../../restaurant/models/OrderModel.dart';
 import 'ListItemCustomButton.dart';
 
 class ListItemCustomCard extends StatelessWidget {
@@ -35,6 +36,17 @@ class ListItemCustomCard extends StatelessWidget {
     return ListItemCustomCard(
         title: restaurant.name,
         description: restaurant.address!.details.toString(),
+        imageUrl: "https://www.firstbenefits.org/wp-content/uploads/2017/10/placeholder.png",
+        buttonText: buttonText,
+        onButtonPressed: onButtonPressed
+    );
+  }
+
+  factory ListItemCustomCard.fromOrder(Order order, String buttonText, VoidCallback onButtonPressed)
+  {
+    return ListItemCustomCard(
+        title: "Comanda la: ${order.restaurantName}",
+        description: "Stare: ${order.orderStatus}",
         imageUrl: "https://www.firstbenefits.org/wp-content/uploads/2017/10/placeholder.png",
         buttonText: buttonText,
         onButtonPressed: onButtonPressed
