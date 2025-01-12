@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/widgets/LogoutActionBarButton.dart';
 import '../models/MenuItemModel.dart';
 import '../providers/MenuItemProvider.dart';
 
@@ -207,6 +208,10 @@ class _RestaurantMenusManageScreenState
       appBar: AppBar(
         title: Text("Menus for ${widget.restaurantName}"),
         centerTitle: true,
+
+        actions: [
+          LogoutActionBarButton(),
+        ]
       ),
       body: menuItemProvider.isLoading
           ? const Center(child: CircularProgressIndicator())

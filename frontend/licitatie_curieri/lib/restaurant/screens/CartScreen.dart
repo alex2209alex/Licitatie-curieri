@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../common/Utils.dart';
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
+import '../../common/widgets/LogoutActionBarButton.dart';
 import '../models/RestaurantMenuItemModel.dart';
 import '../providers/CartProvider.dart';
 import '../services/CartService.dart';
@@ -95,11 +96,15 @@ class _CartScreenState extends State<CartScreen> {
         title: const Text("My Cart"),
         centerTitle: true,
         actions: [
-          CartActionBarButton(
-            key: GlobalKey<CartActionBarButtonState>(),
-            canRedirect: false,
+          Offstage(
+              offstage: true,
+              child: CartActionBarButton(
+                key: GlobalKey<CartActionBarButtonState>(),
+                canRedirect: false,
+              ),
           ),
-          const SizedBox(width: 20.0),
+
+          LogoutActionBarButton(),
         ],
       ),
       body: Consumer<CartProvider>(
