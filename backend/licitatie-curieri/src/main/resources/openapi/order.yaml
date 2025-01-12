@@ -101,14 +101,14 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-  /orders/{id}/cancel:
+  /orders/{order_id}/cancel:
     put:
       tags:
         - Order
       summary: Cancels an Order
       operationId: cancelOrder
       parameters:
-        - name: id
+        - name: order_id
           required: true
           in: path
           description: Order's Id
