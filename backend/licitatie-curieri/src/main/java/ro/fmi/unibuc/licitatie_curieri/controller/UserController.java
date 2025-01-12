@@ -26,31 +26,31 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public void verifyUser(
+    public TokenResponseDto verifyUser(
             @PathVariable("email") String email,
             @RequestBody UserVerificationDto userVerificationDto
     ) {
         log.info(String.format(LogMessageUtils.VERIFY_USER, email));
 
-        userService.verifyUser(email, userVerificationDto);
+        return userService.verifyUser(email, userVerificationDto);
     }
 
     @Override
-    public UserLoginResponseDto authenticateUser(
+    public void authenticateUser(
             @RequestBody UserLoginDto userLoginDto
     ){
         log.info(String.format(LogMessageUtils.AUTHENTICATE_USER, userLoginDto.getEmail(), userLoginDto.getPassword()));
 
-        return userService.loginUser(userLoginDto);
+        userService.loginUser(userLoginDto);
     }
 
     @Override
-    public void getTwoFACodeUser(@RequestBody UserTwoFAVerificationDto userTwoFAVerificationDto) {
+    public TokenResponseDto getTwoFACodeUser(@RequestBody UserTwoFAVerificationDto userTwoFAVerificationDto) {
         log.info(String.format(LogMessageUtils.TWO_FACTOR_AUTH_USER,
                 userTwoFAVerificationDto.getEmail(),
                 userTwoFAVerificationDto.getVerificationCode()
         ));
 
-        userService.getTwoFACodeUser(userTwoFAVerificationDto);
+        return userService.getTwoFACodeUser(userTwoFAVerificationDto);
     }
 }

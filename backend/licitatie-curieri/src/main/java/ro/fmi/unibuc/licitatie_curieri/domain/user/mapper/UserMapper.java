@@ -36,7 +36,7 @@ public interface UserMapper {
 
     UserCreationResponseDto mapToUserCreationResponseDto(User user);
 
-    UserLoginResponseDto mapToUserLoginResponseDto(String  token);
+    TokenResponseDto mapToTokenResponseDto(String  token);
 
     @Named("hashPassword")
     default String hashPassword(String password) {
