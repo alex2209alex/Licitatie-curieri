@@ -30,7 +30,7 @@ public interface OrderMapper {
     OrderDetailsDto mapToOrderDetailsDto(Order order);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deliveryPrice", source = "orderCreationDto.deliveryPriceLimit")
+    @Mapping(target = "deliveryPrice", ignore = true)
     @Mapping(target = "auctionDeadline", expression = "java(this.getAuctionDeadline())")
     @Mapping(target = "orderStatus", expression = "java(this.getOrderStatusForCreation())")
     @Mapping(target = "courier", ignore = true)
