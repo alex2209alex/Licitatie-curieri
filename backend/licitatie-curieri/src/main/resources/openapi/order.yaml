@@ -4,6 +4,75 @@ info:
   title: Order management
   description: API related to management of Orders.
 paths:
+  /orders/client:
+    get:
+      tags:
+        - Order
+      summary: Gets orders for the client making the request
+      operationId: getClientOrders
+      responses:
+        '200':
+          description: Resources successfully fetched.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDetails'
+        '403':
+          description: User is not a client.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+  /orders/nearby:
+    get:
+      tags:
+        - Order
+      summary: Gets orders at nearby Restaurants for couriers
+      operationId: getNearbyOrders
+      parameters:
+        - name: latitude
+          required: true
+          in: query
+          description: Courier's latitude
+          schema:
+            type: number
+            format: double
+            minimum: -90
+            maximum: 90
+          example: 44.439663
+        - name: longitude
+          required: true
+          in: query
+          description: Courier's longitude
+          schema:
+            type: number
+            format: double
+            minimum: -180
+            maximum: 180
+          example: 26.096306
+      responses:
+        '200':
+          description: Resources successfully fetched.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDetails'
+        '400':
+          description: Query parameters are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '403':
+          description: User is not a courier.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
   /orders:
     post:
       tags:
@@ -36,15 +105,52 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+  /orders/{order_id}/cancel:
+    put:
+      tags:
+        - Order
+      summary: Cancels an Order
+      operationId: cancelOrder
+      parameters:
+        - name: order_id
+          required: true
+          in: path
+          description: Order's Id
+          schema:
+            type: integer
+            format: int64
+          example: 100
+      responses:
+        '200':
+          description: Order canceled.
+        '403':
+          description: User is not allowed to cancel the Order.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '404':
+          description: Order with provided Id not found.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
 components:
   schemas:
     OrderCreation:
       type: object
       required:
+        - addressId
+        - deliveryPriceLimit
         - items
       properties:
+        addressId:
+          description: Id of the Order's Address
+          type: integer
+          format: int64
+          example: 100
         deliveryPriceLimit:
-          description: Max limit of Delivery price
+          description: Max limit of delivery price
           type: number
           format: double
           minimum: 1
@@ -59,17 +165,40 @@ components:
       type: object
       required:
         - id
+        - quantity
       properties:
         id:
           description: Id of the ordered Item
           type: integer
           format: int64
           example: 100
+        quantity:
+          description: Quantity of the ordered Item
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100
+          example: 4
     OrderCreationResponse:
       type: object
       properties:
+        id:
+          description: Order's ID
+          type: integer
+          format: int64
+          example: 100
+        addressId:
+          description: Id of the Order's Address
+          type: integer
+          format: int64
+          example: 100
+        auctionDeadline:
+          description: Auction deadline
+          type: string
+          format: date-time
+          example: 2025-01-01T07L00:00.00Z
         deliveryPriceLimit:
-          description: Max limit of Delivery price
+          description: Max limit of delivery price
           type: number
           format: double
           example: 10
@@ -85,20 +214,63 @@ components:
             $ref: '#/components/schemas/OrderCreationItemResponse'
     OrderCreationItemResponse:
       type: object
-      required:
-        - id
       properties:
         id:
           description: Id of the ordered Item
           type: integer
           format: int64
           example: 100
-        price:
-          description: Price of Item
+        quantity:
+          description: Quantity of the ordered Item
+          type: integer
+          format: int32
+          example: 4
+    OrderDetails:
+      type: object
+      properties:
+        id:
+          description: Order's ID
+          type: integer
+          format: int64
+          example: 100
+        restaurantAddress:
+          description: Restaurant's Address
+          type: string
+          example: Str. Strada Nr. 1
+        clientAddress:
+          description: Client's Address
+          type: string
+          example: Str. Strada Nr. 1
+        foodPrice:
+          description: Food's price
           type: number
           format: double
-          example: 100.50
-        name:
-          description: Name of Item
+          example: 10
+        deliveryPriceLimit:
+          description: Max limit of delivery price
+          type: number
+          format: double
+          example: 10
+        lowestBid:
+          description: Current delivery price
+          type: number
+          format: double
+          example: 10
+        auctionDeadline:
+          description: Auction deadline
           type: string
-          example: Burger Texan
+          format: date-time
+          example: 2025-01-01T07L00:00.00Z
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatus'
+    OrderStatus:
+      type: string
+      description: OrderStatus
+      example: IN_AUCTION
+      enum:
+        - IN_AUCTION
+        - PAID
+        - PICKED_UP
+        - NEARBY
+        - DELIVERED
+        - CANCELLED

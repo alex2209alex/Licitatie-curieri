@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.5</version>
+		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>ro.fmi.unibuc</groupId>
@@ -47,7 +47,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -118,11 +117,9 @@
 		<dependency>
 			<groupId>com.twilio.sdk</groupId>
 			<artifactId>twilio</artifactId>
-			<version>8.30.0</version>
+			<version>10.6.4</version>
 		</dependency>
-
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -177,6 +174,9 @@
 								<useTags>true</useTags>
 								<useOptional>false</useOptional>
 								<unhandeledException>true</unhandeledException>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.user</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.user.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.user.models</modelPackage>
 								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
@@ -198,6 +198,9 @@
 								<useTags>true</useTags>
 								<useOptional>false</useOptional>
 								<unhandeledException>true</unhandeledException>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.address</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.address.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.address.models</modelPackage>
 								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
@@ -219,17 +222,20 @@
 								<useTags>true</useTags>
 								<useOptional>false</useOptional>
 								<unhandeledException>true</unhandeledException>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.restaurant</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.restaurant.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models</modelPackage>
 								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
 					</execution>
 					<execution>
-						<id>Menu OpenApi generation</id>
+						<id>MenuItem OpenApi generation</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/openapi/menu.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/menuitem.yaml</inputSpec>
 							<generatorName>spring</generatorName>
 							<modelNameSuffix>Dto</modelNameSuffix>
 							<configOptions>
@@ -240,6 +246,33 @@
 								<useTags>true</useTags>
 								<useOptional>false</useOptional>
 								<unhandeledException>true</unhandeledException>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.menuitem</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.menuitem.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.menuitem.models</modelPackage>
+								<useSpringBoot3>true</useSpringBoot3>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Order OpenApi generation</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/order.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<modelNameSuffix>Dto</modelNameSuffix>
+							<configOptions>
+								<useResponseEntity>false</useResponseEntity>
+								<interfaceOnly>true</interfaceOnly>
+								<java8>true</java8>
+								<dateLibrary>java8</dateLibrary>
+								<useTags>true</useTags>
+								<useOptional>false</useOptional>
+								<unhandeledException>true</unhandeledException>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.order</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.order.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.order.models</modelPackage>
 								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>
@@ -269,5 +302,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

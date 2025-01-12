@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/User.dart';
 import '../repository/UserRepository.dart';
@@ -10,7 +11,7 @@ class UserViewModel extends ChangeNotifier {
   UserViewModel(this.userRepository);
 
   Future<bool> signUp(User user) async {
-    if(user.password == user.passwordConfirmation) {
+    if (user.password == user.passwordConfirmation) {
       bool isSignedUp = await userRepository.signUp(user);
 
       if (isSignedUp) {
@@ -23,29 +24,33 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> verifyUser(
-      String emailVerificationCode,
-      String phoneVerificationCode
-      ) async {
+  Future<bool> verifyUser(String emailVerificationCode, String phoneVerificationCode) async {
+    String token = await userRepository.verifyUser(
+        userEmail, emailVerificationCode, phoneVerificationCode);
 
-    return await userRepository.verifyUser(
-        userEmail,
-        emailVerificationCode,
-        phoneVerificationCode
-    );
+    if (token != null && token.isNotEmpty) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('authToken', token);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<bool> authentication(String email, String password) async {
-    bool isAuth = await userRepository.authentication(email, password);
-
-    if(isAuth){
-      userEmail = email;
-    }
-
-    return isAuth;
+    userEmail = email;
+    return await userRepository.authentication(email, password);
   }
 
   Future<bool> twoFACode(String verificationCode) async {
-    return await userRepository.twoFACode(userEmail, verificationCode);
+    String token = await userRepository.twoFACode(userEmail, verificationCode);
+
+    if (token != null && token.isNotEmpty) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('authToken', token);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

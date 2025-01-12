@@ -2,14 +2,14 @@ package ro.fmi.unibuc.licitatie_curieri.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.openapitools.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fmi.unibuc.licitatie_curieri.common.EmailSender;
-import ro.fmi.unibuc.licitatie_curieri.common.security.JwtUtils;
 import ro.fmi.unibuc.licitatie_curieri.common.SmsSender;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.*;
+import ro.fmi.unibuc.licitatie_curieri.common.security.JwtUtils;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
+import ro.fmi.unibuc.licitatie_curieri.controller.user.models.*;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.mapper.UserMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.repository.UserRepository;
@@ -54,7 +54,7 @@ public class UserService {
     }
 
     @Transactional(noRollbackFor = ForbiddenException.class)
-    public void verifyUser(String email, UserVerificationDto userVerificationDto) {
+    public TokenResponseDto verifyUser(String email, UserVerificationDto userVerificationDto) {
         val user = userRepository.findByEmailAndEmailVerificationCodeAndPhoneVerificationCode(email, userVerificationDto.getEmailVerificationCode(), userVerificationDto.getPhoneVerificationCode())
                 .orElseThrow(() -> new BadRequestException(ErrorMessageUtils.USER_VERIFICATION_FAILED));
 
@@ -67,12 +67,14 @@ public class UserService {
         user.setEmailVerificationCode(null);
         user.setPhoneVerificationCode(null);
         user.setVerificationDeadline(null);
+
+        return userMapper.mapToTokenResponseDto(JwtUtils.generateToken(user.getId(), user.getUserType()));
     }
 
     @Transactional
-    public UserLoginResponseDto loginUser(UserLoginDto userLoginDto) {
+    public void loginUser(UserLoginDto userLoginDto) {
         val user = userRepository.findByEmailAndPassword(userLoginDto.getEmail(), userMapper.hashPassword(userLoginDto.getPassword()))
-                .orElseThrow(() -> new UnauthorizedException(String.format(ErrorMessageUtils.AUTHORIZATION_FAILED)));
+                .orElseThrow(() -> new UnauthorizedException(ErrorMessageUtils.AUTHORIZATION_FAILED));
 
         try {
             String code = EmailSender.generateCode();
@@ -88,16 +90,14 @@ public class UserService {
         } catch (MessagingException e) {
             throw new InternalServerErrorException(e.getMessage());
         }
-
-        return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(userLoginDto.getEmail()));
     }
 
     @Transactional(noRollbackFor = ForbiddenException.class)
-    public void getTwoFACodeUser(UserTwoFAVerificationDto userTwoFAVerificationDto) {
-       val user = userRepository.findByEmailAndTwoFACode(
-               userTwoFAVerificationDto.getEmail(),
-               userTwoFAVerificationDto.getVerificationCode()
-               )
+    public TokenResponseDto getTwoFACodeUser(UserTwoFAVerificationDto userTwoFAVerificationDto) {
+        val user = userRepository.findByEmailAndTwoFACode(
+                        userTwoFAVerificationDto.getEmail(),
+                        userTwoFAVerificationDto.getVerificationCode()
+                )
                 .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.USER_NOT_FOUND, userTwoFAVerificationDto.getEmail())));
 
         if (Instant.now().isAfter(user.getVerifyFaCodeDeadline())) {
@@ -107,6 +107,7 @@ public class UserService {
         } else {
             user.setTwoFACode(null);
             user.setVerifyFaCodeDeadline(null);
+            return userMapper.mapToTokenResponseDto(JwtUtils.generateToken(user.getId(), user.getUserType()));
         }
     }
 

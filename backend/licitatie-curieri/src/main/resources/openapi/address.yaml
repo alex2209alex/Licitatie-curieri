@@ -44,6 +44,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AddressCreationResponse'
+        '400':
+          description: Invalid data provided.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
         '403':
           description: User is not allowed to create Addresses.
           content:
@@ -84,7 +90,7 @@ components:
         details:
           description: Address's details
           type: string
-          maxLength: 100
+          maxLength: 1000
           example: Str. Strada Nr. 1
         latitude:
           description: Address's latitude

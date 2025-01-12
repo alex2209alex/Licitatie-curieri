@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.User;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserType;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -15,6 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndPassword(String email, String password);
 
     Optional<User> findByEmailAndTwoFACode(String email, String twoFACode);
-
-    Optional<User> findByEmail(String email);
+    
+    Optional<User> findById(Long id);
 }

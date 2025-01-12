@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:licitatie_curieri/address/models/AddressModel.dart';
@@ -50,25 +48,6 @@ class AddressProvider with ChangeNotifier {
       }
     return null;
   }
-
-  Future<Address?> fetchAddressFromCoordinates(double latitude, double longitude) async
-  {
-    _isLoading = true;
-    notifyListeners();
-
-    await fetchAddresses();
-
-    for(Address address in _addresses)
-      {
-        if(address.latitude == latitude && address.longitude == longitude)
-          {
-            return address;
-          }
-      }
-    return null;
-  }
-
-
 
   Future<void> _loadSelectedAddress() async {
     final prefs = await SharedPreferences.getInstance();

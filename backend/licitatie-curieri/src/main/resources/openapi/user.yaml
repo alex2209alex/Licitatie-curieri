@@ -36,7 +36,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
   /users/{email}/verification:
     put:
       tags:
@@ -61,6 +60,10 @@ paths:
       responses:
         '200':
           description: User successfully verified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
         '400':
           description: Request body is invalid.
           content:
@@ -73,7 +76,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
   /users/login:
     post:
       tags:
@@ -88,12 +90,8 @@ paths:
               $ref: '#/components/schemas/UserLogin'
         required: true
       responses:
-        '201':
-          description: Token successfully created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserLoginResponse'
+        '200':
+          description: Two factor code was sent (!!TBA...)
         '401':
           description: Authentication failed due to invalid credentials.
           content:
@@ -106,7 +104,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
   /users/getTwoFACode:
     put:
       tags:
@@ -123,6 +120,10 @@ paths:
       responses:
         '200':
           description: User successfully verified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
         '403':
           description: Verification deadline expired. User was deleted.
           content:
@@ -135,7 +136,6 @@ paths:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/GenericApplicationError'
-
 components:
   schemas:
     UserCreation:
@@ -183,7 +183,6 @@ components:
           example: examplePassword1!
         userType:
           $ref: '#/components/schemas/UserType'
-
     UserCreationResponse:
       type: object
       properties:
@@ -210,7 +209,6 @@ components:
           example: "+40123456789"
         userType:
           $ref: '#/components/schemas/UserType'
-
     UserVerification:
       type: object
       required:
@@ -225,7 +223,6 @@ components:
           description: Phone verification code
           type: string
           example: 12345
-
     UserType:
       type: string
       description: Type of User in the application
@@ -233,8 +230,7 @@ components:
       enum:
         - CLIENT
         - COURIER
-        - ADMIN_RESTAURANT
-
+        - RESTAURANT_ADMIN
     UserLogin:
       type: object
       required:
@@ -250,8 +246,7 @@ components:
           type: string
           description: User's password
           example: securePassword123!
-
-    UserLoginResponse:
+    TokenResponse:
       type: object
       required:
         - token
@@ -260,7 +255,6 @@ components:
           type: string
           description: JSON Web Token
           example: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbGV4X2lzYWM3MkB5YWhvby5jb20iLCJpYXQiOjE3MzQwNDI1MjcsImV4cCI6MTczNDY0NzMyN30.-lQlrmLP06IML36ls9hWzboJQrs5Udm1Uz65KY5B8aSvrui3AHSNAtqws64WuFViFuxGQe6yeKdEUsolg-uUaw
-
     UserTwoFAVerification:
       type: object
       required:

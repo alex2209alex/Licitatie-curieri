@@ -22,6 +22,7 @@ import java.util.List;
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private static final String SECRET_KEY = "MOPS";
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -42,11 +43,12 @@ public class JwtFilter extends OncePerRequestFilter {
                         .parseClaimsJws(token)
                         .getBody();
 
-                String email = claims.getSubject();
-                if (email != null) {
+                String userId = claims.getId();
+                String userType = claims.getSubject();
+                if (userId != null) {
                     List<GrantedAuthority> authorities = Collections.emptyList();
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            email, null, authorities);
+                            userId, userType, authorities);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (Exception e) {

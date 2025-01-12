@@ -10,7 +10,6 @@ class Address {
     required this.latitude,
     required this.longitude,
   });
-
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       id: json['id'],

@@ -2,9 +2,11 @@ package ro.fmi.unibuc.licitatie_curieri.domain.restaurant.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
-import org.openapitools.model.*;
+import ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models.RestaurantCreationDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models.RestaurantCreationResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models.RestaurantDetailsDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.restaurant.models.RestaurantUpdateResponseDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 
@@ -13,32 +15,27 @@ import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface RestaurantMapper {
-    @Mapping(target = "latitude", source = "address.latitude")
-    @Mapping(target = "longitude", source = "address.longitude")
     RestaurantDetailsDto toRestaurantDetailsDto(Restaurant restaurant);
 
-    @Mapping(target = "details", source = "address")
-    @Mapping(target = "latitude", source = "latitude")
-    @Mapping(target = "longitude", source = "longitude")
-    AddressCreationDto toAddressCreationDto(CreateRestaurantDto createRestaurantDto);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "details", source = "addressDetails")
+    Address toAddress(RestaurantCreationDto restaurantCreationDto);
+
+    @Mapping(target = "addressId", source = "address.id")
+    @Mapping(target = "addressDetails", source = "address.details")
+    @Mapping(target = "latitude", source = "address.latitude")
+    @Mapping(target = "longitude", source = "address.longitude")
+    RestaurantCreationResponseDto toRestaurantCreationResponseDto(Restaurant restaurant);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "menuItems", ignore = true)
     @Mapping(target = "name", source = "createRestaurantDto.name")
-    @Mapping(target = "address", source = "addressId", qualifiedByName = "mapAddressId")
-    Restaurant toRestaurant(CreateRestaurantDto createRestaurantDto, Long addressId);
+    @Mapping(target = "wasRemoved", constant = "false")
+    Restaurant toRestaurant(RestaurantCreationDto createRestaurantDto, Address address);
 
-    CreateRestaurantResponseDto toCreateRestaurantResponseDto(Restaurant restaurant);
-
-    UpdateRestaurantNameResponseDto toUpdateRestaurantNameResponseDto(Restaurant restaurant);
-
-    @Named("mapAddressId")
-    default Address mapAddressId(Long addressId) {
-        if (addressId == null) {
-            return null;
-        }
-
-        Address address = new Address();
-        address.setId(addressId);
-        return address;
-    }
+    @Mapping(target = "addressId", source = "address.id")
+    @Mapping(target = "addressDetails", source = "address.details")
+    @Mapping(target = "latitude", source = "address.latitude")
+    @Mapping(target = "longitude", source = "address.longitude")
+    RestaurantUpdateResponseDto toRestaurantUpdateResponseDto(Restaurant restaurant);
 }
