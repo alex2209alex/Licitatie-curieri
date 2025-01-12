@@ -23,25 +23,29 @@ public class OrderController implements OrderApi {
 
     @Override
     public List<OrderDetailsDto> getClientOrders() {
-        log.info(String.format(LogMessageUtils.GET_CLIENT_ORDER));
+        log.info(LogMessageUtils.GET_CLIENT_ORDER);
 
         return orderService.getClientOrders();
     }
 
     @Override
     public List<OrderDetailsDto> getNearbyOrders(@RequestParam(value = "latitude") Double latitude, @RequestParam(value = "longitude") Double longitude) {
-        return null;
+        log.info(String.format(LogMessageUtils.GET_NEARBY_ORDER, latitude, longitude));
+
+        return orderService.getNearbyOrders(latitude, longitude);
     }
 
     @Override
     public OrderCreationResponseDto createOrder(@RequestBody OrderCreationDto orderCreationDto) {
-        log.info(String.format(LogMessageUtils.CREATE_ORDER));
+        log.info(LogMessageUtils.CREATE_ORDER);
 
         return orderService.createOrder(orderCreationDto);
     }
 
     @Override
     public void cancelOrder(@PathVariable("order_id") Long orderId) {
+        log.info(String.format(LogMessageUtils.CANCEL_ORDER, orderId));
 
+        orderService.cancelOrder(orderId);
     }
 }

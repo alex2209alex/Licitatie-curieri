@@ -58,6 +58,10 @@ public class OrderService {
         }
     }
 
+    public List<OrderDetailsDto> getNearbyOrders(Double latitude, Double longitude) {
+        return null;
+    }
+
     @Transactional
     public OrderCreationResponseDto createOrder(OrderCreationDto orderCreationDto) {
         userInformationService.ensureCurrentUserIsVerified();
@@ -119,6 +123,9 @@ public class OrderService {
 
             return orderMapper.mapToOrderCreationResponse(persistedOrder);
         }
+    }
+
+    public void cancelOrder(Long orderId) {
     }
 
     private Restaurant getRestaurant(OrderCreationDto orderCreationDto) {

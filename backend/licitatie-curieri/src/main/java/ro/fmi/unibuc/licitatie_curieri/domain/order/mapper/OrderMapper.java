@@ -24,7 +24,7 @@ import java.util.List;
 )
 public interface OrderMapper {
     @Mapping(target = "restaurantAddress", source = ".", qualifiedByName = "getRestaurantAddress")
-    @Mapping(target = "clientAddress", source = "address.id")
+    @Mapping(target = "clientAddress", source = "address.details")
     @Mapping(target = "lowestBid", source = "deliveryPrice")
     @Mapping(target = "auctionDeadline", source = "auctionDeadline", qualifiedByName = "toOffsetDateTime")
     OrderDetailsDto mapToOrderDetailsDto(Order order);
