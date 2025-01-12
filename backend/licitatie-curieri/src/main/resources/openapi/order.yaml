@@ -39,6 +39,8 @@ paths:
           schema:
             type: number
             format: double
+            minimum: -90
+            maximum: 90
           example: 44.439663
         - name: longitude
           required: true
@@ -47,6 +49,8 @@ paths:
           schema:
             type: number
             format: double
+            minimum: -180
+            maximum: 180
           example: 26.096306
       responses:
         '200':

@@ -25,6 +25,7 @@ import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociationId;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class OrderService {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_GET_CLIENT_ORDERS);
         }
 
-        val userAddressIds = userInformationService.getCurrentUser()
+        val addressIds = userInformationService.getCurrentUser()
                 .getUserAddressAssociations()
                 .stream()
                 .map(UserAddressAssociation::getId)
@@ -53,16 +54,36 @@ public class OrderService {
                 .collect(Collectors.toSet());
 
         synchronized (mutex) {
-            val orders = orderRepository.findAllByAddressIds(userAddressIds);
-            return orders.stream()
+            return orderRepository.findAllByAddressIds(addressIds).stream()
                     .map(orderMapper::mapToOrderDetailsDto)
-                    .toList();
+                    .sorted(Comparator.comparing(OrderDetailsDto::getAuctionDeadline))
+                    .toList()
+                    .reversed();
         }
     }
 
     @Transactional(readOnly = true)
     public List<OrderDetailsDto> getNearbyOrders(Double latitude, Double longitude) {
-        return null;
+        userInformationService.ensureCurrentUserIsVerified();
+        if (!userInformationService.isCurrentUserCourier()) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_GET_NEARBY_ORDERS);
+        }
+
+        synchronized (mutex) {
+            return orderRepository.findAll().stream()
+                    .filter(order -> OrderStatus.IN_AUCTION == order.getOrderStatus())
+                    .filter(order -> DistanceCalculator.isWithinRange(
+                                    order.getOrderMenuItemAssociations().getFirst().getMenuItem().getRestaurant().getAddress().getLatitude(),
+                                    order.getOrderMenuItemAssociations().getFirst().getMenuItem().getRestaurant().getAddress().getLongitude(),
+                                    latitude,
+                                    longitude
+                            )
+                    )
+                    .map(orderMapper::mapToOrderDetailsDto)
+                    .sorted(Comparator.comparing(OrderDetailsDto::getAuctionDeadline))
+                    .toList()
+                    .reversed();
+        }
     }
 
     @Transactional
@@ -111,7 +132,7 @@ public class OrderService {
 
         val order = orderMapper.mapToOrder(orderCreationDto, foodPrice, clientAddress);
 
-        synchronized(mutex){
+        synchronized (mutex) {
             val persistedOrder = orderRepository.save(order);
             persistedOrder.setOrderMenuItemAssociations(new ArrayList<>());
             menuItemQuantityHashMap.forEach((menuItemId, quantity) -> {
@@ -146,6 +167,7 @@ public class OrderService {
         }
     }
 
+
     private Restaurant getRestaurant(OrderCreationDto orderCreationDto) {
         val menuItem = menuItemRepository.findById(orderCreationDto.getItems().getFirst().getId())
                 .orElseThrow(() -> new BadRequestException(ErrorMessageUtils.MENU_ITEM_NOT_FOUND));
@@ -158,7 +180,7 @@ public class OrderService {
                 .map(UserAddressAssociation::getId)
                 .map(UserAddressAssociationId::getAddressId)
                 .collect(Collectors.toSet());
-        if(!addressIds.contains(order.getAddress().getId())) {
+        if (!addressIds.contains(order.getAddress().getId())) {
             throw new ForbiddenException(ErrorMessageUtils.ORDER_DOES_NOT_BELONG_TO_CLIENT);
         }
     }
