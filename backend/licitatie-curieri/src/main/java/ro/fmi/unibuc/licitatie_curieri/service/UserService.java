@@ -54,7 +54,7 @@ public class UserService {
     }
 
     @Transactional(noRollbackFor = ForbiddenException.class)
-    public void verifyUser(String email, UserVerificationDto userVerificationDto) {
+    public TokenResponseDto verifyUser(String email, UserVerificationDto userVerificationDto) {
         val user = userRepository.findByEmailAndEmailVerificationCodeAndPhoneVerificationCode(email, userVerificationDto.getEmailVerificationCode(), userVerificationDto.getPhoneVerificationCode())
                 .orElseThrow(() -> new BadRequestException(ErrorMessageUtils.USER_VERIFICATION_FAILED));
 
@@ -67,10 +67,12 @@ public class UserService {
         user.setEmailVerificationCode(null);
         user.setPhoneVerificationCode(null);
         user.setVerificationDeadline(null);
+
+        return userMapper.mapToTokenResponseDto(JwtUtils.generateToken(user.getId(), user.getUserType()));
     }
 
     @Transactional
-    public UserLoginResponseDto loginUser(UserLoginDto userLoginDto) {
+    public void loginUser(UserLoginDto userLoginDto) {
         val user = userRepository.findByEmailAndPassword(userLoginDto.getEmail(), userMapper.hashPassword(userLoginDto.getPassword()))
                 .orElseThrow(() -> new UnauthorizedException(ErrorMessageUtils.AUTHORIZATION_FAILED));
 
@@ -88,12 +90,10 @@ public class UserService {
         } catch (MessagingException e) {
             throw new InternalServerErrorException(e.getMessage());
         }
-
-        return userMapper.mapToUserLoginResponseDto(JwtUtils.generateToken(user.getId(), user.getUserType()));
     }
 
     @Transactional(noRollbackFor = ForbiddenException.class)
-    public void getTwoFACodeUser(UserTwoFAVerificationDto userTwoFAVerificationDto) {
+    public TokenResponseDto getTwoFACodeUser(UserTwoFAVerificationDto userTwoFAVerificationDto) {
         val user = userRepository.findByEmailAndTwoFACode(
                         userTwoFAVerificationDto.getEmail(),
                         userTwoFAVerificationDto.getVerificationCode()
@@ -107,6 +107,7 @@ public class UserService {
         } else {
             user.setTwoFACode(null);
             user.setVerifyFaCodeDeadline(null);
+            return userMapper.mapToTokenResponseDto(JwtUtils.generateToken(user.getId(), user.getUserType()));
         }
     }
 

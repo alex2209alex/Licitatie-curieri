@@ -68,7 +68,6 @@ class VerificationPageState extends State<VerificationPage> {
                     );
 
                     if (isVerified) {
-                      await userViewModel.authentication(widget.email,widget.password);
                       if(widget.selectedUserType == UserType.CLIENT)
                         {
                           // navigate to main page of CLIENT
