@@ -8,6 +8,8 @@ import ro.fmi.unibuc.licitatie_curieri.common.distancecalculator.DistanceCalcula
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
+import ro.fmi.unibuc.licitatie_curieri.common.orderhandler.OrderHandler;
+import ro.fmi.unibuc.licitatie_curieri.common.orderhandler.OrderThread;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationItemDto;
@@ -27,6 +29,8 @@ import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociationId;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,7 +44,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final UserInformationService userInformationService;
-    private final Object mutex = new Object();
+    private final OrderHandler orderHandler;
 
     @Transactional(readOnly = true)
     public List<OrderDetailsDto> getClientOrders() {
@@ -56,7 +60,7 @@ public class OrderService {
                 .map(UserAddressAssociationId::getAddressId)
                 .collect(Collectors.toSet());
 
-        synchronized (mutex) {
+        synchronized (OrderHandler.mutex) {
             return orderRepository.findAllByAddressIds(addressIds).stream()
                     .map(orderMapper::mapToOrderDetailsDto)
                     .sorted(Comparator.comparing(OrderDetailsDto::getAuctionDeadline))
@@ -72,7 +76,7 @@ public class OrderService {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_GET_NEARBY_ORDERS);
         }
 
-        synchronized (mutex) {
+        synchronized (OrderHandler.mutex) {
             return orderRepository.findAll().stream()
                     .filter(order -> OrderStatus.IN_AUCTION == order.getOrderStatus())
                     .filter(order -> DistanceCalculator.isWithinRange(
@@ -135,8 +139,9 @@ public class OrderService {
 
         val order = orderMapper.mapToOrder(orderCreationDto, foodPrice, clientAddress);
 
-        synchronized (mutex) {
-            val persistedOrder = orderRepository.save(order);
+        Order persistedOrder;
+        synchronized (OrderHandler.mutex) {
+            persistedOrder = orderRepository.save(order);
             persistedOrder.setOrderMenuItemAssociations(new ArrayList<>());
             menuItemQuantityHashMap.forEach((menuItemId, quantity) -> {
                 val orderMenuItemAssociationId = new OrderMenuItemAssociationId();
@@ -147,9 +152,12 @@ public class OrderService {
                 orderMenuItemAssociation.setQuantity(quantity);
                 persistedOrder.getOrderMenuItemAssociations().add(orderMenuItemAssociation);
             });
-
-            return orderMapper.mapToOrderCreationResponse(persistedOrder);
         }
+
+        val orderThread = new OrderThread(orderHandler, persistedOrder.getId(), ChronoUnit.SECONDS.between(Instant.now(), persistedOrder.getAuctionDeadline()));
+        orderThread.start();
+
+        return orderMapper.mapToOrderCreationResponse(persistedOrder);
     }
 
     @Transactional
@@ -159,7 +167,7 @@ public class OrderService {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_MAKE_OFFERS);
         }
 
-        synchronized (mutex) {
+        synchronized (OrderHandler.mutex) {
             val order = orderRepository.findById(offerDto.getOrderId())
                     .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, offerDto.getOrderId())));
 
@@ -188,7 +196,7 @@ public class OrderService {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_CANCEL_ORDERS);
         }
 
-        synchronized (mutex) {
+        synchronized (OrderHandler.mutex) {
             val order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
 

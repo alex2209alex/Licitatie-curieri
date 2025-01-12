@@ -51,4 +51,5 @@ public class ErrorMessageUtils {
     public static final String ORDER_DOES_NOT_BELONG_TO_CLIENT = "Order does not belong to the client";
     public static final String ONLY_COURIER_CAN_MAKE_OFFERS = "Only courier can make offers";
     public static final String ORDER_CANNOT_BE_CANCELED = "Order cannot be canceled";
+    public static final String ERROR_WITH_ORDER_THREAD = "Error with order thread";
 }
