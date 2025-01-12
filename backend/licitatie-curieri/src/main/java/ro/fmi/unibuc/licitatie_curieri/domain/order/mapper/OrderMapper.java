@@ -8,6 +8,7 @@ import org.mapstruct.ReportingPolicy;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationItemResponseDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderDetailsDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.address.entity.Address;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.Order;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderStatus;
@@ -22,6 +23,12 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface OrderMapper {
+    @Mapping(target = "restaurantAddress", source = ".", qualifiedByName = "getRestaurantAddress")
+    @Mapping(target = "clientAddress", source = "address.id")
+    @Mapping(target = "lowestBid", source = "deliveryPrice")
+    @Mapping(target = "auctionDeadline", source = "auctionDeadline", qualifiedByName = "toOffsetDateTime")
+    OrderDetailsDto mapToOrderDetailsDto(Order order);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "deliveryPrice", source = "orderCreationDto.deliveryPriceLimit")
     @Mapping(target = "auctionDeadline", expression = "java(this.getAuctionDeadline())")
@@ -43,6 +50,11 @@ public interface OrderMapper {
 
     default OrderStatus getOrderStatusForCreation() {
         return OrderStatus.IN_AUCTION;
+    }
+
+    @Named("getRestaurantAddress")
+    default String getRestaurantAddress(Order order) {
+        return order.getOrderMenuItemAssociations().getFirst().getMenuItem().getRestaurant().getAddress().getDetails();
     }
 
     @Named("toOffsetDateTime")

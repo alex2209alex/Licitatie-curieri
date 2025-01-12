@@ -30,7 +30,7 @@ paths:
       tags:
         - Order
       summary: Gets orders at nearby Restaurants for couriers
-      operationId: getOrdersNearby
+      operationId: getNearbyOrders
       parameters:
         - name: latitude
           required: true

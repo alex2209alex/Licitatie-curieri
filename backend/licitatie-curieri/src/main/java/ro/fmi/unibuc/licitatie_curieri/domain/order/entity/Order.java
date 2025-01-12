@@ -31,6 +31,9 @@ public class Order {
     @Column(name = "delivery_price")
     private Double deliveryPrice;
 
+    @Column(name = "delivery_price_limit")
+    private Double deliveryPriceLimit;
+
     @Column(name = "auction_deadline")
     private Instant auctionDeadline;
 

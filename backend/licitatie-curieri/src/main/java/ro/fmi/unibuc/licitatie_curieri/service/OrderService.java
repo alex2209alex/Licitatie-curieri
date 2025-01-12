@@ -12,6 +12,7 @@ import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationItemDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderDetailsDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.repository.MenuItemRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderMenuItemAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderMenuItemAssociationId;
@@ -19,9 +20,11 @@ import ro.fmi.unibuc.licitatie_curieri.domain.order.mapper.OrderMapper;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.repository.OrderRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
+import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociationId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +34,29 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final UserInformationService userInformationService;
+    private final Object mutex = new Object();
+
+    @Transactional(readOnly = true)
+    public List<OrderDetailsDto> getClientOrders() {
+        userInformationService.ensureCurrentUserIsVerified();
+        if (!userInformationService.isCurrentUserClient()) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_GET_CLIENT_ORDERS);
+        }
+
+        val userAddressIds = userInformationService.getCurrentUser()
+                .getUserAddressAssociations()
+                .stream()
+                .map(UserAddressAssociation::getId)
+                .map(UserAddressAssociationId::getAddressId)
+                .collect(Collectors.toSet());
+
+        synchronized (mutex) {
+            val orders = orderRepository.findAllByAddressIds(userAddressIds);
+            return orders.stream()
+                    .map(orderMapper::mapToOrderDetailsDto)
+                    .toList();
+        }
+    }
 
     @Transactional
     public OrderCreationResponseDto createOrder(OrderCreationDto orderCreationDto) {
@@ -78,19 +104,21 @@ public class OrderService {
 
         val order = orderMapper.mapToOrder(orderCreationDto, foodPrice, clientAddress);
 
-        val persistedOrder = orderRepository.save(order);
-        persistedOrder.setOrderMenuItemAssociations(new ArrayList<>());
-        menuItemQuantityHashMap.forEach((menuItemId, quantity) -> {
-            val orderMenuItemAssociationId = new OrderMenuItemAssociationId();
-            orderMenuItemAssociationId.setOrderId(persistedOrder.getId());
-            orderMenuItemAssociationId.setMenuItemId(menuItemId);
-            val orderMenuItemAssociation = new OrderMenuItemAssociation();
-            orderMenuItemAssociation.setId(orderMenuItemAssociationId);
-            orderMenuItemAssociation.setQuantity(quantity);
-            persistedOrder.getOrderMenuItemAssociations().add(orderMenuItemAssociation);
-        });
+        synchronized(mutex){
+            val persistedOrder = orderRepository.save(order);
+            persistedOrder.setOrderMenuItemAssociations(new ArrayList<>());
+            menuItemQuantityHashMap.forEach((menuItemId, quantity) -> {
+                val orderMenuItemAssociationId = new OrderMenuItemAssociationId();
+                orderMenuItemAssociationId.setOrderId(persistedOrder.getId());
+                orderMenuItemAssociationId.setMenuItemId(menuItemId);
+                val orderMenuItemAssociation = new OrderMenuItemAssociation();
+                orderMenuItemAssociation.setId(orderMenuItemAssociationId);
+                orderMenuItemAssociation.setQuantity(quantity);
+                persistedOrder.getOrderMenuItemAssociations().add(orderMenuItemAssociation);
+            });
 
-        return orderMapper.mapToOrderCreationResponse(persistedOrder);
+            return orderMapper.mapToOrderCreationResponse(persistedOrder);
+        }
     }
 
     private Restaurant getRestaurant(OrderCreationDto orderCreationDto) {
