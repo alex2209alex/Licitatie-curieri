@@ -24,26 +24,33 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> verifyUser(
-      String emailVerificationCode, String phoneVerificationCode) async {
-    return await userRepository.verifyUser(
+  Future<bool> verifyUser(String emailVerificationCode, String phoneVerificationCode) async {
+    String token = await userRepository.verifyUser(
         userEmail, emailVerificationCode, phoneVerificationCode);
-  }
-
-  Future<bool> authentication(String email, String password) async {
-    String token = await userRepository.authentication(email, password);
 
     if (token != null && token.isNotEmpty) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('authToken', token);
-      userEmail = email;
       return true;
     } else {
       return false;
     }
   }
 
+  Future<bool> authentication(String email, String password) async {
+    userEmail = email;
+    return await userRepository.authentication(email, password);
+  }
+
   Future<bool> twoFACode(String verificationCode) async {
-    return await userRepository.twoFACode(userEmail, verificationCode);
+    String token = await userRepository.twoFACode(userEmail, verificationCode);
+
+    if (token != null && token.isNotEmpty) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('authToken', token);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
