@@ -103,7 +103,7 @@ class _CartScreenState extends State<CartScreen> {
           const SizedBox(width: 20.0),
 
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.only(right: 12.0, top: 12.0, bottom: 12.0, left: 0.0),
             child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -119,7 +119,8 @@ class _CartScreenState extends State<CartScreen> {
                   },
 
                   child: const Icon(Icons.fastfood_outlined))
-            ]))
+            ])),
+          SizedBox(width: 20.0),
         ],
       ),
       body: Consumer<CartProvider>(

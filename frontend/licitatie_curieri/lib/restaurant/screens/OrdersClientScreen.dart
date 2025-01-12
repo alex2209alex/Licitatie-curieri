@@ -61,7 +61,7 @@ class _OrdersClientScreenState extends State<OrdersClientScreen> {
                     return ListTile(
                       title: Text(order.restaurantName),
                       subtitle:
-                      Text("Stare: ${order.orderStatus}.\nComanda de ${order.foodPrice} RON"),
+                      Text("Status: ${order.orderStatus}.\nOrder of ${order.foodPrice} RON"),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -85,22 +85,7 @@ class _OrdersClientScreenState extends State<OrdersClientScreen> {
                   },
                 );
               },
-            ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: UniqueKey(),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddressScreen(),
-            ),
-          ).then((_) {
-            initData();
-          });
-        },
-        child: const Icon(Icons.location_on),
-        tooltip: 'Go to Addresses',
-      ),
+            )
     );
   }
 }
