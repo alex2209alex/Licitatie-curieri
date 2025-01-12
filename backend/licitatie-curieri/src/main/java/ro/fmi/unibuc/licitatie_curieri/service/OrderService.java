@@ -13,6 +13,9 @@ import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationItemDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationResponseDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderDetailsDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferStatusDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.repository.MenuItemRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.Order;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderMenuItemAssociation;
@@ -150,6 +153,35 @@ public class OrderService {
     }
 
     @Transactional
+    public OfferResponseDto makeOffer(OfferDto offerDto) {
+        userInformationService.ensureCurrentUserIsVerified();
+        if (!userInformationService.isCurrentUserCourier()) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_MAKE_OFFERS);
+        }
+
+        synchronized (mutex) {
+            val order = orderRepository.findById(offerDto.getOrderId())
+                    .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, offerDto.getOrderId())));
+
+            if (OrderStatus.IN_AUCTION != order.getOrderStatus()) {
+                return new OfferResponseDto(OfferStatusDto.REJECTED_AUCTION_IS_OVER, offerDto.getOrderId(), offerDto.getDeliveryPrice());
+            }
+
+            if (order.getDeliveryPriceLimit() < offerDto.getDeliveryPrice()) {
+                return new OfferResponseDto(OfferStatusDto.REJECTED_OFFER_EXCEEDS_DELIVERY_PRICE_LIMIT, offerDto.getOrderId(), offerDto.getDeliveryPrice());
+            }
+
+            if (order.getDeliveryPrice() == null || order.getDeliveryPrice() > offerDto.getDeliveryPrice()) {
+                order.setDeliveryPrice(offerDto.getDeliveryPrice());
+                order.setCourier(userInformationService.getCurrentUser());
+                return new OfferResponseDto(OfferStatusDto.ACCEPTED, offerDto.getOrderId(), offerDto.getDeliveryPrice());
+            }
+
+            return new OfferResponseDto(OfferStatusDto.REJECTED_NOT_LOWEST_OFFER, offerDto.getOrderId(), offerDto.getDeliveryPrice());
+        }
+    }
+
+    @Transactional
     public void cancelOrder(Long orderId) {
         userInformationService.ensureCurrentUserIsVerified();
         if (!userInformationService.isCurrentUserClient()) {
@@ -166,7 +198,6 @@ public class OrderService {
             order.setOrderStatus(OrderStatus.CANCELLED);
         }
     }
-
 
     private Restaurant getRestaurant(OrderCreationDto orderCreationDto) {
         val menuItem = menuItemRepository.findById(orderCreationDto.getItems().getFirst().getId())
