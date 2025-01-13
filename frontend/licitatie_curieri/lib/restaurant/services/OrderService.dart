@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
-import 'package:licitatie_curieri/restaurant/models/MenuItemModel.dart';
 import 'package:licitatie_curieri/restaurant/models/OrderModel.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:licitatie_curieri/restaurant/models/RestaurantMenuItemModel.dart';
 import 'package:licitatie_curieri/restaurant/providers/CartProvider.dart';
 import 'package:licitatie_curieri/restaurant/services/CartService.dart';
+
 import '../../common/GetToken.dart';
 import '../../common/Utils.dart';
 
 class OrderService {
-  static const String baseUrl = '${Utils.baseUrl}';
+  static const String baseUrl = '${Utils.BASE_URL}';
   final GetToken getToken = GetToken();
 
   Future<List<Order>> fetchOrders() async {
@@ -36,10 +36,10 @@ class OrderService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
-      log("Client Orders: " + data.map((json) => OrderDetails.fromJson(json)).toList().toString());
+      log("Client Orders: " +
+          data.map((json) => OrderDetails.fromJson(json)).toList().toString());
       return data.map((json) => OrderDetails.fromJson(json)).toList();
-    }
-    else {
+    } else {
       throw Exception("Failed to fetch orders");
     }
   }
@@ -69,7 +69,8 @@ class OrderService {
         log("Order details fetched successfully: $data");
         return OrderToDeliverDetails.fromJson(data);
       } else {
-        throw Exception("Failed to fetch order details: ${response.statusCode}");
+        throw Exception(
+            "Failed to fetch order details: ${response.statusCode}");
       }
     } catch (error) {
       log("Error fetching order details: $error");
@@ -77,7 +78,8 @@ class OrderService {
     }
   }
 
-  Future<bool> createOrder(AddressProvider addressProvider, double deliveryPriceLimit, CartProvider cartProvider) async {
+  Future<bool> createOrder(AddressProvider addressProvider,
+      double deliveryPriceLimit, CartProvider cartProvider) async {
     log("fetchOrders invoked");
     String? token = await getToken.getToken();
     log("token $token");
@@ -86,17 +88,20 @@ class OrderService {
       throw Exception("Authentication token not found");
     }
     int? addressId = addressProvider.selectedAddressId;
-    if(addressId == null){
+    if (addressId == null) {
       throw Exception("Address is not selected");
     }
 
     List<RestaurantMenuItem> items = await CartService().getCartItems();
-    if(items.isEmpty){
+    if (items.isEmpty) {
       throw Exception("Must add items to cart");
     }
 
-
-    OrderCreation orderCreation = OrderCreation(id: 0, addressId: addressId, deliveryPriceLimit: deliveryPriceLimit, items: items);
+    OrderCreation orderCreation = OrderCreation(
+        id: 0,
+        addressId: addressId,
+        deliveryPriceLimit: deliveryPriceLimit,
+        items: items);
     final requestBody = orderCreation.toJson();
 
     Uri uri = Uri.parse("$baseUrl/orders/client");
@@ -112,12 +117,10 @@ class OrderService {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return true;
-    }
-    else {
+    } else {
       throw Exception("Failed statusCode for creation");
     }
   }
-
 
   Future<List<Order>> fetchOrdersCourier() async {
     try {
@@ -134,7 +137,8 @@ class OrderService {
 
       log("Current location: Latitude: $latitude, Longitude: $longitude");
 
-      Uri uri = Uri.parse("$baseUrl/orders/nearby?latitude=$latitude&longitude=$longitude");
+      Uri uri = Uri.parse(
+          "$baseUrl/orders/nearby?latitude=$latitude&longitude=$longitude");
       final response = await http.get(
         uri,
         headers: {
@@ -155,6 +159,7 @@ class OrderService {
       rethrow; // Re-throw the error to be handled by the caller
     }
   }
+
   Future<void> cancelOrder(int id) async {
     String? token = await getToken.getToken();
 
@@ -176,7 +181,6 @@ class OrderService {
     }
   }
 
-
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -196,7 +200,8 @@ class OrderService {
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw Exception("Location permissions are permanently denied. We cannot request permissions.");
+        throw Exception(
+            "Location permissions are permanently denied. We cannot request permissions.");
       }
 
       return await Geolocator.getCurrentPosition();
@@ -205,5 +210,4 @@ class OrderService {
       rethrow;
     }
   }
-
 }

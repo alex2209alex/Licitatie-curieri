@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/restaurant/services/OrderService.dart';
 
 import '../../address/providers/AddressProvider.dart';
@@ -12,7 +11,9 @@ class OrderProvider with ChangeNotifier {
   bool _isLoading = false;
 
   List<Order> get orders => _orders;
+
   Order? get selectedOrder => _selectedOrder;
+
   bool get isLoading => _isLoading;
 
   set selectedOrder(Order? order) {
@@ -23,11 +24,11 @@ class OrderProvider with ChangeNotifier {
   Future<void> fetchOrdersClient() async {
     _isLoading = true;
     notifyListeners();
-    try{
+    try {
       _orders = await OrderService().fetchOrders();
-    }catch(error) {
+    } catch (error) {
       print("Error fetching orders: $error");
-    } finally{
+    } finally {
       _isLoading = false;
       notifyListeners();
     }
@@ -36,16 +37,15 @@ class OrderProvider with ChangeNotifier {
   Future<void> fetchOrdersCourier() async {
     _isLoading = true;
     notifyListeners();
-    try{
+    try {
       _orders = await OrderService().fetchOrdersCourier();
-    }catch(error) {
+    } catch (error) {
       print("Error fetching orders: $error");
-    } finally{
+    } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
-
 
   Future<void> cancelOrder(int id) async {
     _isLoading = true;
@@ -53,8 +53,7 @@ class OrderProvider with ChangeNotifier {
     try {
       await OrderService().cancelOrder(id);
       await fetchOrdersClient();
-    } catch(error)
-    {
+    } catch (error) {
       print("Error cancelling order $id: $error");
     } finally {
       _isLoading = false;
@@ -77,15 +76,16 @@ class OrderProvider with ChangeNotifier {
     return orderToDeliverDetails;
   }
 
-  Future<bool> createOrder(AddressProvider addressProvider, double deliveryPriceLimit, CartProvider cartProvider) async {
+  Future<bool> createOrder(AddressProvider addressProvider,
+      double deliveryPriceLimit, CartProvider cartProvider) async {
     _isLoading = true;
     notifyListeners();
     bool isOk = false;
     try {
-      isOk = await OrderService().createOrder(addressProvider, deliveryPriceLimit, cartProvider);
+      isOk = await OrderService()
+          .createOrder(addressProvider, deliveryPriceLimit, cartProvider);
       await fetchOrdersClient();
-    } catch(error)
-    {
+    } catch (error) {
       print("Error creating order: $error");
     } finally {
       _isLoading = false;
@@ -98,7 +98,6 @@ class OrderProvider with ChangeNotifier {
     _selectedOrder = order;
     notifyListeners();
   }
-
 
   void updateOrderFromRealTime(Map<String, dynamic> data) {
     final orderId = data['orderId'];
@@ -115,18 +114,16 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-
-  Future<void> placeBid(int orderId, double bidAmount) async {
-    try {
-      final success = await OrderService().placeBid(orderId, bidAmount);
-      if (success) {
-        print('Bid placed successfully');
-      } else {
-        print('Failed to place bid');
-      }
-    } catch (e) {
-      print('Error placing bid: $e');
-    }
-  }
-
+// Future<void> placeBid(int orderId, double bidAmount) async {
+//   try {
+//     final success = await OrderService().placeBid(orderId, bidAmount);
+//     if (success) {
+//       print('Bid placed successfully');
+//     } else {
+//       print('Failed to place bid');
+//     }
+//   } catch (e) {
+//     print('Error placing bid: $e');
+//   }
+// }
 }
