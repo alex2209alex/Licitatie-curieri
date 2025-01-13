@@ -11,8 +11,7 @@ class PaymentRepository {
   final GetToken getToken = GetToken();
 
   Future<PaymentIntentData?> createPaymentIntent(String amount, String currency) async {
-    // String? token = await getToken.getToken();
-    String? token = "";
+    String? token = await getToken.getToken();
 
     if (token == null) {
       throw Exception("Authentication token not found");

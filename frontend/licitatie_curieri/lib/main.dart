@@ -9,7 +9,6 @@ import 'package:licitatie_curieri/restaurant/providers/CartProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/MenuItemProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
 import 'package:licitatie_curieri/ui/AuthenticatePage.dart';
-import 'package:licitatie_curieri/ui/PaymentPage.dart';
 import 'package:licitatie_curieri/viewModel/PaymentViewModel.dart';
 import 'package:licitatie_curieri/viewModel/UserViewModel.dart';
 import 'package:provider/provider.dart';
@@ -60,8 +59,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'LicitatieCurieri',
-      // home: AuthenticatePage(),
-      home: PaymentPage(),
+      home: AuthenticatePage(),
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
     );

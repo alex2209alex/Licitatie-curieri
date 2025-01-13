@@ -14,6 +14,7 @@ class PaymentPage extends StatefulWidget {
 
 class PaymentPageState extends State<PaymentPage> {
   bool isLoading = false;
+  final TextEditingController amountController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,31 +28,43 @@ class PaymentPageState extends State<PaymentPage> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-
-                  try {
-                    await paymentViewModel.initPayment('1000', 'ron'); // trb modificat aici. momentan hardcodat
-                    if (paymentViewModel.paymentIntentData != null) {
-                      await showPaymentSheet(context, paymentViewModel.paymentIntentData!);
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Payment failed: ${e.toString()}")));
-                  } finally {
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Amount (RON)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
                     setState(() {
-                      isLoading = false;
+                      isLoading = true;
                     });
-                  }
-                },
-                child: isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text("Pay with Stripe"),
+
+                    try {
+                      int amount = int.parse(amountController.text);
+                      await paymentViewModel.initPayment(amount.toString(), 'RON');
+                      if (paymentViewModel.paymentIntentData != null) {
+                        await showPaymentSheet(context, paymentViewModel.paymentIntentData!);
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Payment failed: ${e.toString()}")));
+                    } finally {
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  },
+                  child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text("Pay with Stripe"),
+                ),
               ),
             ],
           ),
@@ -71,7 +84,6 @@ class PaymentPageState extends State<PaymentPage> {
       await Stripe.instance.presentPaymentSheet();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Paid successfully")));
     } catch (e) {
-      debugPrint('Payment failed: ${e.toString()}'); // trb sters
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Payment failed: ${e.toString()}")));
     }
   }
