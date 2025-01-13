@@ -75,18 +75,11 @@ class UserRepository {
   }
 
   Future<String> twoFACode(String email, String verificationCode) async {
-    String? token = await getToken.getToken();
-
-    if (token == null) {
-      throw Exception("Authentication token not found");
-    }
-
     final response = await put(
       Uri.parse("$baseUrl/getTwoFACode"),
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Bearer $token',
+        'Access-Control-Allow-Origin': '*'
       },
       body: jsonEncode({
         'email': email,

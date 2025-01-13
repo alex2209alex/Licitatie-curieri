@@ -74,6 +74,7 @@ class CartActionBarButtonState extends State<CartActionBarButton> {
           clipBehavior: Clip.none,
           children: [
             FloatingActionButton(
+                heroTag: UniqueKey(),
                 onPressed: () {
                   if (widget.canRedirect) {
                     Navigator.push(

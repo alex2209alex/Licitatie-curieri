@@ -4,6 +4,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:licitatie_curieri/common/GetToken.dart';
 import 'package:licitatie_curieri/model/enum/UserType.dart';
+import 'package:licitatie_curieri/restaurant/screens/OrdersCourierScreen.dart';
 import 'package:licitatie_curieri/restaurant/screens/RestaurantsManageScreen.dart';
 import 'package:licitatie_curieri/ui/utils/AppColors.dart';
 import 'package:licitatie_curieri/ui/utils/Constants.dart';
@@ -81,7 +82,7 @@ class TwoFACodePageState extends State<TwoFACodePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const RestaurantsScreen()),
+                                        const OrdersCourierScreen()),
                               );
                             }
                           } else {

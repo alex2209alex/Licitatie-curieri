@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/address/providers/AddressProvider.dart';
 import 'package:licitatie_curieri/common/GetToken.dart';
+import 'package:licitatie_curieri/restaurant/screens/OrdersClientScreen.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/Utils.dart';
@@ -53,6 +54,7 @@ class _CartScreenState extends State<CartScreen> {
       "deliveryPriceLimit": deliveryPriceLimit,
       "items": items,
     };
+    log("deliveryPriceLimit: ${deliveryPriceLimit.toString()}");
 
     String? token = await GetToken().getToken();
 
@@ -105,6 +107,27 @@ class _CartScreenState extends State<CartScreen> {
           ),
 
           LogoutActionBarButton(),
+          const SizedBox(width: 20.0),
+
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0, top: 12.0, bottom: 12.0, left: 0.0),
+            child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              FloatingActionButton(
+                  heroTag: UniqueKey(),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OrdersClientScreen(),
+                      ),
+                    );
+                  },
+
+                  child: const Icon(Icons.fastfood_outlined))
+            ])),
+          SizedBox(width: 20.0),
         ],
       ),
       body: Consumer<CartProvider>(

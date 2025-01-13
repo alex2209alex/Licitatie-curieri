@@ -7,6 +7,7 @@ import 'package:licitatie_curieri/repository/PaymentRepository.dart';
 import 'package:licitatie_curieri/repository/UserRepository.dart';
 import 'package:licitatie_curieri/restaurant/providers/CartProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/MenuItemProvider.dart';
+import 'package:licitatie_curieri/restaurant/providers/OrderProvider.dart';
 import 'package:licitatie_curieri/restaurant/providers/RestaurantProvider.dart';
 import 'package:licitatie_curieri/ui/AuthenticatePage.dart';
 import 'package:licitatie_curieri/viewModel/PaymentViewModel.dart';
@@ -39,6 +40,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => MenuItemProvider()),
           ChangeNotifierProvider(create: (_) => CartProvider()),
           ChangeNotifierProvider(create: (_) => AddressProvider()),
+          ChangeNotifierProvider(create: (_) => OrderProvider()),
           ChangeNotifierProvider<PaymentViewModel>(
               create: (_) => PaymentViewModel(PaymentRepository()),
           ),
