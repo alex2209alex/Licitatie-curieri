@@ -74,7 +74,7 @@ public class UserService {
     @Transactional
     public void loginUser(UserLoginDto userLoginDto) {
         val user = userRepository.findByEmailAndPassword(userLoginDto.getEmail(), userMapper.hashPassword(userLoginDto.getPassword()))
-                .orElseThrow(() -> new UnauthorizedException(ErrorMessageUtils.AUTHORIZATION_FAILED));
+                .orElseThrow(() -> new UnauthorizedException(String.format(ErrorMessageUtils.AUTHORIZATION_FAILED)));
 
         try {
             String code = EmailSender.generateCode();
