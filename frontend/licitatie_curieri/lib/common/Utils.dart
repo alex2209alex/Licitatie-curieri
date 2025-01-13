@@ -1,4 +1,4 @@
 class Utils{
-  static const String baseUrl = "http://192.168.100.7:8080";
-  static const String mapsApiKey = "AIzaSyCLHtavY4sU424fSE9w-kAkw7cPnt5EAqI";
+  static const String baseUrl = "http://192.168.1.132:8080";
+  static const String mapsApiKey = "AIzaSyAZvQvex-YGGR58zx_hGW3ucqSQGf6s2gs";
 }

@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:licitatie_curieri/restaurant/services/OrderService.dart';
 
+import '../../address/providers/AddressProvider.dart';
 import '../models/OrderModel.dart';
+import 'CartProvider.dart';
 
 class OrderProvider with ChangeNotifier {
   List<Order> _orders = [];
@@ -31,6 +33,20 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchOrdersCourier() async {
+    _isLoading = true;
+    notifyListeners();
+    try{
+      _orders = await OrderService().fetchOrdersCourier();
+    }catch(error) {
+      print("Error fetching orders: $error");
+    } finally{
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+
   Future<void> cancelOrder(int id) async {
     _isLoading = true;
     notifyListeners();
@@ -43,6 +59,38 @@ class OrderProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<OrderToDeliverDetails?> fetchOrderDetails(int orderId) async {
+    _isLoading = true;
+    OrderToDeliverDetails? orderToDeliverDetails;
+    notifyListeners();
+    try {
+      orderToDeliverDetails = await OrderService().fetchOrderDetails(orderId);
+    } catch (error) {
+      print("Error fetching orderDetails $orderId: $error");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return orderToDeliverDetails;
+  }
+
+  Future<bool> createOrder(AddressProvider addressProvider, double deliveryPriceLimit, CartProvider cartProvider) async {
+    _isLoading = true;
+    notifyListeners();
+    bool isOk = false;
+    try {
+      isOk = await OrderService().createOrder(addressProvider, deliveryPriceLimit, cartProvider);
+      await fetchOrdersClient();
+    } catch(error)
+    {
+      print("Error creating order: $error");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+      return isOk;
     }
   }
 

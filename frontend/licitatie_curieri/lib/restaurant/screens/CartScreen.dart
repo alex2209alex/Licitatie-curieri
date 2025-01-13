@@ -53,6 +53,7 @@ class _CartScreenState extends State<CartScreen> {
       "deliveryPriceLimit": deliveryPriceLimit,
       "items": items,
     };
+    log("deliveryPriceLimit: ${deliveryPriceLimit.toString()}");
 
     String? token = await GetToken().getToken();
 

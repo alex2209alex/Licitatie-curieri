@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:licitatie_curieri/restaurant/screens/OrdersCourierScreen.dart';
 // import 'package:licitatie_curieri/restaurant/screens/RestaurantsManageScreen.dart';
 import 'package:licitatie_curieri/ui/utils/AppColors.dart';
 import 'package:licitatie_curieri/ui/utils/Constants.dart';
@@ -90,7 +91,7 @@ class VerificationPageState extends State<VerificationPage> {
                           // navigate to main page of COURIER
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const RestaurantsScreen()),
+                            MaterialPageRoute(builder: (context) => const OrdersCourierScreen()),
                           );
                         }
 
