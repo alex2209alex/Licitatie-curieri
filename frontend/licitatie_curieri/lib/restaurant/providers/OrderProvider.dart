@@ -99,4 +99,34 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
+  void updateOrderFromRealTime(Map<String, dynamic> data) {
+    final orderId = data['orderId'];
+    final newOrderStatus = data['orderStatus'];
+    final newPrice = data['deliveryPrice'];
+
+    final orderIndex = _orders.indexWhere((order) => order.id == orderId);
+    if (orderIndex != -1) {
+      (_orders[orderIndex] as OrderDetails).orderStatus = newOrderStatus;
+      (_orders[orderIndex] as OrderDetails).lowestBid = newPrice;
+      notifyListeners();
+    } else {
+      print('Order not found: $orderId');
+    }
+  }
+
+
+  Future<void> placeBid(int orderId, double bidAmount) async {
+    try {
+      final success = await OrderService().placeBid(orderId, bidAmount);
+      if (success) {
+        print('Bid placed successfully');
+      } else {
+        print('Failed to place bid');
+      }
+    } catch (e) {
+      print('Error placing bid: $e');
+    }
+  }
+
 }

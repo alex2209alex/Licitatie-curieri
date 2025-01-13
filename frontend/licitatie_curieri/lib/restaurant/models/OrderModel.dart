@@ -47,6 +47,28 @@ class OrderDetails extends Order {
       auctionDeadline: DateTime.parse(json["auctionDeadline"])
     );
   }
+
+  OrderDetails copyWith({
+    int? id,
+    String? orderStatus,
+    String? restaurantAddress,
+    String? clientAddress,
+    double? foodPrice,
+    double? deliveryPriceLimit,
+    double? lowestBid,
+    DateTime? auctionDeadline,
+}){
+    return OrderDetails(id: id ?? this.id,
+        restaurantAddress: restaurantAddress ?? this.restaurantAddress,
+        clientAddress: clientAddress ?? this.clientAddress,
+        foodPrice: foodPrice ?? this.foodPrice,
+        deliveryPriceLimit: deliveryPriceLimit ?? this.deliveryPriceLimit,
+        lowestBid: lowestBid ?? this.lowestBid,
+        auctionDeadline: auctionDeadline ?? this.auctionDeadline,
+        orderStatus: orderStatus ?? this.orderStatus);
+  }
+
+
 }
 
 class OrderCreation extends Order{
