@@ -60,6 +60,10 @@ paths:
       responses:
         '200':
           description: User successfully verified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
         '400':
           description: Request body is invalid.
           content:
@@ -86,12 +90,8 @@ paths:
               $ref: '#/components/schemas/UserLogin'
         required: true
       responses:
-        '201':
-          description: Token successfully created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserLoginResponse'
+        '200':
+          description: Two factor code was sent (!!TBA...)
         '401':
           description: Authentication failed due to invalid credentials.
           content:
@@ -120,6 +120,10 @@ paths:
       responses:
         '200':
           description: User successfully verified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
         '403':
           description: Verification deadline expired. User was deleted.
           content:
@@ -242,7 +246,7 @@ components:
           type: string
           description: User's password
           example: securePassword123!
-    UserLoginResponse:
+    TokenResponse:
       type: object
       required:
         - token
