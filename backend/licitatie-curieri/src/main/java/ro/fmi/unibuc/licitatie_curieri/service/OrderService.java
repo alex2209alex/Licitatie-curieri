@@ -229,4 +229,23 @@ public class OrderService {
             throw new ForbiddenException(ErrorMessageUtils.ORDER_CANNOT_BE_CANCELED);
         }
     }
+
+    @Transactional
+    public OrderToDeliverDetailsDto getOrderDetails(Long orderId) {
+        val currentUser = userInformationService.getCurrentUser();
+
+        if(!userInformationService.isCurrentUserCourier())
+        {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_VIEW_ORDER_DETAILS);
+        }
+
+        val order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BadRequestException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
+
+        if(!order.getCourier().getId().equals(currentUser.getId())){
+            throw new ForbiddenException(ErrorMessageUtils.COURIER_NOT_ASSOCIATED_WITH_ORDER);
+        }
+
+        return orderMapper.mapToOrderToDeliverDetailsDto(order);
+    }
 }
