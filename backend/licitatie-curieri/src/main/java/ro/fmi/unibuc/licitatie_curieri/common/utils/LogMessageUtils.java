@@ -24,4 +24,6 @@ public class LogMessageUtils {
     public static final String VERIFY_USER = "verifyUser operation was invoked with email %s";
     public static final String AUTHENTICATE_USER = "authenticateUser operation was invoked with email %s and password %s";
     public static final String TWO_FACTOR_AUTH_USER = "Verify 2FE operation was invoked with email %s and code %s";
+
+    public static final String PAYMENT_METHOD = "createPaymentIntent was invoked with ammount %s and currency %s";
 }
