@@ -1,9 +1,9 @@
-import 'dart:convert';
+import 'dart:async';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:licitatie_curieri/restaurant/providers/OrderProvider.dart';
 import 'package:provider/provider.dart';
-import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import '../../common/widgets/CartActionBarButton.dart';
 import '../models/OrderModel.dart';
@@ -17,82 +17,30 @@ class OrdersCourierScreen extends StatefulWidget {
 }
 
 class _OrdersCourierScreenState extends State<OrdersCourierScreen> {
-  late StompClient _stompClient;
-  bool _isConnected = false;
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize the STOMP client
-    _stompClient = StompClient(
-      config: StompConfig(
-          url: '',
-        onConnect: onConnectCallback
-      ),
-    );
-
-    // Connect to the server
-    _connectToStompServer();
-
-    // Initial data fetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      initData();
+    });
+    _timer = Timer.periodic(const Duration(seconds: 20), (_) {
+      log("Refreshing Orders");
       initData();
     });
   }
 
-  void onConnectCallback(StompFrame connectFrame) {
-    log("Listening...");
-  }
-  Future<void> _connectToStompServer() async {
-    try {
-      _stompClient.activate();
-      log('Connected to STOMP server');
-      setState(() {
-        _isConnected = true;
-      });
-
-      // Subscribe to a destination for real-time updates
-      _stompClient.subscribe(
-        destination: '/topic/offers',
-        callback: (frame) {
-          final data = json.decode(frame.body!);
-          log('Received update: $data');
-          // Update the UI based on the received data
-          final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-          orderProvider.updateOrderFromRealTime(data);
-        },
-      );
-    } catch (e) {
-      log('Failed to connect to STOMP server: $e');
-    }
-  }
-
   Future<void> initData() async {
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-    await orderProvider.fetchOrdersCourier();
+    await orderProvider.fetchOrdersCourier(); // Fetch orders for couriers
   }
 
   @override
   void dispose() {
-    _stompClient.deactivate();
+    // Cancel the timer when the screen is disposed
+    _timer.cancel();
     super.dispose();
-  }
-
-  void _makeBid(int orderId, double bidAmount) {
-    if (_isConnected) {
-      final bidData = {
-        'orderId': orderId,
-        'deliveryPrice': bidAmount,
-      };
-      _stompClient.send(
-        destination: '/realTime/order/makeOffer',
-        body: json.encode(bidData),
-      );
-      log('Bid sent: $bidData');
-    } else {
-      log('STOMP client not connected');
-    }
   }
 
   @override
@@ -111,89 +59,52 @@ class _OrdersCourierScreenState extends State<OrdersCourierScreen> {
           if (orderProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (orderProvider.orders.isEmpty) {
             return const Center(child: Text("No orders found."));
           }
-
           return ListView.builder(
             itemCount: orderProvider.orders.length,
             itemBuilder: (context, i) {
               final order = orderProvider.orders[i];
-
+              // Cast to OrderDetails to access extended properties
               if (order is OrderDetails) {
                 return ListTile(
                   title: Text(order.restaurantAddress),
-                  subtitle: Text("Status: ${order.orderStatus}.\nOrder of ${order.foodPrice} RON"),
+                  subtitle: Text(
+                      "Status: ${order.orderStatus}.\nOrder of ${order.foodPrice} RON"),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.open_in_new),
                         onPressed: () {
+                          // Navigate to OrderDetailsScreen
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => OrderDetailsScreen(orderId: order.id),
+                              builder: (context) =>
+                                  OrderDetailsScreen(orderId: order.id),
                             ),
                           );
                         },
                       ),
-                      if (order.orderStatus == "IN_AUCTION")
+                      if (order.orderStatus != "CANCELLED")
                         IconButton(
-                          icon: const Icon(Icons.gavel),
+                          icon: const Icon(Icons.cancel),
                           onPressed: () {
-                            _showBidDialog(order.id);
+                            orderProvider.cancelOrder(order.id);
                           },
                         ),
                     ],
                   ),
                 );
               } else {
-                return const SizedBox();
+                return const SizedBox(); // Handle case if it's not OrderDetails
               }
             },
           );
         },
       ),
-    );
-  }
-
-  void _showBidDialog(int orderId) {
-    final bidController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Place Your Bid'),
-          content: TextField(
-            controller: bidController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Enter bid amount (RON)'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                final bidAmount = double.tryParse(bidController.text);
-                if (bidAmount != null) {
-                  _makeBid(orderId, bidAmount);
-                  Navigator.pop(context);
-                } else {
-                  log('Invalid bid amount');
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
