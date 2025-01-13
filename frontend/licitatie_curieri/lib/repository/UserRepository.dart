@@ -27,7 +27,7 @@ class UserRepository {
     }
   }
 
-  Future<bool> verifyUser(String email, String emailVerificationCode,
+  Future<String> verifyUser(String email, String emailVerificationCode,
       String phoneVerificationCode) async {
     final response = await put(
       Uri.parse("$baseUrl/$email/verification"),
@@ -42,13 +42,19 @@ class UserRepository {
     );
 
     if (response.statusCode == 200) {
-      return true;
+        var jsonResponse = jsonDecode(response.body);
+        String token = jsonResponse['token'];
+        if (token != null && token.isNotEmpty) {
+          return token;
+        } else {
+          throw Exception('Token not found in response');
+        }
     } else {
       throw Exception('Verification failed. ${response.body}');
     }
   }
 
-  Future<String> authentication(String email, String password) async {
+  Future<bool> authentication(String email, String password) async {
     final response = await post(
       Uri.parse("$baseUrl/login"),
       headers: {
@@ -61,20 +67,14 @@ class UserRepository {
       }),
     );
 
-    if (response.statusCode == 201) {
-      var jsonResponse = jsonDecode(response.body);
-      String token = jsonResponse['token'];
-      if (token != null && token.isNotEmpty) {
-        return token;
-      } else {
-        throw Exception('Token not found in response');
-      }
+    if (response.statusCode == 200) {
+      return true;
     } else {
       throw Exception('Authentication failed. ${response.body}');
     }
   }
 
-  Future<bool> twoFACode(String email, String verificationCode) async {
+  Future<String> twoFACode(String email, String verificationCode) async {
     String? token = await getToken.getToken();
 
     if (token == null) {
@@ -95,7 +95,13 @@ class UserRepository {
     );
 
     if (response.statusCode == 200) {
-      return true;
+        var jsonResponse = jsonDecode(response.body);
+        String token = jsonResponse['token'];
+        if (token != null && token.isNotEmpty) {
+          return token;
+        } else {
+          throw Exception('Token not found in response');
+        }
     } else {
       throw Exception('2FA failed. ${response.body}');
     }

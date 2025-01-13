@@ -23,7 +23,12 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/users/signup", "users/*/verification", "users/login").permitAll()
+                        .requestMatchers(
+                                "/users/signup",
+                                "/users/*/verification",
+                                "/users/login",
+                                "/users/getTwoFACode"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
