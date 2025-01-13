@@ -11,10 +11,7 @@ import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
 import ro.fmi.unibuc.licitatie_curieri.common.orderhandler.OrderHandler;
 import ro.fmi.unibuc.licitatie_curieri.common.orderhandler.OrderThread;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
-import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
-import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationItemDto;
-import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationResponseDto;
-import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderDetailsDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.order.models.*;
 import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferResponseDto;
 import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferStatusDto;
@@ -91,6 +88,27 @@ public class OrderService {
                     .toList()
                     .reversed();
         }
+    }
+
+    @Transactional
+    public OrderToDeliverDetailsDto getOrderDetails(Long orderId) {
+        userInformationService.ensureCurrentUserIsVerified();
+        if(!userInformationService.isCurrentUserCourier()) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_VIEW_ORDER_DETAILS);
+        }
+
+        Order order;
+        synchronized (OrderHandler.mutex) {
+            order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new BadRequestException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
+
+            val currentUser = userInformationService.getCurrentUser();
+            if(!order.getCourier().getId().equals(currentUser.getId())){
+                throw new ForbiddenException(ErrorMessageUtils.COURIER_NOT_ASSOCIATED_WITH_ORDER);
+            }
+        }
+
+        return orderMapper.mapToOrderToDeliverDetailsDto(order);
     }
 
     @Transactional
@@ -228,24 +246,5 @@ public class OrderService {
         if (OrderStatus.IN_AUCTION != order.getOrderStatus()) {
             throw new ForbiddenException(ErrorMessageUtils.ORDER_CANNOT_BE_CANCELED);
         }
-    }
-
-    @Transactional
-    public OrderToDeliverDetailsDto getOrderDetails(Long orderId) {
-        val currentUser = userInformationService.getCurrentUser();
-
-        if(!userInformationService.isCurrentUserCourier())
-        {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_VIEW_ORDER_DETAILS);
-        }
-
-        val order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BadRequestException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
-
-        if(!order.getCourier().getId().equals(currentUser.getId())){
-            throw new ForbiddenException(ErrorMessageUtils.COURIER_NOT_ASSOCIATED_WITH_ORDER);
-        }
-
-        return orderMapper.mapToOrderToDeliverDetailsDto(order);
     }
 }

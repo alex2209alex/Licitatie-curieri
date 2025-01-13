@@ -35,6 +35,13 @@ public class OrderController implements OrderApi {
     }
 
     @Override
+    public OrderToDeliverDetailsDto getOrderDetails(@PathVariable(value = "order_id") Long orderId) {
+        log.info(String.format(LogMessageUtils.GET_ORDER_DETAILS, orderId));
+
+        return orderService.getOrderDetails(orderId);
+    }
+
+    @Override
     public OrderCreationResponseDto createOrder(@RequestBody OrderCreationDto orderCreationDto) {
         log.info(LogMessageUtils.CREATE_ORDER);
 
@@ -46,13 +53,5 @@ public class OrderController implements OrderApi {
         log.info(String.format(LogMessageUtils.CANCEL_ORDER, orderId));
 
         orderService.cancelOrder(orderId);
-    }
-
-    @Override
-    public OrderToDeliverDetailsDto getOrderDetails(@PathVariable(value = "order_id") Long orderId)
-    {
-        log.info(String.format(LogMessageUtils.GET_ORDER_DETAILS, orderId));
-
-        return orderService.getOrderDetails(orderId);
     }
 }
