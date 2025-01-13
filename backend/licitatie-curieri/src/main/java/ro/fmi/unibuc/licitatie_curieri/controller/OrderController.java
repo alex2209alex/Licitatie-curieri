@@ -1,6 +1,7 @@
 package ro.fmi.unibuc.licitatie_curieri.controller;
 
 import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.LogMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.api.OrderApi;
-import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationDto;
-import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderCreationResponseDto;
-import ro.fmi.unibuc.licitatie_curieri.controller.order.models.OrderDetailsDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.order.models.*;
 import ro.fmi.unibuc.licitatie_curieri.service.OrderService;
 
 import java.util.List;
@@ -47,5 +46,13 @@ public class OrderController implements OrderApi {
         log.info(String.format(LogMessageUtils.CANCEL_ORDER, orderId));
 
         orderService.cancelOrder(orderId);
+    }
+
+    @Override
+    public OrderToDeliverDetailsDto getOrderDetails(@PathVariable(value = "order_id") Long orderId)
+    {
+        log.info(String.format(LogMessageUtils.GET_ORDER_DETAILS, orderId));
+
+        return orderService.getOrderDetails(orderId);
     }
 }

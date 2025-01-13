@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
+import '../../common/widgets/LogoutActionBarButton.dart';
 import '../providers/MenuItemProvider.dart';
 import '../providers/RestaurantProvider.dart';
 import '../services/CartService.dart';
@@ -52,6 +53,8 @@ class _RestaurantMenusScreenState extends State<RestaurantMenusScreen> {
         actions: [
           CartActionBarButton(key: _cartKey, canRedirect: true),
           SizedBox(width: 20.0),
+
+          LogoutActionBarButton(),
         ],
       ),
       body: menuProvider.isLoading

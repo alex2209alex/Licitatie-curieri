@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
+import '../../common/widgets/LogoutActionBarButton.dart';
 import '../../ui/PaymentPage.dart';
 import 'RestaurantMenusScreen.dart';
 
@@ -53,6 +54,8 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
         actions: [
           CartActionBarButton(canRedirect: true),
           SizedBox(width: 20.0),
+
+          LogoutActionBarButton(),
         ],
       ),
       body: noSelectedAddress

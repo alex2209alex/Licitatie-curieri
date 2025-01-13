@@ -1,0 +1,63 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Payment management
+  description: API related to management of Payments.
+paths:
+  /payment/createIntent:
+    post:
+      tags:
+        - Stripe_payment
+      summary: Creates a payment intent for processing a transaction
+      operationId: createPaymentIntent
+      requestBody:
+        description: Information required to initiate a payment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIntent'
+      responses:
+        '200':
+          description: Payment intent successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateIntentResponse'
+        '400':
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+        '500':
+          description: Error in creating payment intent.
+          content:
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/GenericApplicationError'
+components:
+  schemas:
+    CreateIntent:
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: int64
+          description: Amount to be charged in smallest currency unit (e.g., cents)
+          example: 1000
+        currency:
+          type: string
+          description: Currency in which the payment is to be made
+          example: "ron"
+    CreateIntentResponse:
+      type: object
+      properties:
+        clientSecret:
+          type: string
+          description: The client secret of the payment intent. This is used to complete the payment on the client side.
+          example: "pi_1ExampleSimpleSecret1234"
+        paymentIntentId:
+          type: string
+          description: The ID of the created payment intent.
+          example: "pi_1Example1234"
