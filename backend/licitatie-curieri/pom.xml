@@ -119,6 +119,11 @@
 			<artifactId>twilio</artifactId>
 			<version>10.6.4</version>
 		</dependency>
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>20.90.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -273,6 +278,30 @@
 								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.order</invokerPackage>
 								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.order.api</apiPackage>
 								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.order.models</modelPackage>
+								<useSpringBoot3>true</useSpringBoot3>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Payment OpenApi generation</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/stripe_payment.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<modelNameSuffix>Dto</modelNameSuffix>
+							<configOptions>
+								<useResponseEntity>false</useResponseEntity>
+								<interfaceOnly>true</interfaceOnly>
+								<java8>true</java8>
+								<dateLibrary>java8</dateLibrary>
+								<useTags>true</useTags>
+								<useOptional>false</useOptional>
+								<unhandeledException>true</unhandeledException>
+								<invokerPackage>ro.fmi.unibuc.licitatie_curieri.controller.stripe_payment</invokerPackage>
+								<apiPackage>ro.fmi.unibuc.licitatie_curieri.controller.stripe_payment.api</apiPackage>
+								<modelPackage>ro.fmi.unibuc.licitatie_curieri.controller.stripe_payment.models</modelPackage>
 								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
 						</configuration>

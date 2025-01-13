@@ -52,4 +52,6 @@ public class ErrorMessageUtils {
     public static final String ORDER_NOT_FOUND = "Order with id %s not found";
     public static final String ORDER_DOES_NOT_BELONG_TO_CLIENT = "Order does not belong to the client";
     public static final String ORDER_CANNOT_BE_CANCELED = "Order cannot be canceled";
+
+    public static final String PAYMENT_ERROR = "Failed to create payment intent";
 }

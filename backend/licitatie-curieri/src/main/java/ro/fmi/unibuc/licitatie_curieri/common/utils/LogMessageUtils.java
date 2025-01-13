@@ -29,4 +29,6 @@ public class LogMessageUtils {
     public static final String GET_CLIENT_ORDER = "getClientOrder operation was invoked";
     public static final String GET_NEARBY_ORDER = "getNearbyOrder operation was invoked with latitude %s and longitude %s";
     public static final String CANCEL_ORDER = "cancelOrder operation was invoked with orderId %s";
+
+    public static final String PAYMENT_METHOD = "createPaymentIntent was invoked with ammount %s and currency %s";
 }
