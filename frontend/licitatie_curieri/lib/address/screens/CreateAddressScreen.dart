@@ -37,7 +37,7 @@ class _CreateAddressScreenState extends State<CreateAddressScreen> {
     final address = _detailsController.text;
     if (address.isEmpty) return;
 
-    const apiKey = Utils.mapsApiKey;
+    const apiKey = Utils.MAPS_API_KEY;
     final url =
         "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
 

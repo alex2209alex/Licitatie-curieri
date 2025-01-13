@@ -25,7 +25,7 @@ class _CartScreenState extends State<CartScreen> {
   final CartService cartService = CartService();
 
   Future<void> _placeOrder(List<RestaurantMenuItem> restaurantMenuItems) async {
-    const String apiUrl = '${Utils.baseUrl}/orders';
+    const String apiUrl = '${Utils.BASE_URL}/orders';
 
     final int addressId =
         Provider.of<AddressProvider>(context, listen: false).selectedAddressId!;

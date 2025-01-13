@@ -62,7 +62,7 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
       final address = _addressController.text;
       if (address.isEmpty) return;
 
-      final apiKey = Utils.mapsApiKey;
+      final apiKey = Utils.MAPS_API_KEY;
       final url =
           "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
 

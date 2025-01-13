@@ -9,7 +9,7 @@ import '../../common/GetToken.dart';
 import '../../common/Utils.dart';
 
 class RestaurantService{
-  static const String baseUrl = '${Utils.baseUrl}';
+  static const String baseUrl = '${Utils.BASE_URL}';
   final GetToken getToken = GetToken();
 
   Future<List<Restaurant>> fetchRestaurants() async {
