@@ -18,6 +18,8 @@ public class ErrorMessageUtils {
     public static final String ONLY_CLIENT_CAN_CREATE_ORDERS = "Only client can create Orders";
     public static final String ORDER_TOO_FAR = "Order too far";
     public static final String NOT_ALL_MENU_ITEMS_BELONG_TO_SAME_RESTAURANT = "Not all Menu Items belong to the same Restaurant";
+    public static final String ONLY_COURIER_CAN_VIEW_ORDER_DETAILS = "Only courier can view Order Details";
+    public static final String COURIER_NOT_ASSOCIATED_WITH_ORDER = "Courier not associated with order";
 
     public static final String ONLY_CLIENT_AND_RESTAURANT_ADMIN_CAN_GET_RESTAURANTS = "Only client and restaurant admin can get Restaurants";
     public static final String MISSING_ADDRESS_ID = "Client requires addressId to view Restaurants";
@@ -50,4 +52,6 @@ public class ErrorMessageUtils {
     public static final String ORDER_NOT_FOUND = "Order with id %s not found";
     public static final String ORDER_DOES_NOT_BELONG_TO_CLIENT = "Order does not belong to the client";
     public static final String ORDER_CANNOT_BE_CANCELED = "Order cannot be canceled";
+
+    public static final String PAYMENT_ERROR = "Failed to create payment intent";
 }

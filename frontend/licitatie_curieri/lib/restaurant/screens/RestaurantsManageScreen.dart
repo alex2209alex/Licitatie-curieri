@@ -9,6 +9,7 @@ import '../models/RestaurantModel.dart';
 import '../providers/RestaurantProvider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:licitatie_curieri/common/widgets/LogoutActionBarButton.dart';
 
 import 'RestaurantMenusManageScreen.dart';
 
@@ -62,7 +63,7 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
       final address = _addressController.text;
       if (address.isEmpty) return;
 
-      final apiKey = Utils.mapsApiKey;
+      final apiKey = Utils.MAPS_API_KEY;
       final url =
           "https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(address)}&key=$apiKey";
 
@@ -242,6 +243,10 @@ class _RestaurantsManageScreenState extends State<RestaurantsManageScreen> {
       appBar: AppBar(
         title: const Text("Manage Restaurants"),
         centerTitle: true,
+
+        actions: [
+          LogoutActionBarButton(),
+        ]
       ),
       body: restaurantProvider.isLoading
           ? const Center(child: CircularProgressIndicator())

@@ -7,7 +7,7 @@ import '../../common/GetToken.dart';
 import '../../common/Utils.dart';
 
 class AddressService {
-  static const String baseUrl = '${Utils.baseUrl}/addresses';
+  static const String baseUrl = '${Utils.BASE_URL}/addresses';
   final GetToken getToken = GetToken();
 
   static List<Address> addresses = [];

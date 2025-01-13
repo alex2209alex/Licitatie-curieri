@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
+import '../../common/widgets/LogoutActionBarButton.dart';
+import '../../ui/PaymentPage.dart';
 import 'RestaurantMenusScreen.dart';
 
 class RestaurantsScreen extends StatefulWidget {
@@ -52,6 +54,8 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
         actions: [
           CartActionBarButton(canRedirect: true),
           SizedBox(width: 20.0),
+
+          LogoutActionBarButton(),
         ],
       ),
       body: noSelectedAddress
@@ -97,20 +101,60 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: UniqueKey(),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddressScreen(),
+      // floatingActionButton: FloatingActionButton(
+      //   heroTag: UniqueKey(),
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => const AddressScreen(),
+      //       ),
+      //     ).then((_) {
+      //       initData();
+      //     });
+      //   },
+      //   child: const Icon(Icons.location_on),
+      //   tooltip: 'Go to Addresses',
+      // ),
+      floatingActionButton: Stack(
+        children: <Widget>[
+          Positioned(
+            right: 20,
+            bottom: 20,
+            child: FloatingActionButton(
+              heroTag: UniqueKey(),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddressScreen(),
+                  ),
+                ).then((_) {
+                  initData();
+                });
+              },
+              child: const Icon(Icons.location_on),
+              tooltip: 'Go to Addresses',
             ),
-          ).then((_) {
-            initData();
-          });
-        },
-        child: const Icon(Icons.location_on),
-        tooltip: 'Go to Addresses',
+          ),
+          Positioned(
+            left: 20,
+            bottom: 20,
+            child: FloatingActionButton(
+              heroTag: UniqueKey(),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PaymentPage(),
+                  ),
+                );
+              },
+              child: const Icon(Icons.payment),
+              tooltip: 'Go to Payment',
+            ),
+          ),
+        ],
       ),
     );
   }

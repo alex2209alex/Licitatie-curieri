@@ -7,7 +7,7 @@ import '../common/Utils.dart';
 import '../model/User.dart';
 
 class UserRepository {
-  final String baseUrl = '${Utils.baseUrl}/users';
+  final String baseUrl = '${Utils.BASE_URL}/users';
   final GetToken getToken = GetToken();
 
   Future<bool> signUp(User user) async {

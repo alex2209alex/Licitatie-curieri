@@ -13,6 +13,7 @@ public class LogMessageUtils {
     public static final String REMOVE_MENU_ITEM = "removeMenuItem operation was invoked for MenuItem with Id %s";
 
     public static final String CREATE_ORDER = "createOrder operation was invoked";
+    public static final String GET_ORDER_DETAILS = "getOrderDetails operation was invoked for Order with Id %s";
 
     public static final String GET_RESTAURANTS = "getRestaurants operation was invoked";
     public static final String GET_RESTAURANT = "getRestaurant operation was invoked with Id %s";
@@ -28,4 +29,6 @@ public class LogMessageUtils {
     public static final String GET_CLIENT_ORDER = "getClientOrder operation was invoked";
     public static final String GET_NEARBY_ORDER = "getNearbyOrder operation was invoked with latitude %s and longitude %s";
     public static final String CANCEL_ORDER = "cancelOrder operation was invoked with orderId %s";
+
+    public static final String PAYMENT_METHOD = "createPaymentIntent was invoked with ammount %s and currency %s";
 }

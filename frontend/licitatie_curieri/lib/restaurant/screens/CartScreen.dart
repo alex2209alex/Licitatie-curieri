@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../common/Utils.dart';
 import '../../common/widgets/CartActionBarButton.dart';
 import '../../common/widgets/ListItemCustomCard.dart';
+import '../../common/widgets/LogoutActionBarButton.dart';
 import '../models/RestaurantMenuItemModel.dart';
 import '../providers/CartProvider.dart';
 import '../services/CartService.dart';
@@ -26,7 +27,7 @@ class _CartScreenState extends State<CartScreen> {
   final CartService cartService = CartService();
 
   Future<void> _placeOrder(List<RestaurantMenuItem> restaurantMenuItems) async {
-    const String apiUrl = '${Utils.baseUrl}/orders';
+    const String apiUrl = '${Utils.BASE_URL}/orders';
 
     final int addressId =
         Provider.of<AddressProvider>(context, listen: false).selectedAddressId!;
@@ -97,10 +98,15 @@ class _CartScreenState extends State<CartScreen> {
         title: const Text("My Cart"),
         centerTitle: true,
         actions: [
-          CartActionBarButton(
-            key: GlobalKey<CartActionBarButtonState>(),
-            canRedirect: false,
+          Offstage(
+              offstage: true,
+              child: CartActionBarButton(
+                key: GlobalKey<CartActionBarButtonState>(),
+                canRedirect: false,
+              ),
           ),
+
+          LogoutActionBarButton(),
           const SizedBox(width: 20.0),
 
           Padding(

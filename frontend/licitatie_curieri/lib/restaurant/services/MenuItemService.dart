@@ -8,7 +8,7 @@ import '../../common/Utils.dart';
 import '../models/MenuItemModel.dart';
 
 class MenuItemService {
-  static const String baseUrl = "${Utils.baseUrl}/menu-items";
+  static const String baseUrl = "${Utils.BASE_URL}/menu-items";
   final GetToken getToken = GetToken();
 
   Future<List<MenuItem>> fetchMenuItems(int restaurantId) async {
