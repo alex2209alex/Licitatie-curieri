@@ -27,7 +27,8 @@ public class SecurityConfiguration {
                                 "/users/signup",
                                 "/users/*/verification",
                                 "/users/login",
-                                "/users/getTwoFACode"
+                                "/users/getTwoFACode",
+                                "/web-socket" // don't change
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

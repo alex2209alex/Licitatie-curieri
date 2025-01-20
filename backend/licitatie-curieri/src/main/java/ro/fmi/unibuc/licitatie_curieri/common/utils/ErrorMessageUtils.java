@@ -56,4 +56,7 @@ public class ErrorMessageUtils {
 
     public static final String PAYMENT_ERROR = "Failed to create payment intent";
     public static final String ERROR_WITH_ORDER_THREAD = "Error with order thread";
+
+    public static final String INVALID_OFFER_MESSAGE = "Invalid offer message";
+    public static final String ERROR_MESSAGE_FAILED_TO_BE_SENT_VIA_WEB_SOCKET = "Error message failed to be sent via web socket";
 }
