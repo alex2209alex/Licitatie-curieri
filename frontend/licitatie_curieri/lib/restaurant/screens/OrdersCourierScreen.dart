@@ -1,109 +1,128 @@
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:licitatie_curieri/restaurant/providers/OrderProvider.dart';
+import 'package:licitatie_curieri/restaurant/screens/OrderDetailsScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:licitatie_curieri/restaurant/providers/OrderProvider.dart';
 
-import '../../common/widgets/CartActionBarButton.dart';
 import '../models/OrderModel.dart';
-import 'OrderDetailsScreen.dart';
 
 class OrdersCourierScreen extends StatefulWidget {
-  const OrdersCourierScreen({Key? key}) : super(key: key);
-
   @override
-  State<OrdersCourierScreen> createState() => _OrdersCourierScreenState();
+  _OrdersCourierScreenState createState() => _OrdersCourierScreenState();
 }
 
 class _OrdersCourierScreenState extends State<OrdersCourierScreen> {
-  late Timer _timer;
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      initData();
-    });
-    _timer = Timer.periodic(const Duration(seconds: 20), (_) {
-      log("Refreshing Orders");
-      initData();
-    });
-  }
-
-  Future<void> initData() async {
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-    await orderProvider.fetchOrdersCourier(); // Fetch orders for couriers
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await orderProvider.fetchOrdersCourier();
+      orderProvider.connectToWebSocket();
+    });
   }
 
   @override
   void dispose() {
-    // Cancel the timer when the screen is disposed
-    _timer.cancel();
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    orderProvider.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final orderProvider = Provider.of<OrderProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Courier Orders'),
-        centerTitle: true,
-        actions: [
-          CartActionBarButton(canRedirect: true),
-          const SizedBox(width: 20.0),
-        ],
-      ),
-      body: Consumer<OrderProvider>(
-        builder: (context, orderProvider, _) {
-          if (orderProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (orderProvider.orders.isEmpty) {
-            return const Center(child: Text("No orders found."));
-          }
-          return ListView.builder(
-            itemCount: orderProvider.orders.length,
-            itemBuilder: (context, i) {
-              final order = orderProvider.orders[i];
-              // Cast to OrderDetails to access extended properties
-              if (order is OrderDetails) {
-                return ListTile(
-                  title: Text(order.restaurantAddress),
-                  subtitle: Text(
-                      "Status: ${order.orderStatus}.\nOrder of ${order.foodPrice} RON"),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+      appBar: AppBar(title: Text('Courier Orders')),
+      body: orderProvider.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+        itemCount: orderProvider.orders.length,
+        itemBuilder: (context, index) {
+          final order = orderProvider.orders[index] as OrderDetails;
+
+          return Card(
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Order #${order.id}',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text('Restaurant Address: ${order.restaurantAddress}'),
+                  Text('Delivery Address: ${order.clientAddress}'),
+                  Text('Lowest Bid: ${order.lowestBid}'),
+                  Text('Delivery Limit: ${order.deliveryPriceLimit}'),
+                  Text('Status: ${order.orderStatus}'),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.open_in_new),
-                        onPressed: () {
-                          // Navigate to OrderDetailsScreen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  OrderDetailsScreen(orderId: order.id),
-                            ),
-                          );
-                        },
+                      ElevatedButton.icon(
+                        onPressed: () => _showBidDialog(context, order.id),
+                        icon: Icon(Icons.gavel),
+                        label: Text('Bid'),
                       ),
-                      if (order.orderStatus != "CANCELLED")
-                        IconButton(
-                          icon: const Icon(Icons.cancel),
-                          onPressed: () {
-                            orderProvider.cancelOrder(order.id);
-                          },
-                        ),
+                      ElevatedButton.icon(
+                        onPressed: () => _showDetailsPage(context, order.id),
+                        icon: Icon(Icons.details),
+                        label: Text('Details'),
+                      ),
                     ],
                   ),
-                );
-              } else {
-                return const SizedBox(); // Handle case if it's not OrderDetails
-              }
-            },
+                ],
+              ),
+            ),
           );
         },
+      ),
+    );
+  }
+
+  void _showBidDialog(BuildContext context, int orderId) {
+    final bidController = TextEditingController();
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Place Bid'),
+        content: TextField(
+          controller: bidController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(labelText: 'Bid Amount'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final bidAmount = double.tryParse(bidController.text);
+              if (bidAmount != null) {
+                orderProvider.sendBid(orderId, bidAmount);
+              }
+              Navigator.pop(context);
+            },
+            child: Text('Submit'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDetailsPage(BuildContext context, int orderId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrderDetailsScreen(orderId: orderId),
       ),
     );
   }

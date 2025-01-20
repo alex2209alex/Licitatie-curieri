@@ -91,7 +91,7 @@ class VerificationPageState extends State<VerificationPage> {
                           // navigate to main page of COURIER
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const OrdersCourierScreen()),
+                            MaterialPageRoute(builder: (context) => OrdersCourierScreen()),
                           );
                         }
 

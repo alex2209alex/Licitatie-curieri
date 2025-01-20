@@ -56,7 +56,12 @@ dependencies:
   geolocator: ^9.0.2
 
   # library for live connection
-  stomp_dart_client: ^2.1.1
+  #stomp_dart_client: 1.0.0
+  socket_io_client: ^3.0.2
+  #webview_flutter: ^3.0.0
+  web_socket_channel: ^3.0.1
+  websocket_universal: ^1.2.5
+  #web_socket_channel: ^2.3.0
 
 dev_dependencies:
   flutter_test:

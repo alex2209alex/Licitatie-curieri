@@ -60,6 +60,7 @@ class TwoFACodePageState extends State<TwoFACodePage> {
                             log("JWT payload: ${jwt.payload}");
                             final clientType = jwt.payload['sub'];
                             log("Clienty Type: $clientType");
+                            log(token);
                             if (clientType == UserType.CLIENT.name) {
                               Navigator.pushReplacement(
                                 context,
@@ -82,7 +83,7 @@ class TwoFACodePageState extends State<TwoFACodePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const OrdersCourierScreen()),
+                                        OrdersCourierScreen()),
                               );
                             }
                           } else {

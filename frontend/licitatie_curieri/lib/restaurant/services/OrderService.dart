@@ -146,7 +146,7 @@ class OrderService {
           'Authorization': 'Bearer $token'
         },
       );
-
+      log("respose fetchOrdersCourier: ${response.statusCode}");
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         log(data.toString());
