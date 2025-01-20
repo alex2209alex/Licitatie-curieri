@@ -54,4 +54,7 @@ public class ErrorMessageUtils {
     public static final String ONLY_COURIER_CAN_MAKE_OFFERS = "Only courier can make offers";
     public static final String ORDER_CANNOT_BE_CANCELED = "Order cannot be canceled";
     public static final String ERROR_WITH_ORDER_THREAD = "Error with order thread";
+
+    public static final String INVALID_OFFER_MESSAGE = "Invalid offer message";
+    public static final String ERROR_MESSAGE_FAILED_TO_BE_SENT_VIA_WEB_SOCKET = "Error message failed to be sent via web socket";
 }
