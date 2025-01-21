@@ -8,8 +8,13 @@ import ro.fmi.unibuc.licitatie_curieri.common.distancecalculator.DistanceCalcula
 import ro.fmi.unibuc.licitatie_curieri.common.exception.BadRequestException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.ForbiddenException;
 import ro.fmi.unibuc.licitatie_curieri.common.exception.NotFoundException;
+import ro.fmi.unibuc.licitatie_curieri.common.orderhandler.OrderHandler;
+import ro.fmi.unibuc.licitatie_curieri.common.orderhandler.OrderThread;
 import ro.fmi.unibuc.licitatie_curieri.common.utils.ErrorMessageUtils;
 import ro.fmi.unibuc.licitatie_curieri.controller.order.models.*;
+import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferResponseDto;
+import ro.fmi.unibuc.licitatie_curieri.controller.realtime.models.OfferStatusDto;
 import ro.fmi.unibuc.licitatie_curieri.domain.menuitem.repository.MenuItemRepository;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.Order;
 import ro.fmi.unibuc.licitatie_curieri.domain.order.entity.OrderMenuItemAssociation;
@@ -21,6 +26,8 @@ import ro.fmi.unibuc.licitatie_curieri.domain.restaurant.entity.Restaurant;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociation;
 import ro.fmi.unibuc.licitatie_curieri.domain.user.entity.UserAddressAssociationId;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,7 +41,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final UserInformationService userInformationService;
-    private final Object mutex = new Object();
+    private final OrderHandler orderHandler;
 
     @Transactional(readOnly = true)
     public List<OrderDetailsDto> getClientOrders() {
@@ -50,7 +57,7 @@ public class OrderService {
                 .map(UserAddressAssociationId::getAddressId)
                 .collect(Collectors.toSet());
 
-        synchronized (mutex) {
+        synchronized (OrderHandler.mutex) {
             return orderRepository.findAllByAddressIds(addressIds).stream()
                     .map(orderMapper::mapToOrderDetailsDto)
                     .sorted(Comparator.comparing(OrderDetailsDto::getAuctionDeadline))
@@ -66,7 +73,7 @@ public class OrderService {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_GET_NEARBY_ORDERS);
         }
 
-        synchronized (mutex) {
+        synchronized (OrderHandler.mutex) {
             return orderRepository.findAll().stream()
                     .filter(order -> OrderStatus.IN_AUCTION == order.getOrderStatus())
                     .filter(order -> DistanceCalculator.isWithinRange(
@@ -81,6 +88,27 @@ public class OrderService {
                     .toList()
                     .reversed();
         }
+    }
+
+    @Transactional
+    public OrderToDeliverDetailsDto getOrderDetails(Long orderId) {
+        userInformationService.ensureCurrentUserIsVerified();
+        if(!userInformationService.isCurrentUserCourier()) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_VIEW_ORDER_DETAILS);
+        }
+
+        Order order;
+        synchronized (OrderHandler.mutex) {
+            order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new BadRequestException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
+
+            val currentUser = userInformationService.getCurrentUser();
+            if(!order.getCourier().getId().equals(currentUser.getId())){
+                throw new ForbiddenException(ErrorMessageUtils.COURIER_NOT_ASSOCIATED_WITH_ORDER);
+            }
+        }
+
+        return orderMapper.mapToOrderToDeliverDetailsDto(order);
     }
 
     @Transactional
@@ -129,8 +157,9 @@ public class OrderService {
 
         val order = orderMapper.mapToOrder(orderCreationDto, foodPrice, clientAddress);
 
-        synchronized (mutex) {
-            val persistedOrder = orderRepository.save(order);
+        Order persistedOrder;
+        synchronized (OrderHandler.mutex) {
+            persistedOrder = orderRepository.save(order);
             persistedOrder.setOrderMenuItemAssociations(new ArrayList<>());
             menuItemQuantityHashMap.forEach((menuItemId, quantity) -> {
                 val orderMenuItemAssociationId = new OrderMenuItemAssociationId();
@@ -141,8 +170,40 @@ public class OrderService {
                 orderMenuItemAssociation.setQuantity(quantity);
                 persistedOrder.getOrderMenuItemAssociations().add(orderMenuItemAssociation);
             });
+        }
 
-            return orderMapper.mapToOrderCreationResponse(persistedOrder);
+        val orderThread = new OrderThread(orderHandler, persistedOrder.getId(), ChronoUnit.SECONDS.between(Instant.now(), persistedOrder.getAuctionDeadline()));
+        orderThread.start();
+
+        return orderMapper.mapToOrderCreationResponse(persistedOrder);
+    }
+
+    @Transactional
+    public OfferResponseDto makeOffer(OfferDto offerDto) {
+        userInformationService.ensureCurrentUserIsVerified();
+        if (!userInformationService.isCurrentUserCourier()) {
+            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_MAKE_OFFERS);
+        }
+
+        synchronized (OrderHandler.mutex) {
+            val order = orderRepository.findById(offerDto.getOrderId())
+                    .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, offerDto.getOrderId())));
+
+            if (OrderStatus.IN_AUCTION != order.getOrderStatus()) {
+                return new OfferResponseDto(OfferStatusDto.REJECTED_AUCTION_IS_OVER, offerDto.getOrderId(), offerDto.getDeliveryPrice());
+            }
+
+            if (order.getDeliveryPriceLimit() < offerDto.getDeliveryPrice()) {
+                return new OfferResponseDto(OfferStatusDto.REJECTED_OFFER_EXCEEDS_DELIVERY_PRICE_LIMIT, offerDto.getOrderId(), offerDto.getDeliveryPrice());
+            }
+
+            if (order.getDeliveryPrice() == null || order.getDeliveryPrice() > offerDto.getDeliveryPrice()) {
+                order.setDeliveryPrice(offerDto.getDeliveryPrice());
+                order.setCourier(userInformationService.getCurrentUser());
+                return new OfferResponseDto(OfferStatusDto.ACCEPTED, offerDto.getOrderId(), offerDto.getDeliveryPrice());
+            }
+
+            return new OfferResponseDto(OfferStatusDto.REJECTED_NOT_LOWEST_OFFER, offerDto.getOrderId(), offerDto.getDeliveryPrice());
         }
     }
 
@@ -153,7 +214,7 @@ public class OrderService {
             throw new ForbiddenException(ErrorMessageUtils.ONLY_CLIENT_CAN_CANCEL_ORDERS);
         }
 
-        synchronized (mutex) {
+        synchronized (OrderHandler.mutex) {
             val order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new NotFoundException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
 
@@ -163,7 +224,6 @@ public class OrderService {
             order.setOrderStatus(OrderStatus.CANCELLED);
         }
     }
-
 
     private Restaurant getRestaurant(OrderCreationDto orderCreationDto) {
         val menuItem = menuItemRepository.findById(orderCreationDto.getItems().getFirst().getId())
@@ -186,24 +246,5 @@ public class OrderService {
         if (OrderStatus.IN_AUCTION != order.getOrderStatus()) {
             throw new ForbiddenException(ErrorMessageUtils.ORDER_CANNOT_BE_CANCELED);
         }
-    }
-
-    @Transactional
-    public OrderToDeliverDetailsDto getOrderDetails(Long orderId) {
-        val currentUser = userInformationService.getCurrentUser();
-
-        if(!userInformationService.isCurrentUserCourier())
-        {
-            throw new ForbiddenException(ErrorMessageUtils.ONLY_COURIER_CAN_VIEW_ORDER_DETAILS);
-        }
-
-        val order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BadRequestException(String.format(ErrorMessageUtils.ORDER_NOT_FOUND, orderId)));
-
-        if(!order.getCourier().getId().equals(currentUser.getId())){
-            throw new ForbiddenException(ErrorMessageUtils.COURIER_NOT_ASSOCIATED_WITH_ORDER);
-        }
-
-        return orderMapper.mapToOrderToDeliverDetailsDto(order);
     }
 }

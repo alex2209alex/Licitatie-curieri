@@ -1,11 +1,18 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
+import 'package:licitatie_curieri/common/GetToken.dart';
+import 'package:licitatie_curieri/common/Utils.dart';
 import 'package:licitatie_curieri/restaurant/services/OrderService.dart';
 
 import '../../address/providers/AddressProvider.dart';
 import '../models/OrderModel.dart';
+import '../services/WebSocketService.dart';
 import 'CartProvider.dart';
 
 class OrderProvider with ChangeNotifier {
+  final WebSocketService _webSocketService = WebSocketService();
   List<Order> _orders = [];
   Order? _selectedOrder;
   bool _isLoading = false;
@@ -76,8 +83,7 @@ class OrderProvider with ChangeNotifier {
     return orderToDeliverDetails;
   }
 
-  Future<bool> createOrder(AddressProvider addressProvider,
-      double deliveryPriceLimit, CartProvider cartProvider) async {
+  Future<bool> createOrder(AddressProvider addressProvider, double deliveryPriceLimit, CartProvider cartProvider) async {
     _isLoading = true;
     notifyListeners();
     bool isOk = false;
@@ -99,14 +105,43 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void connectToWebSocket() {
+    _webSocketService.setOnMessageReceived((message) {
+      log("Received WebSocket message: $message");
+      log(message);
+      //message = '{"offerStatus":"ACCEPTED","orderId":245,"deliveryPrice":10.83}';
+      final object = json.decode(message);
+      log(object.toString());
+      updateOrderFromRealTime(object);
+
+      if (message.isNotEmpty) {
+        try {
+          final Map<String, dynamic> data = jsonDecode(message);
+          if (data['type'] == 'offerUpdate') {
+            updateOrderFromRealTime(data['data']);
+          }
+        } catch (e) {
+          log("Error decoding WebSocket message: $e");
+        }
+      }
+    });
+
+    _webSocketService.connect();
+  }
   void updateOrderFromRealTime(Map<String, dynamic> data) {
     final orderId = data['orderId'];
-    final newOrderStatus = data['orderStatus'];
+    final offerStatus = data['offerStatus'];
     final newPrice = data['deliveryPrice'];
+
+    //log("orderId: $")
+
+    if(offerStatus != "ACCEPTED")
+      {
+        return;
+      }
 
     final orderIndex = _orders.indexWhere((order) => order.id == orderId);
     if (orderIndex != -1) {
-      (_orders[orderIndex] as OrderDetails).orderStatus = newOrderStatus;
       (_orders[orderIndex] as OrderDetails).lowestBid = newPrice;
       notifyListeners();
     } else {
@@ -114,16 +149,20 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-// Future<void> placeBid(int orderId, double bidAmount) async {
-//   try {
-//     final success = await OrderService().placeBid(orderId, bidAmount);
-//     if (success) {
-//       print('Bid placed successfully');
-//     } else {
-//       print('Failed to place bid');
-//     }
-//   } catch (e) {
-//     print('Error placing bid: $e');
-//   }
-// }
+  void sendBid(int orderId, double bidAmount) async{
+    final token = await GetToken().getToken();
+    final bidData = {
+      "orderId": orderId,
+      "deliveryPrice": bidAmount,
+      "token": token
+    };
+    _webSocketService.send(bidData);
+  }
+
+  @override
+  void dispose() {
+    _webSocketService.disconnect();
+    super.dispose();
+  }
+
 }

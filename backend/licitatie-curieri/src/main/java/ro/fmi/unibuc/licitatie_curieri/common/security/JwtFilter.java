@@ -33,30 +33,34 @@ public class JwtFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-
-            byte[] apiKeySecretBytes = Base64.getEncoder().encode(SECRET_KEY.getBytes());
-            Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
-
-            try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(signingKey)
-                        .parseClaimsJws(token)
-                        .getBody();
-
-                String userId = claims.getId();
-                String userType = claims.getSubject();
-                if (userId != null) {
-                    List<GrantedAuthority> authorities = Collections.emptyList();
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            userId, userType, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
-            } catch (Exception e) {
-                SecurityContextHolder.clearContext();
-            }
+            setAuthFromToken(token);
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void setAuthFromToken(String token)
+    {
+        byte[] apiKeySecretBytes = Base64.getEncoder().encode(SECRET_KEY.getBytes());
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
+
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(signingKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String userId = claims.getId();
+            String userType = claims.getSubject();
+            if (userId != null) {
+                List<GrantedAuthority> authorities = Collections.emptyList();
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        userId, userType, authorities);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+        }
     }
 }
 
